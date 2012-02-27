@@ -17,15 +17,17 @@ return array (
 		'titleSeparator' => ' | ',
 		'defaultKeywords' => 'training book, motivator, trainingbook, trainingbook.com, tracker, sport tracker, sports tracker, GPS tracking, effective training, fun training, social training, challenge friends, share music playlists, result oriented, faster speed, voice assistant, weight control',
 		'defaultDescription' => 'TRAININGBOOK is your virtual motivator in living active and healthy life.s',
-		'domainName' => 'http://trainingbook.local/',
+		'domainName' => 'http://trainingbook.broka.lv/',
 	),
 	'twitter' => array (
 		'consumerKey' => 'XCKtWHPKeoIbUhqqIanOWA',
 		'consumerSecret' => '9W9xTQutJ5EqKwQJUTaEnZZ1ASZ4VPjgU0sPGMeoiWo',
 	),
 	'facebook' => array (
-		'appId' => '206959362723186',
-		'secret' => 'f79f18a5170038eb3aaf0a66d54d6d32',
+/*		'appId' => '206959362723186',
+		'secret' => 'f79f18a5170038eb3aaf0a66d54d6d32', */
+		'appId' => '115339601926091',
+		'secret' => 'ae760d072f652756c2be0182ee03505a',	
 		'loginParams' => array (
 			'display' => 'popup',
 			'req_perms' => 'email,read_stream,publish_stream,user_about_me,user_birthday,friends_about_me',
