@@ -1,0 +1,19 @@
+<?php foreach ($this->users as $user):?>
+	<div class="block clear noBord">
+		<div class="thumbnail">
+			<?php if ($user->getProfileImageUrl() != null):?>
+				<img alt="" src="<?php echo $user->getProfileImageUrl() ?>" />
+			<?php endif;?>
+		</div>
+		<div class="content friendsList">
+			<h1><a href="/friend/profile/id/<?php echo $user->getId()?>"><?php echo $user->getName()?></a></h1>
+			<?php $latestPosts = $user->getPosts()->slice(0, 1);?>
+			<?php if (isset($latestPosts[0])):?>
+				<h2><?php echo $latestPosts[0]->getComment()?></h2>
+			<?php endif;?>
+			<span class="infoText"><?php echo $user->getWorkouts()->count()?> Workouts</span>
+			<span class="infoText">Duration <?php echo $this->secondsToHours($user->countTime())?></span>
+			<span class="infoText">Distance <?php echo $user->countDistances();?> Km</span>
+		</div>
+	</div>
+<?php endforeach;?>

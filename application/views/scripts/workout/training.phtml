@@ -1,0 +1,129 @@
+<?php
+$workout = $this->workout; /* @var $workout \Entity\Workout */
+$post = $workout->getFeedPost();
+?>
+<div id="top" class="clear">
+	<?php if ($this->currentUser->getId() != $workout->getUser()->getId()):?>
+		<div class="thumbnailSmall">
+			<?php if ($workout->getUser()->getProfileImageUrl() != null):?>
+				<img src="<?php echo $workout->getUser()->getProfileImageUrl()?>" alt="" />
+			<?php endif;?>
+		</div>
+		<p class="friendName"><?php echo $workout->getUser()->getName()?></p>
+		<?php if ($workout->getChallenge() != null && $workout->getChallenge()->getOpponentUser()->getId() == $this->currentUser->getId()):?>
+			<p>
+				<span>Challenged your <?php echo round($workout->getDistance() / 1000, 2)?> km</span>
+			</p>
+		<?php endif;?>
+	<?php endif;?>
+	<div class="map" id="map-canvas">
+		<!-- <div class="speed" style="top: 150px; left: 200px;">
+			<p>1.45 km/h</p>
+			<p class="sp">Lowest speed</p>
+			<span></span>
+		</div>
+		<div class="speed" style="top: 180px; left: 380px;">
+			<p>3.45 km/h</p>
+			<p class="sp">Highest speed</p>
+			<span></span>
+		</div> -->
+	</div>
+	<span class="infoText"><?php echo $workout->getFeedPost()->getDateAdded()->format('d M Y H:i')?></span>
+	<!-- <span>3 km goal workout</span> -->
+	<div class="block noBord clear">
+		<div class="thumbnailLeft">
+			<?php if ($workout->getTrainingPlan(0)->getSport()->getId() > 100):?>
+				<div class="thumbnail running"><img src="/gfx/running_thumbnail.png" style="width: 48px; height: 48px;" alt="" /></div>
+			<?php else:?>
+				<div class="thumbnail running"><img src="/gfx/sport/ic-<?php echo strtolower(str_replace(' ', '', $workout->getTrainingPlan(0)->getSport()->getName()))?>.gif" style="width: 48px; height: 48px;" alt="" /></div>
+			<?php endif;?>
+		</div>
+		<div class="content">
+			<?php foreach ($workout->getTrainingPlanReports() as $trainingPlanReport): /* @var $trainingPlanReport \Entity\TrainingPlan\Report */?>
+				<div class="myGoal">
+					<h1><?php echo $trainingPlanReport->getTrainingPlan()->getSport()->getName()?> <?php echo round($trainingPlanReport->getDistance() / 1000, 2)?> km</h1>
+					<!-- span class="time best">8:27:20</span> -->
+				</div>
+				<?php if ($workout->getUser()->getId() == $this->currentUser->getId() && $workout->getChallenge() != null && $workout->getChallenge()->getChallengeReport() != null):?>
+					<p class="notification">
+						<?php if ($workout->getChallenge()->getChallengeReport()->didWinChallenge()):?>
+							<span>You won <?php echo $workout->getChallenge()->getOpponentUser()->getName()?></span>
+						<?php else:?>
+							<span>You did not win <?php echo $workout->getChallenge()->getOpponentUser()->getName()?> yet</span>
+						<?php endif;?>
+						<span class="right best"><?php echo $this->secondsToHours($workout->getDuration())?></span>
+					</p>
+				<?php endif;?>
+				<table class="data attribute">
+						<tr>
+							<td>Speed</td>
+							<td>Average <?php echo $trainingPlanReport->getAverageSpeed()?> km/h</td>
+							<td>Highest <?php echo $trainingPlanReport->getHighestSpeed()?> km/h</td>
+						</tr>
+						<?php if ($trainingPlanReport->getPace() == null):?>
+							<tr>
+								<td>Pace</td>
+								<td>Average <?php echo $trainingPlanReport->getAveragePace()?> steps/min</td>
+								<td>Highest <?php echo $trainingPlanReport->getHighestPace()?> steps/min</td>
+							</tr>
+						<?php else:?>
+							<tr>
+								<td>Pace</td>
+								<td><?php echo $trainingPlanReport->getPace()?> steps/min</td>
+								<td></td>
+							</tr>
+						<?php endif;?>
+						<?php if ($trainingPlanReport->getHeartRate() == null):?>
+							<tr>
+								<td>Heart rate</td>
+								<td>Average <?php echo $trainingPlanReport->getAverageHeartRate()?> bpm</td>
+								<td>Highest <?php echo $trainingPlanReport->getHighestHeartRate()?> bpm</td>
+							</tr>
+						<?php else:?>
+							<tr>
+								<td>Heart rate</td>
+								<td><?php echo $trainingPlanReport->getHeartRate()?> bpm</td>
+								<td></td>
+							</tr>
+						<?php endif;?>
+						<?php if ($trainingPlanReport->getBurnedCalories() != null):?>
+							<tr>
+								<td>Calories</td>
+								<td><?php echo $trainingPlanReport->getBurnedCalories()?> kcal</td>
+								<td></td>
+							</tr>
+						<?php endif;?>
+				</table>
+			<?php endforeach;?>
+			<div class="rate clear">
+				<div class="rate0<?php echo $workout->getRating()?>"></div>
+			</div>
+			<?php if ($post->getComment() != null):?>
+				<p>“<?php echo $post->getComment()?>”</p>
+			<?php endif;?>
+		</div>
+	</div>
+</div>
+<div class="block clear noBord">
+	<div class="thumbnail"></div>
+	<div class="content">
+		<div class="social">
+			<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $post->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+			<span></span>
+			<span class="highlight"><a href="javascript:;"><?php if ($post->getComments()->count() > 0):?><?php echo $post->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+		</div>
+		<div id="commentWrapper-<?php echo $post->getId()?>"></div>
+	</div>
+</div>
+<script type="text/javascript">
+
+	<?php foreach ($workout->getTrainingPlanReport(0)->getExerciseReports() as $exerciseReport):?>
+		<?php foreach ($exerciseReport->getTrackPoints() as $trackPoint):/*@var $trackPoint \Entity\Exercise\TrackPoint */?>
+			LiveTracking.addPoint(<?php echo $trackPoint->getLat()?>, <?php echo $trackPoint->getLon()?>, <?php echo $trackPoint->getTime()->getTimestamp()?>);
+		<?php endforeach;?>
+	<?php endforeach;?>
+	LiveTracking.drawMap();
+	
+
+	NewsFeed.showComments(<?php echo $post->getId()?>);
+</script>

@@ -1,0 +1,206 @@
+<form method="post" action="" id="add-training-plan-form">
+	<div class="block noBord set clear">
+		<div class="element">
+			<div class="left clear">
+				<select class="select smaller" id="01" title="Select one" name="sportId">
+					<?php foreach ($this->sports as $sport):?>
+						<option value="<?php echo $sport->getId()?>"><?php echo $sport->getName()?></option>
+					<?php endforeach;?>
+			  </select>
+			  <span class="select smaller"><?php echo $this->sports[0]->getName()?></span>
+		  </div>
+		</div>
+		<div class="element"><input type="text" class="text small tooltip" value="Workout plan name" id="workoutPlanName" name="name" onclick="Click.clear(this)" /></div>
+	</div>
+	<div class="line"></div>
+	<div class="block noBord set clear">
+		<div class="element">
+			<input type="hidden" name="exercises[intensity][]" value="4" />
+			<input type="hidden" name="exercises[note][]" />
+			<span class="left label">Warmup</span>
+			<div class="left clear">
+				<select class="select smaller02" id="01" title="Select one" name="exercises[type][]" onchange="WorkoutPlan.changeType(this);">
+					<option value="distance">Distance</option>
+					<option value="time">Time</option>
+			  	</select>
+			  <span class="select smaller02">Distance</span>
+		  </div>
+		</div>
+		<div id="warmup-type-distance" class="element">
+			<div class="element"><input type="text" class="text small tooltip numeric required" value="Value" name="exercises[distance][]" onclick="Click.clear(this);" /></div>
+			<div class="element">
+				<div class="left clear">
+					<select class="select smaller02" title="Select one" name="exercises[unit][]">
+						<option value="1000">km</option>
+						<option value="1">m</option>
+				  </select>
+				  <span class="select smaller02">km</span>
+			  </div>
+			</div>
+		</div>
+		<div id="warmup-type-time" class="element hidden">
+			<div class="element">
+			<input type="text" class="text min tooltip numeric" value="HH" onclick="Click.clear(this);" name="exercises[hours][]" />
+			<input type="text" class="text min tooltip numeric" value="MM" onclick="Click.clear(this);" name="exercises[minutes][]" />
+			<input type="text" class="text min tooltip numeric" value="SS" onclick="Click.clear(this);" name="exercises[seconds][]" />
+		</div>
+	</div>
+	</div>
+	<div class="block noBord clear">
+		<div class="element">
+			<input type="hidden" name="exercises[intensity][]" value="4" />
+			<input type="hidden" name="exercises[note][]" />
+			<span class="left label">Cooldown</span>
+			<div class="left clear">
+				<select class="select smaller02" id="01" title="Select one" name="exercises[type][]" onchange="WorkoutPlan.changeType(this);">
+					<option value="distance">Distance</option>
+					<option value="time">Time</option>
+			  	</select>
+			  <span class="select smaller02">Distance</span>
+		  </div>
+		</div>
+		<div id="cooldown-type-distance" class="element">
+			<div class="element"><input type="text" class="text small tooltip numeric required" value="Value" name="exercises[distance][]" onclick="Click.clear(this);" /></div>
+			<div class="element">
+				<div class="left clear">
+					<select class="select smaller02" title="Select one" name="exercises[unit][]">
+						<option value="1000">km</option>
+						<option value="1">m</option>
+				  </select>
+				  <span class="select smaller02">km</span>
+			  </div>
+			</div>
+		</div>
+		<div id="cooldown-type-time" class="element hidden">
+			<div class="element">
+				<input type="text" class="text min tooltip numeric" value="HH" onclick="Click.clear(this);" name="exercises[hours][]" />
+				<input type="text" class="text min tooltip numeric" value="MM" onclick="Click.clear(this);" name="exercises[minutes][]" />
+				<input type="text" class="text min tooltip numeric" value="SS" onclick="Click.clear(this);" name="exercises[seconds][]" />
+			</div>
+		</div>
+	</div>
+	<div id="exercise-data-1">
+		<div class="line"></div>
+		<div class="block noBord set clear">
+			<div class="element">
+				<div class="left clear">
+					<select class="select smaller02" title="Select one" name="exercises[intensity][]">
+						<option value="1">Intensity</option>
+						<option value="1">Low</option>
+						<option value="2">Medium</option>
+						<option value="3">High</option>
+				  </select>
+				  <span class="select smaller02">Intensity</span>
+			  </div>
+			</div>
+			<div class="element">
+				<div class="left clear">
+					<select class="select smaller02" title="Select one" name="exercises[type][]" onchange="WorkoutPlan.changeType(this);">
+						<option value="distance">Distance</option>
+						<option value="time">Time</option>
+				  	</select>
+				  <span class="select smaller02">Distance</span>
+			  </div>
+			</div>
+			<div id="exercise-type-distance-1" class="element">
+				<div class="element"><input type="text" class="text small02 tooltip numeric required" name="exercises[distance][]" value="Value" onclick="Click.clear(this);" /></div>
+				<div class="element">
+					<div class="left clear">
+						<select class="select smaller02" title="Select one" name="exercises[unit][]">
+							<option value="1000">km</option>
+							<option value="1">m</option>
+					  </select>
+					  <span class="select smaller02">km</span>
+				  </div>
+				</div>
+			</div>
+			<div id="exercise-type-time-1" class="element hidden">
+				<div class="element">
+					<input type="text" class="text min tooltip numeric" value="HH" onclick="Click.clear(this);" name="exercises[hours][]" />
+					<input type="text" class="text min tooltip numeric" value="MM" onclick="Click.clear(this);" name="exercises[minutes][]" />
+					<input type="text" class="text min tooltip numeric" value="SS" onclick="Click.clear(this);" name="exercises[seconds][]" />
+				</div>
+			</div>
+			<input type="text" class="text tooltip shortNote required" value="Short note (255 characters)" name="exercises[note][]" onclick="Click.clear(this);" />
+		</div>
+	</div>
+	<div class="buttonLight">
+		<a href="javascript:;" onclick="WorkoutPlan.addExercise();">+ Add Interval (Low, medium or High intensity.)</a>
+	</div>
+	<div class="shareAction">
+		<span>
+				<input type="radio" id="share-social" name="isPrivate" value="0" checked="checked" />
+				<label class="active" for="share-social">Share:</label>
+			</span>
+			<span>
+				<?php if ($this->currentUser->getFacebookUserId() != null):?>
+					<a href="javascript:;" id="share-facebook" class="facebook" onclick="$('#share-social').attr('checked', true);">Facebook</a>
+					<input type="hidden" name="postFacebook" id="post-facebook" value="0" />
+				<?php endif;?>
+				<?php if ($this->currentUser->getTwitterUserId() != null):?>
+					<a href="javascript:;" id="share-twitter" class="twitter" onclick="$('#share-social').attr('checked', true);">Twitter</a>
+					<input type="hidden" name="postTwitter" id="post-twitter" value="0" />
+				<?php endif;?>
+			</span>
+			<span>
+				<input type="radio" id="private-share" name="isPrivate" value="1" checked="checked" />
+				<label for="private-share">Private</label>
+			</span>
+		<input type="button" class="button right" id="submitButton" value="Create"/>
+	</div>
+</form>
+
+<div id="sample-exercise" class="hidden">
+	<div class="line"></div>
+	<div class="remove">
+		<a href="javascript:;" onclick="WorkoutPlan.removeExercise(this)">Remove</a>
+	</div>
+	<div class="block noBord set clear">
+		<div class="element">
+			<div class="left clear">
+				<select class="select smaller02" title="Select one" name="exercises[intensity][]">
+					<option value="">Intensity</option>
+					<option value="1">Low</option>
+					<option value="2">Medium</option>
+					<option value="3">High</option>
+			  </select>
+			  <span class="select smaller02">Intensity</span>
+		  </div>
+		</div>
+		<div class="element">
+			<div class="left clear">
+				<select class="select smaller02" title="Select one" name="exercises[type][]" onchange="WorkoutPlan.changeType(this);">
+					<option value="distance">Distance</option>
+					<option value="time">Time</option>
+			  	</select>
+			  <span class="select smaller02">Distance</span>
+		  </div>
+		</div>
+		<div id="exercise-type-distance-1" class="element">
+			<div class="element"><input type="text" class="text small02 tooltip numeric required" name="exercises[distance][]" value="Value" onclick="Click.clear(this);" /></div>
+			<div class="element">
+				<div class="left clear">
+					<select class="select smaller02" title="Select one" name="exercises[unit][]">
+						<option value="1000">km</option>
+						<option value="1">m</option>
+				  </select>
+				  <span class="select smaller02">km</span>
+			  </div>
+			</div>
+		</div>
+		<div id="exercise-type-time-1" class="element hidden">
+			<div class="element">
+				<input type="text" class="text min tooltip numeric" value="HH" onclick="Click.clear(this);" name="exercises[hours][]" />
+				<input type="text" class="text min tooltip numeric" value="MM" onclick="Click.clear(this);" name="exercises[minutes][]" />
+				<input type="text" class="text min tooltip numeric" value="SS" onclick="Click.clear(this);" name="exercises[seconds][]" />
+			</div>
+		</div>
+		<input type="text" class="text tooltip required" value="Short note (255 characters)" name="exercises[note][]" onclick="Click.clear(this);" />
+	</div>
+</div>
+
+<script type="text/javascript">
+	WorkoutPlan.init();
+	Click.check('#submitButton', ['#workoutPlanName', 'FORM .required']);
+	$(".numeric").numeric({ decimal: false, negative: false });
+</script>

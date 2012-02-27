@@ -1,0 +1,113 @@
+<div class="block noBord clear">
+	<div class="distance left clear">
+		<select class="select" title="Select one" name="sportId" onchange="Workout.getTrainingPlansBySport(this);" id="sportId">
+			<option value="">Sport type</option>
+			<?php foreach ($this->sports as $sport):?>
+				<option value="<?php echo $sport->getId()?>"><?php echo $sport->getName()?></option>
+			<?php endforeach;?>
+		</select>
+		<span class="select">Sport type</span>
+	</div>
+	<div class="left clear">
+		<select class="select" title="Select one" name="trainingPlanId" id="trainingPlanId">
+			<option value="">Workout plan</option>
+		</select>
+		<span class="select">Workout plan</span>
+	</div>
+</div>
+<div class="navi clear">
+	<input type="text" class="text medium tooltip" name="location" onclick="Click.clear(this);" value="Where?" />
+	<div id="track">
+		<span class="track"><a href="#">Track</a></span>
+		<!-- <span class="tooltipBox"><span></span>Map it</span> -->
+	</div>
+	<div id="mapIt" class="clear">
+		<span class="mapIt">
+			<a href="javascript:;" onclick="$('#map-canvas').toggleClass('hidden');initialize();$('#lineDistance').click();">Map it</a>
+		</span>
+		<!-- <span class="tooltipBox"><span></span>Map it</span> -->
+	</div>
+	<br/>
+	<div id="map-canvas" style="height: 200px; width: 100%;" class="hidden"></div>
+</div>
+<div class="line"></div>
+<div class="block noBord set clear">
+	<div class="element">
+			<div class="left clear">
+			  <span class="label left w65">Distance</span>
+		  </div>
+	</div>
+	<div class="element"><input type="text" class="text small tooltip numeric" value="Value" name="distance" id="lineDistance" onclick="Click.clear(this);"/></div>
+	<div class="element">
+			<div class="left clear">
+				<select class="select smaller" name="unit" id="unit" title="Select one">
+					<option value="1">m</option>
+					<option value="1000">km</option>
+			  </select>
+			  <span class="select smaller">m</span>
+		  </div>
+	</div>
+</div>
+<div class="block noBord set clear">
+	<div class="element">
+		<div class="left clear">
+			<span class="left label w65">Time</span>
+		</div>
+	</div>
+	<div class="element">
+		<input type="text" class="text min tooltip numeric" value="HH" name="hours" onclick="Click.clear(this);"/>
+		<input type="text" class="text min tooltip numeric" value="MM" name="minutes" onclick="Click.clear(this);"/>
+		<input type="text" class="text min tooltip numeric" value="SS" name="seconds" onclick="Click.clear(this);"/>
+	</div>
+</div>
+<div id="parameters" style="display: none;">
+	<div class="block noBord clear">
+		<div class="element">
+			<div class="left clear">
+				<span class="left label w65">Calories</span>
+			</div>
+		</div>
+		<div class="element"><input type="text" class="text small numeric" value="" name="calories"/></div>
+	</div>
+	<div class="block noBord clear">
+		<div class="element">
+			<div class="left clear">
+				<span class="left label w65">Pace</span>
+			</div>
+		</div>
+		<div class="element"><input type="text" class="text small numeric" value="" name="pace"/></div>
+	</div>
+	<div class="block noBord clear">
+		<div class="element">
+			<div class="left clear">
+				<span class="left label w65">Heart rate</span>
+			</div>
+		</div>
+		<div class="element"><input type="text" class="text small numeric" value="" name="heartRate"/></div>
+	</div>
+</div>
+<div class="buttonLight">
+	<a href="javascript:;" onclick="Workout.addParameters();">+ Add Parameter (Calories, Pace Etc.)</a>
+</div>
+<div class="line"></div>
+<div class="feeling">
+	<h2>How did you feel?</h2>
+	<div class="rate00" id="rate">
+		<a href="javascript:;" onclick="Rate.set(1);"></a>
+		<a href="javascript:;" onclick="Rate.set(2);"></a>
+		<a href="javascript:;" onclick="Rate.set(3);"></a>
+		<a href="javascript:;" onclick="Rate.set(4);"></a>
+		<a href="javascript:;" onclick="Rate.set(5);"></a>
+	</div>
+	<input type="hidden" name="rating" id="rateValue" value="" />
+</div>
+
+<textarea rows="" cols="" class="tooltip" name="comment" id="comment" onclick="Click.clear(this);">Your comment</textarea>
+
+<div id="trackPoints"></div>
+
+<script type="text/javascript">
+	Select.init();
+	Click.check('#publishButton', ['#sportId', '#trainingPlanId']);
+	$(".numeric").numeric({ decimal: false, negative: false });
+</script>

@@ -1,0 +1,43 @@
+<?php foreach ($this->challenges as $challenge): /* @var $challenge \Entity\Challenge */?>
+	<div class="block noBord clear">
+		<div class="thumbnail">
+			<?php if ($challenge->getUser()->getProfileImageUrl() != null):?>
+				<img alt="" src="<?php echo $challenge->getUser()->getProfileImageUrl()?>" />
+			<?php endif;?>
+		</div>
+		<div class="content">
+			<span class="name"><a href="/user/profile/id/<?php echo $challenge->getUser()->getId()?>"><?php echo $challenge->getUser()->getName()?></a></span>
+			<?php if ($challenge->getChallengeReport() == null):?>
+				<span class="infoText">Currently</span>
+			<?php endif;?>
+			<span>Challenging <a href="/user/profile/id/<?php echo $challenge->getOpponentUser()->getId()?>"><?php echo $challenge->getOpponentUser()->getName()?></a></span>
+			<div class="goal">
+				<?php if ($challenge->getWorkout() != null):?>
+					<h1><?php echo $challenge->getWorkout()->getName()?></h1>
+				<?php elseif ($challenge->getRecord() != null):?>
+					<h1><?php echo $challenge->getRecord()->getSport()->getName()?></h1>
+				<?php endif;?>
+				<?php if ($challenge->getChallengeReport() == null && $challenge->getWorkout() != null && $challenge->getWorkout()->getStartTime() != null && $challenge->getWorkout()->getEndTime() == null):?>
+					<div class="trackLive">
+						<a href="/workout/track/id/<?php echo $challenge->getWorkout()->getId()?>">Track live!</a>
+					</div>
+				<?php endif;?>
+			</div>
+			<?php if ($challenge->getChallengeReport() != null):?>
+				<p class="notification"><span class="best">
+					<?php if ($challenge->getChallengeReport()->didWinChallenge()):?>
+						<?php echo $challenge->getUser()->getName()?> won the challenge.
+					<?php else:?>
+						<?php echo $challenge->getUser()->getName()?> did not win the challenge.
+					<?php endif;?>
+				</span></p>
+			<?php endif;?>
+			<div class="social">
+				<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $challenge->getFeedPost()->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+				<span></span>
+				<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $challenge->getFeedPost()->getId()?>);"><?php if ($challenge->getFeedPost()->getComments()->count() > 0):?><?php echo $challenge->getFeedPost()->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+			</div>
+			<div id="commentWrapper-<?php echo $challenge->getFeedPost()->getId()?>"></div>
+		</div>
+	</div>
+<?php endforeach;?>

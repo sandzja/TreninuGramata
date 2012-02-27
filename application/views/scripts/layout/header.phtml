@@ -1,0 +1,23 @@
+<div id="header" class="clear">
+	<div id="logo">
+		<a href="/">trainingbook.com</a>
+	</div>
+	<div id="userActionWrapper">
+		<?php if (!Zend_Auth::getInstance()->hasIdentity()):?>
+			<p>Sign in or create an account with</p>
+			<span class="facebookLogin"><a href="javascript:;" onclick="Facebook.login('/user/login/type/facebook');"></a></span>
+			<span class="twitterLogin"><a href="javascript:;" onclick="Twitter.login('/user/login/type/twitter');"></a></span>
+		<?php else:?>
+			<div>
+				<div class="right" id="userAction">
+					<a href="javascript:;" id="userMenuLink" class="name" style="text-decoration: none; cursor: default;"><b><?php echo Zend_Auth::getInstance()->getIdentity()->getName()?></b></a>
+					<ul style="display: none;" id="userMenu">
+						<li><a href="/my-trainings"">My trainings</a></li>
+						<li><a href="/user/logout">Log out</a></li>
+					</ul>
+				</div>
+				<p class="right" style="line-height: 26px;">Signed in as</p>
+			</div>
+		<?php endif;?>
+	</div>
+</div>

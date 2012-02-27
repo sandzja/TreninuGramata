@@ -1,0 +1,24 @@
+<table>
+	<tr>
+		<?php for ($i = 3; $i >= 0; $i--):?>
+			<td class="graph">
+				<?php if (isset($this->overallTimes[$i]['time'])):?>
+					<span><?php echo $this->overallTimes[$i]['time']?></span>
+					<div class="graph">
+						<img  style="height: <?php echo $this->overallTimes[$i]['percent']?>px" alt="" src="/gfx/bar_small_bg.png" />
+					</div>
+				<?php endif;?>
+			</td>
+		<?php endfor;?>
+	</tr>
+	<tr>
+		<?php for ($i = 3; $i >= 1; $i--):?>
+			<td>
+				<?php if (isset($this->overallTimes[$i]['week'])):?>
+					W<?php echo $this->overallTimes[$i]['week']?>
+				<?php endif;?>
+			</td>
+		<?php endfor;?>
+		<td>Current</td>
+	</tr>
+</table>

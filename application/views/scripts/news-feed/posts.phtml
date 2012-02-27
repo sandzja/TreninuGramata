@@ -1,0 +1,66 @@
+<?php foreach ($this->posts as $post):?>
+	<?php
+	if ($post instanceof \Entity\Feed\Post\Workout && $post->getWorkout()->getTrainingPlan(0) == null) {
+		continue;
+	}
+	?>
+	<div class="block clear noBord">
+		<div class="thumbnail">
+			<?php if ($post->getAuthor()->getProfileImageUrl() != null):?>
+				<img alt="" src="<?php echo $post->getAuthor()->getProfileImageUrl() ?>" />
+			<?php endif;?>
+		</div>
+		<?php if ($post instanceof \Entity\Feed\Post\Note):?>
+			<div class="content">
+				<span class="name"><a href="/friend/profile/id/<?php echo $post->getAuthor()->getId()?>"><?php echo $post->getAuthor()->getName()?></a></span>
+				<span class="infoText"><?php echo Helper_Date::format($post->getDateAdded())?> - Web</span>
+				<p><?php echo $post->getComment()?></p>
+				<div class="social">
+					<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $post->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+					<span></span>
+					<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $post->getId()?>);"><?php if ($post->getComments()->count() > 0):?><?php echo $post->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+					<!-- span class="infoText">-  Marcis Rozītis, Adrija Rozīte</span-->
+				</div>
+				<div id="commentWrapper-<?php echo $post->getId()?>"></div>
+			</div>
+		<?php endif;?>
+		<?php if ($post instanceof \Entity\Feed\Post\Picture):?>
+			<div class="content">
+				<span class="name"><a href="/friend/profile/id/<?php echo $post->getAuthor()->getId()?>"><?php echo $post->getAuthor()->getName()?></a></span>
+				<span class="infoText"><?php echo Helper_Date::format($post->getDateAdded())?> - Web</span>
+				<p><?php echo $post->getComment()?></p>
+				<img alt="" src="/news-feed/show-picture/postId/<?php echo $post->getId()?>" class="clear" />
+				<div class="social">
+					<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $post->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+					<span></span>
+					<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $post->getId()?>);"><?php if ($post->getComments()->count() > 0):?><?php echo $post->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+					<!-- span class="infoText">-  Marcis Rozītis, Adrija Rozīte</span> -->
+				</div>
+				<div id="commentWrapper-<?php echo $post->getId()?>"></div>
+			</div>
+		<?php endif;?>
+		<?php if ($post instanceof \Entity\Feed\Post\Workout):?>
+			<div class="content">
+				<span class="name"><a href="/friend/profile/id/<?php echo $post->getAuthor()->getId()?>"><?php echo $post->getAuthor()->getName()?></a></span>
+				<span class="infoText"><?php echo Helper_Date::format($post->getDateAdded())?> - Web</span>
+				<div class="goal">
+					<h1><a href="/workout/training/id/<?php echo $post->getWorkout()->getId()?>"><?php echo $post->getWorkout()->getTrainingPlan(0)->getSport()->getName()?> <?php echo round($post->getWorkout()->getDistance() / 1000, 2)?> km in <?php echo $this->secondsToHours($post->getWorkout()->getDuration())?></a></h1>
+					<?php if ($post->getWorkout()->isShared() && $post->getWorkout()->getStartTime() != null && $post->getWorkout()->getEndTime() == null):?>
+						<div class="trackLive">
+							<a href="/workout/track/id/<?php echo $post->getWorkout()->getId()?>">Track live!</a>
+						</div>
+					<?php else:?>
+						<div class="rate0<?php echo $post->getWorkout()->getRating()?>"></div>
+					<?php endif;?>
+				</div>
+				<p><?php echo $post->getComment()?></p>
+				<div class="social">
+					<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $post->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+					<span></span>
+					<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $post->getId()?>);"><?php if ($post->getComments()->count() > 0):?><?php echo $post->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+				</div>
+				<div id="commentWrapper-<?php echo $post->getId()?>"></div>
+			</div>
+		<?php endif;?>
+	</div>
+<?php endforeach;?>

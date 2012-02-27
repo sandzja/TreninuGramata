@@ -1,0 +1,20 @@
+<?php if ($this->user->getProfileImageUrl() != null):?>
+	<img src="<?php echo $this->user->getProfileImageUrl()?>" />
+<?php endif;?>
+<h2><?php echo $this->user->getName()?></h2>
+<i><?php echo $this->user->getMoto()?></i>
+<ul>
+	<li>Overall distance: <?php echo $this->user->countDistances() / 1000?> km</li>
+	<li>Overall time: <?php echo $this->user->countTime() / 60 / 60 ?> h</li>
+	<li><?php echo count($this->user->getWorkouts())?> workouts</li>
+</ul>
+
+<h3>Graph</h3>
+<h3>Goal: 10000</h3>
+
+<h3>Personal Bests</h3>
+<ul>
+	<?php foreach ($this->user->getRecords() as $record):?>
+		<li><?php echo $record->getSport()->getName()?>: Distance: <?php echo $record->getDistance()?> - Duration: <?php echo $record->getDuration()?> s</li>
+	<?php endforeach;?>
+</ul>

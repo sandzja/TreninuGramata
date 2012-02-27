@@ -1,0 +1,24 @@
+<table>
+	<tr>
+		<?php for ($i = 3; $i >= 0; $i--):?>
+			<td class="graph">
+				<?php if (isset($this->distances[$i]['distance'])):?>
+					<span><?php echo round($this->distances[$i]['distance'])?> m</span>
+					<div class="graph">
+						<img  style="height: <?php echo $this->distances[$i]['percent']?>px" alt="" src="/gfx/bar_small_bg.png" />
+					</div>
+				<?php endif;?>
+			</td>
+		<?php endfor;?>
+	</tr>
+	<tr>
+		<?php for ($i = 3; $i >= 1; $i--):?>
+			<td>
+				<?php if (isset($this->distances[$i]['week'])):?>
+					W<?php echo $this->distances[$i]['week']?>
+				<?php endif;?>
+			</td>
+		<?php endfor;?>
+		<td>Current</td>
+	</tr>
+</table>

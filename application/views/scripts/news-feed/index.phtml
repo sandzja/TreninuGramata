@@ -1,0 +1,58 @@
+<div id="top" class="clear">
+	<h1>
+		<span>+ Add a </span>
+		<a href="javascript:;" onclick="ShareContent.note();" id="share-note-link">Note</a><span>,</span>
+		<a href="javascript:;" onclick="ShareContent.photo();" id="share-photo-link">Photo</a>
+		<span>or</span>
+		<a href="javascript:;" onclick="ShareContent.workout();" id="share-workout-link">Workout</a>
+	</h1>
+	<form method="post" id="shareContentForm" enctype="multipart/form-data">
+		<div id="shareContent"></div>
+		<div class="shareAction" style="display: none;">
+			<span>
+				<input type="radio" id="share-social" name="isPrivate" value="0" checked="checked" />
+				<label class="active" for="share-social">Share:</label>
+			</span>
+			<span>
+				<?php if ($this->currentUser->getFacebookUserId() != null):?>
+					<a href="javascript:;" id="share-facebook" class="facebook facebookActive" onclick="$('#share-social').attr('checked', 'checked');">Facebook</a>
+					<input type="hidden" name="postFacebook" id="post-facebook" value="1" />
+				<?php endif;?>
+				<?php if ($this->currentUser->getTwitterUserId() != null):?>
+					<a href="javascript:;" id="share-twitter" class="twitter twitterActive" onclick="$('#share-social').attr('checked', 'checked');">Twitter</a>
+					<input type="hidden" name="postTwitter" id="post-twitter" value="1" />
+				<?php endif;?>
+			</span>
+			<span>
+				<input type="radio" id="private-share" name="isPrivate" value="1" />
+				<label for="private-share">Private</label>
+			</span>
+			<input type="button" class="button right" name="publish" id="publishButton" value="Add" onclick="$(this).click(function (){$(this).attr('disabled', true)});"/>
+		</div>
+	</form>
+	<div class="tabs">
+		<ul>
+			<li<?php if ($this->type == null):?> class="active"<?php endif;?>><a href="/news-feed">Friends activity</a></li>
+			<li<?php if ($this->type == 'my'):?> class="active"<?php endif;?>><a href="/news-feed/index/type/my">My activity</a></li>
+			<!-- <li<?php if ($this->type == 'public'):?> class="active"<?php endif;?>><a href="/news-feed/index/type/public">Public feed</a></li> -->
+		</ul>
+	</div>
+</div>
+<div id="newsFeedPosts">
+	<?php echo $this->action('posts', 'news-feed', null, array (
+		'type' => $this->type,
+	))?>
+</div>
+
+<div class="block clear noBord">
+	<div class="more">
+		<a href="javascript:;" id="load-more">Load More News</a>
+		<input type="hidden" name="typeValue" id="typeValue" value="<?php echo $this->type?>" />
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		ShareContent.init();
+		NewsFeed.init();
+	});
+</script>

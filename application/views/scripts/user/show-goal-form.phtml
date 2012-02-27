@@ -1,0 +1,31 @@
+<div class="newGoal clear">
+	<form method="post" action="" id="newGoalForm">
+		<h2>New goal</h2>
+		<div class="select clear">
+			<div>
+				<select class="select small" name="type">
+					<option value="distance">Distance</option>
+				</select>
+				<span class="select small">Distance</span>
+			</div>
+		</div>
+		<div class="element">
+			<input type="text" class="text min tooltip" value="Value" name="value" onclick="Click.clear(this);" />
+		</div>
+		<div class="element">
+			<div>
+				<select class="select min" name="unit">
+					<option value="1">m</option>
+					<option value="1000">km</option>
+				</select>
+				<span class="select min">m</span>
+			</div>
+		</div>
+		<input type="button" value="Set" name="setGoal" id="setGoalButton" class="button blue right">
+		<a href="javascript:;" class="cancel right" onclick="Goal.closeForm();">Cancel</a>
+	</form>
+</div>
+
+<script type="text/javascript">
+	Select.init();
+</script>

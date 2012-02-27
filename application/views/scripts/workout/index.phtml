@@ -1,0 +1,38 @@
+<div id="top" class="clear">
+	<h1>
+		<a class="active" href="javascript:;" onclick="WorkoutPlan.search();" id="search-link">Search plans</a><span> or</span>
+		<a href="javascript:;" onclick="WorkoutPlan.addWorkoutPlan();" id="add-workout-plan-link">Create new plan</a>
+	</h1>
+	<div id="shareContent">
+		<?php echo $this->action('show-search-form', 'workout', null, array (
+			'name' => $this->name
+		))?>
+	</div>
+	<div class="tabs clear">
+		<ul>
+			<li<?php if ($this->type == 'my'):?> class="active"<?php endif;?>><a href="/workout/index/type/my">My plans</a></li>
+			<li<?php if ($this->type == 'friends'):?> class="active"<?php endif;?>><a href="/workout/index/type/friends">Friends plans</a></li>
+			<li<?php if ($this->type == 'database'):?> class="active"<?php endif;?>><a href="/workout/index/type/database">Database</a></li>
+		</ul>
+	</div>
+</div>
+<?php echo $this->action('global', 'workout')?>
+
+<div id="trainingPlanPosts">
+	<?php echo $this->action('posts', 'workout', null, array (
+		'type' => $this->type,
+		'name' => $this->name,
+		'search' => $this->search,
+	))?>
+</div>
+
+
+<div class="block clear noBord">
+	<div class="more">
+		<a href="javascript:;" id="load-more">Load More Workout plans</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	Pager.init('#trainingPlanPosts', '/workout/posts/type/<?php echo $this->type?>/name/<?php echo $this->name?>/search/<?php echo $this->search?>');
+</script>

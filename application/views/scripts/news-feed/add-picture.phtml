@@ -1,0 +1,11 @@
+<?php if (isset($this->isSuccessful)):?>
+	<?php if ($this->isSuccessful):?>
+		<script type="text/javascript">
+			parent.ShareContent.closeAndReload();
+		</script>
+	<?php else:?>
+		<script type="text/javascript">
+			parent.alert('Image upload filed!');
+		</script>
+	<?php endif;?>
+<?php endif;?>

@@ -1,0 +1,20 @@
+<?php foreach ($this->post->getComments() as $comment):?>
+	<div class="commentWrapper clear">
+		<div class="thumbnailSmall">
+			<?php if ($comment->getAuthor()->getProfileImageUrl() != null):?>
+				<img alt="" src="<?php echo $comment->getAuthor()->getProfileImageUrl()?>" />
+			<?php endif;?>
+		</div>
+		<div class="comment">
+			<p>
+				<span class="name"><a href="/friend/profile/id/<?php echo $comment->getAuthor()->getId()?>"><?php echo $comment->getAuthor()->getName()?></a></span>
+				- <?php echo $comment->getText()?>
+			</p>
+			<span class="infoText"><?php echo $comment->getDateAdded()->format('d M Y')?></span>
+		</div>
+	</div>
+<?php endforeach;?>
+<form method="post" id="addCommentForm-<?php echo $this->post->getId()?>">
+	<input type="hidden" name="postId" value="<?php echo $this->post->getId()?>" />
+	<input type="text" class="text tooltip" name="comment" value="Add a comment" onclick="Click.clear(this);" id="comment-<?php echo $this->post->getId()?>" />
+</form>

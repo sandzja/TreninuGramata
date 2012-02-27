@@ -1,0 +1,15 @@
+<div class="fileinputs">
+	<input type="file" class="add file" name="picture" id="fileUpload" size="66" style="width: 100%; margin-top: 14px;" />
+	<div class="fakefile">
+		<input type="text" class="text add tooltip" id="fileUploadValue" value="" />
+		<a class="addPhoto" href="#"></a>
+	</div>
+</div>
+<textarea rows="" cols="" class="tooltip" name="note" id="note" onclick="Click.clear(this);">Your comment</textarea>
+
+<iframe name="photoUploadIframe" style="width: 0px; height: 0px;"></iframe>
+
+<script type="text/javascript">
+	ShareContent.initFileUpload();
+	Click.check('#publishButton', ['#note', '#fileUpload']);
+</script>

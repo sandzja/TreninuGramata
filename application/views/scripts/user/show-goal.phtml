@@ -1,0 +1,16 @@
+<div class="block">
+	<h2>Goal: <?php echo round($this->user->getGoal() / 1000, 2)?> km</h2>
+	<span  class="setGoal"><a href="javascript:;" onclick="Goal.showForm();">Set New</a></span>
+	<div class="bar">
+		<?php if ($this->user->countDistances() == 0):?>
+			<span style="width: 100%;" class="noProgress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+		<?php else:?>
+			<?php if ($this->user->getGoal() == 0):?>
+				<span style="width: 100%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+			<?php else:?>
+				<span style="width: <?php echo round($this->user->countDistances() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countDistances() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+			<?php endif;?>
+		<?php endif;?>
+	</div>
+	<div id="goalForm"></div>
+</div>

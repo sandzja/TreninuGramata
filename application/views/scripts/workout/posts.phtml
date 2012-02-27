@@ -1,0 +1,82 @@
+<?php foreach ($this->trainingPlans as $trainingPlan): /* @var $trainingPlan \Entity\TrainingPlan */?>
+	<div class="block clear">
+		<div class="thumbnail">
+			<?php if ($trainingPlan->getUser()->getProfileImageUrl() != null):?>
+				<img alt="" src="<?php echo $trainingPlan->getUser()->getProfileImageUrl()?>" />
+			<?php endif;?>
+		</div>
+		<div class="content">
+			<span class="name"><a href="/user/profile/id/<?php echo $trainingPlan->getUser()->getId()?>"><?php echo $trainingPlan->getUser()->getName()?></a></span>
+			<span class="infoText"><?php echo $trainingPlan->getDate()->format('d M Y H:i')?> - Web</span>
+			<span class="infoText right">Used by <?php echo $trainingPlan->getTrainingPlanCopies()->count()?> athletes</span>
+			<div class="clear">
+				<div class="goal">
+					<h2><?php echo $trainingPlan->getSport()->getName()?></h2>
+					<h1><?php echo $this->secondsToHours($trainingPlan->countExerciseDuration())?> <?php echo $trainingPlan->getName()?></h1>
+					<?php if ($trainingPlan->getUser()->getId() != $this->currentUser->getId()):?>
+						<a href="javascript:;" onclick="WorkoutPlan.addToMyPlans(<?php echo $trainingPlan->getId()?>, this)" class="addToPlans">+ Add to my plans</a>
+					<?php endif;?>
+				</div>
+			</div>
+			<div class="workoutBarWrapper">
+				<div class="workoutBar clear">
+					<?php $graphData = $this->workoutService->getIntensityGraph($trainingPlan);?>
+					<?php foreach ($trainingPlan->getExercises() as $i => $exercise):?>
+						<?php if (isset($graphData[$i])):?>
+							<div style="width: <?php echo $graphData[$i]?>%;" class="workout0<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_WC):?>1<?php else:?><?php echo $exercise->getIntensity() + 1?><?php endif;?><?php if ($i == 0):?> first<?php endif;?><?php if ($i == count($trainingPlan->getExercises()) - 1):?> last<?php endif;?>">
+								<?php if ($i != count($trainingPlan->getExercises()) - 1):?>
+									<span></span>
+								<?php endif;?>
+							</div>
+						<?php endif;?>
+					<?php endforeach;?>
+				</div>
+			</div>
+			<div class="showMore clear">
+				<div id="show-more-content-<?php echo $trainingPlan->getFeedPost()->getId()?>" class="hidden">
+					<?php foreach ($trainingPlan->getExercises() as $exercise):?>
+						<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_WC):?>
+							<p>
+								<?php if ($exercise->getGoal()->getDuration() != 0):?>
+									<?php echo $this->secondsToHours($exercise->getGoal()->getDuration())?> <?php echo $exercise->getName()?>
+								<?php elseif ($exercise->getGoal()->getDistance() != 0):?>
+									<?php echo $this->secondsToHours($exercise->getGoal()->getDistance() / $trainingPlan->getSport()->getIntensitySpeed())?> <?php echo $exercise->getName()?>
+								<?php endif;?>
+							</p>
+						<?php else:?>
+							<p class="sub">
+								<?php if ($exercise->getGoal()->getDuration() != 0):?>
+									<?php echo $this->secondsToHours($exercise->getGoal()->getDuration())?> <?php echo $exercise->getName()?>
+								<?php elseif ($exercise->getGoal()->getDistance() != 0):?>
+									<?php echo $this->secondsToHours($exercise->getGoal()->getDistance() / $trainingPlan->getSport()->getIntensitySpeed())?> <?php echo $exercise->getName()?>
+								<?php endif;?>
+							 <b>
+							<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_LOW):?>
+								Low intensity
+							<?php endif;?>
+							<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_MEDIUM):?>
+								Medium intensity
+							<?php endif;?>
+							<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_HIGH):?>
+								High intensity
+							<?php endif;?>
+							</b> <span class="infoText"> “<?php echo $exercise->getNote()?>”</span></p>
+						<?php endif;?>
+					<?php endforeach;?>
+					<?php if ($trainingPlan->getUser()->getId() != $this->currentUser->getId()):?>
+						<a href="javascript:;" onclick="WorkoutPlan.addToMyPlans(<?php echo $trainingPlan->getId()?>, this)" class="right">+ Add to My plans</a>
+					<?php endif;?>
+					<a href="#" class="right">Recommend</a>
+					<a href="#" class="right">Share</a>
+				</div>
+				<a href="javascript:;" id="show-more-link-<?php echo $trainingPlan->getFeedPost()->getId()?>" onclick="NewsFeed.showTrainingPlanContent(<?php echo $trainingPlan->getFeedPost()->getId()?>)">+ show more</a>
+			</div>
+			<div class="social">
+				<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $trainingPlan->getFeedPost()->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+				<span></span>
+				<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $trainingPlan->getFeedPost()->getId()?>);"><?php if ($trainingPlan->getFeedPost()->getComments()->count() > 0):?><?php echo $trainingPlan->getFeedPost()->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+			</div>
+			<div id="commentWrapper-<?php echo $trainingPlan->getFeedPost()->getId()?>"></div>
+		</div>
+	</div>
+<?php endforeach;?>

@@ -1,0 +1,29 @@
+<form method="get" action="" id="searchForm">
+	<div class="block noBord clear">
+		<div class="element">
+			<div class="left clear">
+				<select class="select smaller" title="Select one" name="sportId">
+					<option value="">Sport type</option>
+					<?php foreach ($this->sports as $sport):?>
+						<option value="<?php echo $sport->getId()?>" <?php if ($this->sport == $sport):?>selected="selected"<?php endif;?>><?php echo $sport->getName()?></option>
+					<?php endforeach;?>
+				  </select>
+			  <span class="select smaller"><?php if ($this->sport != null):?><?php echo $this->sport->getName()?><?php else:?>Sport type<?php endif;?></span>
+		  </div>
+		</div>
+		<div class="element">
+			<div class="left clear">
+				<select class="select smaller" title="Select one" name="intensity">
+					<option value="">Intensity</option>
+					<?php foreach (\Entity\Exercise::$intensities as $intensity => $intensityName):?>
+						<option value="<?php echo $intensity?>" <?php if ($this->intensity === (string) $intensity):?>selected="selected"<?php endif;?>><?php echo $intensityName?></option>
+					<?php endforeach;?>
+				  </select>
+			  <span class="select smaller"><?php if ($this->intensity != null):?><?php echo \Entity\Exercise::$intensities[$this->intensity]?><?php else:?>Intensity<?php endif;?></span>
+		  </div>
+		</div>
+	</div>
+	<input type="text" class="text add<?php if ($this->name == null):?> tooltip<?php endif;?>" id="searchString" <?php if ($this->name == null):?>onclick="Click.clear(this);"<?php endif;?> name="name" value="<?php if ($this->name != null):?><?php echo $this->name ?><?php else:?>Search by name<?php endif;?>" />
+	<a class="search" href="javascript:;" onclick="if ($('#searchString').val() == 'Search by name') {$('#searchString').val('');}$('#searchForm').submit();"></a>
+	<input type="hidden" name="search" value="1" />
+</form>

@@ -1,0 +1,27 @@
+<div id="graphWrapper">
+	<div id="graphBg">
+		<div class="parameters clear">
+			<div class="element">
+				<form method="post" action="">
+					<div>
+						<select class="select smaller" title="Select one" onclick="MyTrainingsGraph.filterSport(this);">
+							<option value="">Sport type</option>
+							<?php foreach ($this->sports as $sport):?>
+								<option value="<?php echo $sport->getId()?>"><?php echo $sport->getName()?></option>
+							<?php endforeach;?>
+						  </select>
+						  <span class="select smaller">Sport type</span>
+					  </div>
+				 </form>
+			</div>
+			<span class="scale">
+				<a href="javascript:;" id="daily-filter-link" class="active" onclick="MyTrainingsGraph.filterGraph('daily');">Daily</a>
+				<a href="javascript:;" id="weekly-filter-link" onclick="MyTrainingsGraph.filterGraph('weekly');">Weekly</a>
+				<a href="javascript:;" id="monthly-filter-link" onclick="MyTrainingsGraph.filterGraph('monthly');">Monthly</a>
+			</span>
+		</div>
+	</div>
+	<div id="trainingGraphContent">
+		<?php echo $this->action('graph-daily', 'my-trainings')?>
+	</div>
+</div>

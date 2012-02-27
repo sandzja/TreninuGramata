@@ -1,0 +1,43 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle() ?>
+<?php echo $this->headMeta()?>
+<?php echo $this->headLink()?>
+<?php echo $this->headScript()?>
+<script type="text/javascript">
+	baseUrl = '<?php echo $this->baseUrl()?>';
+</script>
+
+</head>
+<body>
+	<div id="container">
+		<?php echo $this->action('header', 'layout')?>
+		<?php echo $this->action('show-top-menu', 'layout')?>
+		<div id="leftWrapper">
+			<?php echo $this->action('left-menu', 'user')?>
+		</div>
+		<div id="contentWrapper" class="clear">
+			<?php echo $this->layout()->content?>
+		</div>
+		<div id="footer">
+			<span>©2011 Trainingbook - All rights reserved</span>
+			<ul>
+				<li><a href="javascript:;" onclick="Modal.open('#about');">Contact</a></li>
+				<!-- li><a href="javascript:;" onclick="Modal.open('#support');">Support</a></li> -->
+				<?php /*?><li><a href="javascript:;" onclick="Modal.open('#terms');">Terms &amp; Policy</a></li><?php */ ?>
+			</ul>
+		</div>
+	</div>
+	<div id="modal">
+		<?php echo $this->action('terms', 'page')?>
+		<?php echo $this->action('support', 'page')?>
+		<?php echo $this->action('about', 'page')?>
+	</div>
+	<script type="text/javascript">
+
+
+
+</script>
+</body>
+</html>

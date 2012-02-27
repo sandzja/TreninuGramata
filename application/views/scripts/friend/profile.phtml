@@ -1,0 +1,64 @@
+<?php
+/* @var $user \Entity\User */
+$user = $this->user;
+
+/* @var $workoutService \Service\Workout */
+$workoutService = $this->workoutService;
+?>
+
+<fieldset>
+	<div style="width: 100px; overflow: hidden;" class="span-1">
+		<?php if ($user->getProfileImageUrl() != null):?>
+			<img src="<?php echo $user->getProfileImageUrl()?>" />
+		<?php endif;?>
+	</div>
+	<div class="span-15">
+		<h2><?php echo $user->getName()?></h2>
+		<p><?php echo $user->getMoto()?></p>
+		<ul>
+			<li>Overall distance: <?php echo $user->countDistances()?> km</li>
+			<li>Overall time: <?php echo $user->countTime() / 60 / 60 ?> h</li>
+			<li><?php echo count($user->getWorkouts())?> workouts</li>
+		</ul>
+	</div>
+	<div class="span-16">
+		<h3>Goal: 1000 kcal</h3>
+	</div>
+	<div class="span-16">
+		<table>
+			<tr>
+				<th>Sport</th>
+				<th>His bests</th>
+				<th>Your bests</th>
+			</tr>
+			<?php foreach ($user->getRecords() as $record): /* @var $record \Entity\Record */?>
+				<tr>
+					<td><?php echo $record->getSport()->getName()?></td>
+					<td>
+						<?php if ($record->isTimeRecord()):?>
+							<?php echo $record->getDuration()?> s
+						<?php else:?>
+							<?php echo $record->getDistance()?> m
+						<?php endif;?>
+					</td>
+					<td>
+						<?php $currentUserRecord = $workoutService->getRecordBySport($this->currentUser->getId(), $record->getSport()->getId());?>
+						<?php if ($currentUserRecord != null):?>
+							<?php if ($record->IsTimeRecord()):?>
+								<?php echo $currentUserRecord->getDuration()?> s
+							<?php else:?>
+								<?php echo $currentUserRecord->getDistance()?> m
+							<?php endif;?>
+						<?php else:?>
+							-
+						<?php endif;?>
+					</td>
+				</tr>
+			<?php endforeach;?>
+		</table>
+	</div>
+</fieldset>
+
+<?php echo $this->action('posts', 'news-feed', null, array (
+	'userId' => $user->getId(),
+))?>

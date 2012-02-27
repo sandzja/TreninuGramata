@@ -1,0 +1,29 @@
+<?php
+$graphDate = clone $this->currentDate;
+$arrowDate = clone $this->currentDate;
+$navigatorDate = clone $this->currentDate;
+
+?>
+<table class="statistic">
+	<tr class="diagram">
+		<td></td>
+		<?php for ($date = $graphDate->modify('-13 weeks'); $date <= $this->currentDate; $date->modify('+1 week')):?>
+			<td>
+				<?php if (isset($this->times[$date->format('YW')]['time'])):?>
+					<span><?php echo $this->times[$date->format('YW')]['time']?></span>
+					<div class="graph">
+						<img src="/gfx/bar_small_bg.png" alt="" style="height: <?php echo $this->times[$date->format('YW')]['percent'] * 90 / 100?>px" />
+					</div>
+				<?php endif;?>
+			</td>
+		<?php endfor;?>
+		<td></td>
+	</tr>
+	<tr class="date">
+		<td><a href="javascript:;" onclick="MyTrainingsGraph.reload('<?php echo $arrowDate->modify('-1 weeks')->format('Y-m-d') ?>')" class="arrowLeft active">Left</a></td>
+			<?php for ($date = $navigatorDate->modify('-13 weeks'); $date <= $this->currentDate; $date->modify('+1 weeks')):?>
+				<td><?php echo $date->format('W')?></td>
+			<?php endfor;?>
+		<td><a href="javascript:;" onclick="MyTrainingsGraph.reload('<?php echo $arrowDate->modify('+2 weeks')->format('Y-m-d') ?>')" class="arrowRight active">Right</a></td>
+	</tr>
+</table>

@@ -1,0 +1,76 @@
+<div id="top" class="clear">
+	<h1>Find your next challenge</h1>
+	<div class="friendSearch clear">
+		<h2>Your records</h2>
+		<div id="searchSmall">
+			<form method="post" action="" id="challenge-friend">
+				<input type="text" class="text action<?php if ($this->friendName == null):?> tooltip<?php endif;?>" onclick="Click.clear(this)" name="friendName" value="<?php if ($this->friendName == null):?>Compare with a friend<?php else:?><?php echo $this->friendName?><?php endif;?>" />
+				<a class="search" href="javascript:;" onclick="$('#challenge-friend').submit();">Search</a>
+			</form>
+		</div>
+	</div>
+	<table class="data">
+		<?php foreach ($this->currentUser->getRecords() as $record):?>
+			<tr>
+				<td><?php echo $record->getSport()->getName()?></td>
+				<td>
+					<?php if ($record->isTimeRecord()):?>
+						<?php echo $this->secondsToHours($record->getDuration())?>
+					<?php else:?>
+						<?php echo round($record->getDistance() / 1000, 2)?> km
+					<?php endif;?>
+				</td>
+				<?php
+					if ($this->friendName != '') {
+						$best = $this->workoutService->getRecordBySportByFriendName($record->getSport()->getId(), $this->friendName);
+					} else {
+						$best = $this->workoutService->getRecordBySport($record->getSport()->getId());
+					}
+				?>
+				<td>
+					<?php if ($best != null):?>
+						<?php if ($best->isTimeRecord()):?>
+							<?php echo $this->secondsToHours($best->getDuration())?>
+						<?php else:?>
+							<?php echo round($best->getDistance() / 1000, 2)?> km
+						<?php endif;?>
+					<?php else:?>
+						-
+					<?php endif;?>
+				</td>
+				<td class="w310">
+					<?php if ($best != null):?>
+						<a href="/user/profile/id/<?php echo $best->getUser()->getId()?>"><?php echo $best->getUser()->getName()?></a>
+					<?php else:?>
+						-
+					<?php endif;?>
+				</td>
+			</tr>
+		<?php endforeach;?>
+		<!-- <tr>
+			<td colspan="4"><a href="#">+ show more</a></td>
+		</tr> -->
+	</table>
+	<div class="tabs">
+		<ul>
+			<li<?php if ($this->type == 'i-challenged'):?> class="active"<?php endif;?>><a href="/challenge/index/type/i-challenged">I challenged</a></li>
+			<li<?php if ($this->type == 'challenged-me'):?> class="active"<?php endif;?>><a href="/challenge/index/type/challenged-me">Challenged me</a></li>
+			<li<?php if ($this->type == 'all'):?> class="active"<?php endif;?>><a href="/challenge">All</a></li>
+		</ul>
+	</div>
+</div>
+<div id="challenges">
+	<?php echo $this->action('posts', 'challenge', null, array (
+		'type' => $this->type,
+	))?>
+</div>
+
+<div class="block clear noBord">
+	<div class="more">
+		<a href="javascript:;" id="load-more">Load More Challenges</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	Pager.init('#challenges', '/challenge/posts/type/<?php echo $this->type?>');
+</script>

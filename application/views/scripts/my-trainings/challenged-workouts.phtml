@@ -1,0 +1,42 @@
+<div id="top" class="clear">
+	<?php echo $this->action('graph', 'my-trainings')?>
+	<div class="tabs smaller">
+		<ul>
+			<li><a href="/my-trainings/all-workouts">All workouts</a></li>
+			<li><a href="/my-trainings/goaled-workouts">Goals</a></li>
+			<li class="active"><a href="/my-trainings/challenged-workouts">Challenges</a></li>
+			<li><a href="/my-trainings/recorded-workouts">Records</a></li>
+		</ul>
+		<div class="display">
+			<a href="/my-trainings/challenged-workouts" class="calView active"></a>
+			<a href="/my-trainings/challenged-workouts-calendar" class="itemView"></a>
+		</div>
+	</div>
+</div>
+
+<?php foreach ($this->workouts as $workout): /* @var $workout \Entity\Workout */?>
+	<div class="block noBord clear">
+		<div class="thumbnail running"></div>
+		<div class="content">
+			<span class="infoText"><?php echo Helper_Date::format($workout->getFeedPost()->getDateAdded(), 'd M Y H:i')?> - Web</span>
+			<!-- <span>3 km goal workout</span> -->
+			<div class="goal">
+				<h1><?php echo $workout->getTrainingPlan(0)->getSport()->getName()?> <?php echo round($workout->getDistance() / 1000, 2)?> km in <?php echo $this->secondsToHours($workout->getDuration())?></h1>
+				<div class="rate0<?php echo $workout->getRating()?>"></div>
+			</div>
+			<!-- <p class="notification">Goal was not yet achieved</p> -->
+			<div class="social">
+				<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $workout->getFeedPost()->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+				<span></span>
+				<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $workout->getFeedPost()->getId()?>);"><?php if ($workout->getFeedPost()->getComments()->count() > 0):?><?php echo $workout->getFeedPost()->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
+			</div>
+			<div id="commentWrapper-<?php echo $workout->getFeedPost()->getId()?>"></div>
+		</div>
+	</div>
+<?php endforeach;?>
+
+<div class="block clear noBord">
+	<div class="more">
+		<a href="#">Load More Workouts</a>
+	</div>
+</div>

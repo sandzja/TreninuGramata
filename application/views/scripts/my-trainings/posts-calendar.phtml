@@ -1,0 +1,43 @@
+<div class="block noBord clear">
+	<div class="month clear">
+		<span class="previous">
+			<a class="active" href="/my-trainings/index/type/<?php echo $this->type?>/calendar/1/date/<?php echo $this->naviDate->modify('-1 month')->format('Y-m-d') ?>">Previous</a>
+		</span>
+		<h1><?php echo $this->naviDate->modify('+1 month')->format('F')?> <?php echo $this->naviDate->format('Y')?></h1>
+		<span class="next">
+			<a class="active" href="/my-trainings/index/type/<?php echo $this->type?>/calendar/1/date/<?php echo $this->naviDate->modify('+1 month')->format('Y-m-d') ?>">Next</a>
+		</span>
+	</div>
+</div>
+<div class="block clear">
+	<ul class="trainingTasks clear">
+		<?php for ($date = new DateTime('first day of ' . $this->currentMonth); $date < new DateTime('first day of ' . $this->nextMonth); $date->modify('+1 day')):?>
+			<?php if ($date->format('N') == 1):?>
+				<div class="block clear">
+					<ul class="trainingTasks clear">
+			<?php endif;?>
+			<?php for($i = $date->format('N'); $i > 1 && $date == new DateTime('first day of ' . $this->currentMonth); $i--): ?>
+				<li></li>
+			<?php endfor; ?>
+			<li>
+				<p class="day"><?php echo $date->format('D')?> <?php echo $date->format('d')?></p>
+				<?php if (isset($this->workouts[$date->format('d')])):?>
+					<?php foreach ($this->workouts[$date->format('d')] as $workout):?>
+						<?php if ($workout->getTrainingPlan(0) == null):?>
+							<?php continue;?>
+						<?php endif;?>
+						<p class="time"><?php echo $workout->getStartTime()->format('H:i')?></p>
+						<p><?php echo $workout->getTrainingPlan(0)->getSport()->getName()?> <br /><?php echo round($workout->getDistance() / 1000, 2)?> Km</p>
+						<?php if ($workout->getRecord() != null):?>
+							<p class="important">Record!</p>
+						<?php endif;?>
+					<?php endforeach;?>
+				<?php endif;?>
+			</li>
+			<?php if ($date->format('N') == 7):?>
+					</ul>
+				</div>
+			<?php endif;?>
+		<?php endfor;?>
+	</ul>
+</div>

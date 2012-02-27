@@ -1,0 +1,9 @@
+<?php if ($this->messages != null):?>
+	<ul class="error">
+		<?php foreach ($this->messages as $fieldName => $fieldMsgs):?>
+			<?php foreach ($fieldMsgs as $fieldMsgId => $fieldMsg):?>
+				<li><?php echo $this->form->$fieldName->getLabel(); ?> <?php echo $fieldMsg?>!</li>
+			<?php endforeach;?>
+		<?php endforeach;?>
+	</ul>
+<?php endif;?>

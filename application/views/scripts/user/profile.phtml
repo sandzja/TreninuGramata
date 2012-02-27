@@ -1,0 +1,71 @@
+<?php
+/* @var $user \Entity\User */
+$user = $this->user;
+
+/* @var $workoutService \Service\Workout */
+$workoutService = $this->workoutService;
+?>
+<div id="top" class="clear">
+	<div class="leftBlock">
+		<div class="userPicture">
+			<?php if ($user->getProfileImageUrl() != null):?>
+				<img alt="" src="<?php echo $user->getProfileImageUrl()?>" />
+			<?php endif;?>
+		</div>
+		<div class="clear">
+		<?php if ($user->getId() != $this->currentUser->getId() && !$this->currentUser->getFollowings()->contains($user)):?>
+			<span id="friend-<?php echo $user->getId();?>" class="name right"><a href="javascript:;" onclick="Friend.add(<?php echo $user->getId()?>);">Add to my friends</a></span>
+		<?php else:?>
+			<span id="friend-<?php echo $user->getId();?>" class="name right"><a href="javascript:;" onclick="Friend.remove(<?php echo $user->getId()?>);">Unfollow</a></span>
+		<?php endif;?>
+		</div>
+		<h1><?php echo $user->getName()?></h1>
+		<p><?php echo count($user->getWorkouts())?> Workouts</p>
+		<p>Duration <?php echo $this->secondsToHours($user->countTime())?></p>
+		<p>Distance <?php echo round($user->countDistances() / 1000, 2)?> Km</p>
+		<h2>Goal: <?php echo round($this->user->getGoal() / 1000, 2)?> km</h2>
+		
+		<div class="bar">
+			<?php if ($this->user->countDistances() == 0):?>
+				<span style="width: 100%;" class="noProgress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+			<?php else:?>
+				<?php if ($this->user->getGoal() == 0):?>
+					<span style="width: 100%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+				<?php else:?>
+					<span style="width: <?php echo round($this->user->countDistances() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countDistances() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+				<?php endif;?>
+			<?php endif;?>
+		</div>
+	</div>
+	<div class="rightBlock">
+		<table class="data">
+			<tr>
+				<th colspan="3">User's personal bests</th>
+				<th>Your bests</th>
+			</tr>
+			<?php foreach ($user->getRecords()->slice(0, 10) as $record): /* @var $record \Entity\Record */?>
+				<tr>
+					<td><?php echo $record->getSport()->getName()?></td>
+					<td>
+						<?php echo round($record->getDistance() / 1000, 2)?> Km
+					</td>
+					<td><?php echo $this->secondsToHours($record->getDuration())?></td>
+					<td>
+						<?php $currentUserRecord = $workoutService->getRecordBySport($record->getSport()->getId(), $this->currentUser->getId());?>
+						<?php if ($currentUserRecord != null):?>
+							<?php echo $this->secondsToHours($currentUserRecord->getDuration())?>
+						<?php else:?>
+							-
+						<?php endif;?>
+					</td>
+				</tr>
+			<?php endforeach;?>
+		</table>
+	</div>
+</div>
+
+
+<?php echo $this->action('posts', 'news-feed', null, array (
+	'userId' => $user->getId(),
+	'type' => 'my',
+))?>

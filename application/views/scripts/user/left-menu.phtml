@@ -1,0 +1,56 @@
+<div class="block">
+	<div class="userPicture">
+		<?php if ($this->user->getProfileImageUrl() != null):?>
+			<img src="<?php echo $this->user->getProfileImageUrl()?>" alt="" />
+		<?php endif;?>
+	</div>
+	<h1><?php echo $this->user->getName()?></h1>
+</div>
+<div class="line"></div>
+<div class="block">
+	<ul>
+		<li><a href="javascript:;" id="overall-time-link" class="active">Ovrl. Time</a></li>
+		<li><a href="javascript:;" id="distance-link">Distance</a></li>
+		<li><a href="javascript:;" id="workouts-link">Workouts</a></li>
+	</ul>
+	<div id="userGraph"></div>
+</div>
+<div class="line"></div>
+<div id="goal">
+	<?php echo $this->action('show-goal', 'user')?>
+</div>
+<?php if (count($this->user->getRecords())):?>
+	<div class="line"></div>
+	<div class="block">
+		<h2>Personal Bests</h2>
+		<table class="data">
+			<tr>
+				<th></th>
+				<th>Results</th>
+				<th>Position</th>
+			</tr>
+			<?php foreach ($this->user->getRecords() as $record):?>
+				<tr>
+					<td><?php echo $record->getSport()->getName()?></td>
+					<td class="result">
+						<?php if ($record->isTimeRecord()):?>
+							<?php echo $this->secondsToHours($record->getDuration())?>
+						<?php else:?>
+							<?php echo round($record->getDistance() / 1000, 2)?> km
+						<?php endif;?>
+					</td>
+					<td>
+						<?php
+							$position = $this->workoutService->getRecordPosition($record);
+						?>
+						<?php if ($position == 0 || $position == 1):?>
+							First!
+						<?php else:?>
+							<?php echo $this->ordinal($position)?>
+						<?php endif;?>
+					</td>
+				</tr>
+			<?php endforeach;?>
+		</table>
+	</div>
+<?php endif;?>

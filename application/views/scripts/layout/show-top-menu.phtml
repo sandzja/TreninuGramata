@@ -1,0 +1,11 @@
+<?php if (Zend_Auth::getInstance()->hasIdentity()):?>
+	<div id="menu">
+		<ul>
+			<li<?php if ($this->activeMenuName == 'news-feed'):?> class="active"<?php endif;?>><a href="/news-feed"><span></span>News</a></li>
+			<li<?php if ($this->activeMenuName == 'my-trainings'):?> class="active"<?php endif;?>><a href="/my-trainings"><span></span>My Trainings</a></li>
+			<li<?php if ($this->activeMenuName == 'workout-plans'):?> class="active"<?php endif;?>><a href="/workout"><span></span>Workout plans</a></li>
+			<li<?php if ($this->activeMenuName == 'challenge'):?> class="active"<?php endif;?>><a href="/challenge"><span></span>Challenges</a></li>
+			<li id="last"<?php if ($this->activeMenuName == 'friend'):?> class="active"<?php endif;?>><a href="/friend"><span></span>Friends</a></li>
+		</ul>
+	</div>
+<?php endif;?>

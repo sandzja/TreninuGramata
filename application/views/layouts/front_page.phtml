@@ -1,0 +1,80 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<?php echo $this->headTitle() ?>
+<?php echo $this->headMeta()?>
+<?php echo $this->headLink()?>
+<?php echo $this->headScript()?>
+<script type="text/javascript">
+	baseUrl = '<?php echo $this->baseUrl()?>';
+</script>
+<style type="text/css">
+	html {
+		background: url(/gfx/bg_00.png) repeat;
+	}
+</style>
+
+</head>
+<body id="frontpage">
+	<div id="home">
+		<div id="container">
+			<?php echo $this->action('header', 'layout')?>
+			<div id="content" class="clear">
+				<div id="phone"></div>
+				<div class="element keyword">
+					<h1>Inspirational & Motivational</h1>
+					<h2>Be 1st among your friends, compare and analyze</h2>
+					<h1>Effective & Target oriented</h1>
+					<h2>Plan your workouts and challenge your friends</h2>
+					<h1>Fun & Social</h1>
+					<h2>Share your emotions, goals and music playlists</h2>
+					<a href="javascript:;" onclick="Modal.open('.signIn');" class="join">Join us now</a>
+					<a href="#" class="appStore right">App Store</a>
+				</div>
+			</div>
+			<div class="quote">
+				<span></span>
+			</div>
+			<div id="footer">
+				<ul>
+					<li><a href="javascript:;" onclick="Modal.open('#about');">Contact</a></li>
+					<!-- li><a href="javascript:;" onclick="Modal.open('#support');">Support</a></li> -->
+					<?php /*?><li><a href="javascript:;" onclick="Modal.open('#terms');">Terms &amp; Policy</a></li><?php */ ?>
+				</ul>
+				<div class="social">
+					<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+				</div>
+				<p>&copy;2011 Trainingbook - All rights reserved</p>
+			</div>
+		</div>
+		<div class="latestNewsWrapper">
+			<div class="latestNewsBg"></div>
+			<div class="latestNews">
+				<?php echo $this->layout()->content?>
+			</div>
+		</div>
+	</div>
+	<div id="modal">
+		<?php echo $this->action('start', 'index')?>
+		<?php echo $this->action('terms', 'page')?>
+		<?php echo $this->action('support', 'page')?>
+		<?php echo $this->action('about', 'page')?>
+	</div>
+	
+	<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28972354-1']);
+  _gaq.push(['_setDomainName', 'trainingbook.com']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl&#39; : 'http://www&#39;) + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

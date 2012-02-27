@@ -1,0 +1,39 @@
+<div id="top" class="clear">
+	<?php echo $this->action('graph', 'my-trainings')?>
+	<div class="tabs smaller">
+		<ul>
+			<li<?php if ($this->type == 'all'):?> class="active"<?php endif;?>><a href="/my-trainings/index/type/all<?php if ($this->calendar == 1):?>/calendar/1<?php endif;?>">All workouts</a></li>
+			<li<?php if ($this->type == 'goals'):?> class="active"<?php endif;?>><a href="/my-trainings/index/type/goals<?php if ($this->calendar == 1):?>/calendar/1<?php endif;?>">Goals</a></li>
+			<li<?php if ($this->type == 'challenges'):?> class="active"<?php endif;?>><a href="/my-trainings/index/type/challenges<?php if ($this->calendar == 1):?>/calendar/1<?php endif;?>">Challenges</a></li>
+			<li<?php if ($this->type == 'records'):?> class="active"<?php endif;?>><a href="/my-trainings/index/type/records<?php if ($this->calendar == 1):?>/calendar/1<?php endif;?>">Records</a></li>
+		</ul>
+		<div class="display">
+			<a href="/my-trainings/index/type/<?php echo $this->type?>" class="calView<?php if ($this->calendar == 0):?> active<?php endif;?>"></a>
+			<a href="/my-trainings/index/type/<?php echo $this->type?>/calendar/1" class="itemView<?php if ($this->calendar == 1):?> active<?php endif;?>"></a>
+		</div>
+	</div>
+</div>
+
+<div id="my-trainings">
+	<?php if ($this->calendar == 0):?>
+		<?php echo $this->action('posts', 'my-trainings', null, array (
+			'type' => $this->type
+		))?>
+	<?php else:?>
+		<?php echo $this->action('posts-calendar', 'my-trainings', null, array (
+			'type' => $this->type,
+			'date' => $this->date,
+		))?>
+	<?php endif;?>
+</div>
+<?php if ($this->calendar == 0):?>
+	<div class="block clear noBord">
+		<div class="more">
+			<a href="javascript:;" id="load-more">Load More Workouts</a>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		Pager.init('#my-trainings', '/my-trainings/posts/type/<?php echo $this->type?>');
+	</script>
+<?php endif;?>

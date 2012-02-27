@@ -1,0 +1,27 @@
+<div>
+	<a href="/friend">Who I follow</a> | <a href="/friend/followers">Who follow me</a>
+	<hr/>
+</div>
+
+<?php foreach ($this->users as $user):?>
+	<fieldset>
+		<?php if ($user->getFacebookUserId() != null):?>
+			<div style="height: 100px; overflow: hidden;" class="span-4">
+				<img src="https://graph.facebook.com/<?php echo $user->getFacebookUserId()?>/picture?type=normal" />
+			</div>
+		<?php endif;?>
+		<div>
+			<b><a href="/friend/profile/id/<?php echo $user->getId();?>"><?php echo $user->getName()?></a></b>
+		</div>
+		<?php $latestPosts = $user->getPosts()->slice(0, 1);?>
+		<?php if (isset($latestPosts[0])):?>
+			<div>
+				Latest activity: <?php echo $latestPosts[0]->getComment()?>
+			</div>
+		<?php endif;?>
+		<div>
+			Overall time: <?php echo $user->countTime()?> | Distance: <?php echo $user->countDistances();?> | Workouts: <?php echo $user->getWorkouts()->count()?>
+		</div>
+	</fieldset>
+<?php endforeach;?>
+

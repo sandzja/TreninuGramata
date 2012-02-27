@@ -1,0 +1,131 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+}
+:link,:visited { 
+	text-decoration:none;
+	color: inherit;
+}
+
+sub, sup {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+html, body {
+	background: #fff;
+}
+body {
+	line-height: 1;
+}
+ul, ol, dl, table, address {
+	margin-top: 1em;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: bold;
+	line-height: normal;
+}
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+address {
+	font-style: normal;
+	line-height: normal;
+}
+blockquote, q {
+	quotes: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+th, td {
+	text-align: left;
+	line-height: normal;
+	vertical-align: top;
+}
+th {
+	font-weight: bold;
+}
+label,
+input,
+button,
+select,
+textarea {
+	vertical-align: middle;
+}
+button,
+label[for],
+input[type=reset],
+input[type=button],
+input[type=submit],
+input[type=radio],
+input[type=checkbox] {
+	cursor: pointer;
+}
+
+/* =classes
+-------------------------------------------------- */
+.left { float: left; }
+.right { float: right; }
+.center { text-align: center; }
+
+.middle { vertical-align: middle; }
+
+.nowrap { white-space: nowrap; }
+.hidden { display: none; visibility: hidden; }
+
+.w1p { width: 1% !important; }
+.w10p { width: 10% !important; }
+.w15p { width: 15% !important; }
+.w20p { width: 20% !important; }
+.w30p { width: 30% !important; }
+.w40p { width: 40% !important; }
+.w50p { width: 50% !important; }
+.w60p { width: 60% !important; }
+.w70p { width: 70% !important; }
+.w80p { width: 80% !important; }
+.w90p { width: 90% !important; }
+.w100p { width: 100% !important; }
+
+.w55 { width: 55px !important; }
+.w65 { width: 65px !important; }
+.w75 { width: 75px !important; }
+.w93 { width: 93px !important; }
+.w105 { width: 105px !important; }
+.w168 { width: 168px !important; }
+.w120 { width: 120px !important; }
+.w130 { width: 130px !important; }
+.w140 { width: 140px !important; }
+.w160 { width: 160px !important; }
+.w260 { width: 260px !important; }
+.w310 { width: 310px !important; }
+.w360 { width: 360px !important; }
+.w390 { width: 390px !important; }
+.w400 { width: 400px !important; }
+.h30 { height: 30px !important; }
+
+/* =clear
+-------------------------------------------------- */
+.clear:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	line-height: 0;
+	visibility: hidden;
+}
+.clear {
+	display: block; /*inline-block */
+}
+html[xmlns] .clear {
+	display: block;
+}
+* html .clear {
+	height: 1px;
+}

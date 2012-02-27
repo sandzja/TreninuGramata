@@ -1,0 +1,18 @@
+<?php foreach ($this->publicPosts as $post):?>
+	<?php if ($post instanceof \Entity\Feed\Post\TrainingPlan) {
+		continue;
+	}?>
+	<div class="block clear">
+			<div class="thumbnail">
+				<?php if ($post->getAuthor()->getProfileImageUrl() != null):?>
+				<img src="<?php echo $post->getAuthor()->getProfileImageUrl()?>" alt="" />
+				<?php endif;?>
+			</div>
+			<div class="content">
+				<span class="name"><?php echo $post->getAuthor()->getName()?></span>
+				<span class="infoText"><?php echo Helper_Date::format($post->getDateAdded())?> - Web</span>
+				<h1><?php echo $post->getComment()?></h1>
+				<span class="highlight right"><?php echo $post->getComments()->count()?> Comments</span>
+			</div>
+		</div>
+<?php endforeach;?>
