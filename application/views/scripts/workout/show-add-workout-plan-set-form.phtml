@@ -1,0 +1,53 @@
+<form method="post" action="" id="add-training-plan-set-form">
+  <?php if (isset($this->currentPlan['param_value'])) { ?>
+  <div class="block noBord set clear">
+		<div class="element">
+			<span class="left">Current plan: <b><?=$this->currentPlan['param_value'];?></b></span>
+		</div>
+	</div>
+  <?php } ?>
+	
+	<div class="block noBord set clear">
+  	<div class="element">
+			<div class="left clear">
+				<select class="select" id="setSetsId" title="Select one" name="setSetsId">
+					<option value="0">Choise training plan</option>
+  				<?php foreach ($this->events as $event):?>
+					  <?php if ($this->currentPlan['param_key']<>$event['id']) { ?>
+						<option value="<?php echo $event['id']; ?>"><?php echo $event['name']?></option>
+					  <?php } ?>
+					<?php endforeach;?>
+			  </select>
+			  <span class="select">Choise training plan</span>
+		  </div>
+		</div>
+	</div>
+	<div class="shareAction">
+		<span>
+				<input type="radio" id="share-social" name="isPrivate" value="0" checked="checked" />
+				<label class="active" for="share-social">Share:</label>
+			</span>
+			<span>
+				<?php if ($this->currentUser->getFacebookUserId() != null):?>
+					<a href="javascript:;" id="share-facebook" class="facebook" onclick="$('#share-social').attr('checked', true);">Facebook</a>
+					<input type="hidden" name="postFacebook" id="post-facebook" value="0" />
+				<?php endif;?>
+				<?php if ($this->currentUser->getTwitterUserId() != null):?>
+					<a href="javascript:;" id="share-twitter" class="twitter" onclick="$('#share-social').attr('checked', true);">Twitter</a>
+					<input type="hidden" name="postTwitter" id="post-twitter" value="0" />
+				<?php endif;?>
+			</span>
+			<span>
+				<input type="radio" id="private-share" name="isPrivate" value="1" checked="checked" />
+				<label for="private-share">Private</label>
+			</span>
+		<input type="button" class="button right buttonNoActive" disabled id="submitButtonSet" value="Start training"/>
+	</div>
+	
+</form>
+
+<script type="text/javascript">
+	WorkoutPlan.init();
+	Click.check('#submitButton', ['#workoutPlanName', 'FORM .required']);
+	$(".numeric").numeric({ decimal: false, negative: false });
+</script>

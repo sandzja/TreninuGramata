@@ -143,7 +143,80 @@ class NewsFeedController extends Zend_Controller_Action {
     	}
     	
     }
-    
+ 
+    /* pievientos no SV - treninu plana izveidosana*/
+    public function addTrainingPlanSetAction() {
+        $this->_helper->disableView();
+        
+        if ($this->_request->isPost()) {
+
+
+        $db = Zend_Db_Table::getDefaultAdapter();
+      
+        $currentUser = $this->userService->getCurrentUser();
+        $user_id = $currentUser->getId();
+        $event_id = $this->_getParam('setSetsId');
+        $data = $db->fetchCol("SELECT name FROM SetSets where id=?",$event_id);
+        $event_name = $data[0];
+
+        $data = $db->fetchCol("SELECT param_key FROM UserConfig where user_id=? and param_name='TrainingPlan'",$user_id);
+
+        // nodzesam visus patreizejos workout
+        // nodzesam ieprieksejo planu pec set_id
+          if (isset($data[0])) {
+            $old_set_id=$data[0];
+            //echo $set_id;
+            
+            error_log("DELETE TrainingPlan, Exercise, Goal,FeedPost,FeedTrainingPlan FROM TrainingPlan INNER JOIN Exercise INNER JOIN Goal INNER JOIN FeedPost INNER JOIN FeedTrainingPlan
+           WHERE TrainingPlan.id=Exercise.trainingPlanId AND Exercise.goal_id=Goal.id and FeedTrainingPlan.training_plan_id=TrainingPlan.id and FeedPost.id=FeedTrainingPlan.id
+           and TrainingPlan.set_id=$old_set_id");
+            
+//          $db->query("DELETE TrainingPlan, Exercise, Goal,FeedPost,FeedTrainingPlan FROM TrainingPlan INNER JOIN Exercise INNER JOIN Goal INNER JOIN FeedPost INNER JOIN FeedTrainingPlan
+           //WHERE TrainingPlan.id=Exercise.trainingPlanId AND Exercise.goal_id=Goal.id and FeedTrainingPlan.training_plan_id=TrainingPlan.id and FeedPost.id=FeedTrainingPlan.id
+           //and TrainingPlan.set_id=$old_set_id");
+           
+           error_log("after");
+        }
+
+                // nodzesam patreizejo, ja ir
+        $db->query("delete from UserConfig where user_id=$user_id and param_name='TrainingPlan'");
+                // uztaisam jaunu
+        $db->query("insert into UserConfig (user_id, param_name, param_value, param_key) values ($user_id,'TrainingPlan','$event_name','$event_id')");
+
+        // liekam ieksaa jaunos
+        $data = $db->fetchAll("SELECT * FROM SetTrainingPlan where set_id=?",$event_id);
+          foreach ($data as $tp) {
+            
+          $db->query("insert into TrainingPlan (user_id, sport_id, name, date, execution_order, set_id) values ($user_id,'".$tp['sport_id']."','".$tp['name']."','".$tp['date']."','".$tp['execution_order']."',$event_id)");
+          $tp_id = $db->lastInsertId();
+          $db->query("INSERT INTO FeedPost (author_user_id,discr) VALUES ('$user_id', 'trainingPlan')");
+          $feed_id = $db->lastInsertId();
+          $db->query("INSERT INTO FeedTrainingPlan (id, training_plan_id) VALUES ('$feed_id', '$tp_id')");
+          
+          
+          
+          $data_ex = $db->fetchAll("SELECT * FROM SetExercise where trainingPlanId=?",$tp['id']);
+          foreach ($data_ex as $ex) {
+            $db->query("insert into Goal (distance, duration) values ('".$ex['distance']."','".$ex['duration']."')");
+            $goal_id = $db->lastInsertId();
+            $db->query("insert into Exercise (trainingPlanId, goal_id, name, intensity, note) values ($tp_id, $goal_id, '".$ex['name']."','".$ex['intensity']."','".$ex['note']."')");
+          }
+            
+          }
+        
+
+            if ($this->_getParam('postFacebook') != 0) {
+                $this->newsFeedService->postFacebook($trainingPlan, 'Just created workout plan on #TrainingBook. Check it out!');
+            }
+            
+        
+            if ($this->_getParam('postTwitter') != 0) {
+//              $this->newsFeedService->postTwitter($workout);
+            }
+        
+        }
+    }
+
     public function addTrainingPlanAction() {
     	$this->_helper->disableView();
     	

@@ -179,6 +179,29 @@ class WorkoutController extends Zend_Controller_Action {
     	$this->view->currentUser = $this->userService->getCurrentUser();
     }
    
+    /* pievienoja SV - WorkautPlanSet izveles lapa */
+    public function showAddWorkoutPlanSetFormAction() {
+    	if ($this->_request->isXmlHttpRequest()) {
+    		$this->_helper->disableLayout();
+    	}
+    	
+  	  $db = Zend_Db_Table::getDefaultAdapter();
+  	  $data = $db->fetchAll("SELECT * FROM SetSets order by event_date");
+    	$this->view->events = $data;
+
+      $currentUser = $this->userService->getCurrentUser();
+      $user_id = $currentUser->getId();
+
+  	  $data = $db->fetchAll("SELECT * FROM UserConfig where user_id=$user_id and param_name='TrainingPlan'");
+    	if (isset($data[0])) 
+            $this->view->currentPlan = $data[0];
+        else 
+            $this->view->currentPlan = null;
+
+    	$this->view->currentUser = $this->userService->getCurrentUser();
+    }    
+
+
     public function trainingAction() {
     	$this->view->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
     	

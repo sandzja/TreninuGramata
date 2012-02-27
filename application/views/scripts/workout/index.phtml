@@ -1,7 +1,8 @@
 <div id="top" class="clear">
 	<h1>
 		<a class="active" href="javascript:;" onclick="WorkoutPlan.search();" id="search-link">Search plans</a><span> or</span>
-		<a href="javascript:;" onclick="WorkoutPlan.addWorkoutPlan();" id="add-workout-plan-link">Create new plan</a>
+		<a href="javascript:;" onclick="WorkoutPlan.addWorkoutPlan();" id="add-workout-plan-link">Create new plan</a><span> or</span>
+	 	<a href="javascript:;" onclick="WorkoutPlan.addWorkoutPlanSet();" id="add-workout-plan-set-link">Training plan set</a>
 	</h1>
 	<div id="shareContent">
 		<?php echo $this->action('show-search-form', 'workout', null, array (
@@ -35,4 +36,5 @@
 
 <script type="text/javascript">
 	Pager.init('#trainingPlanPosts', '/workout/posts/type/<?php echo $this->type?>/name/<?php echo $this->name?>/search/<?php echo $this->search?>');
+	if (gup()=='plan') WorkoutPlan.addWorkoutPlanSet();
 </script>
