@@ -4,6 +4,13 @@
 // Zend Framework is in the include_path; additionally, for performance
 // reasons, it's best to move this to your web server configuration or php.ini
 // for production.
+
+$path = '/var/www/blog.broka.lv/zend/library/';
+set_include_path('.'  . PATH_SEPARATOR .$path);
+
+$path = '/var/www/blog.broka.lv/doctirne/DoctrineORM-2.1.6';
+set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(dirname(__FILE__) . '/../library'),
     realpath(dirname(__FILE__) . '/../..'),
