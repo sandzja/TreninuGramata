@@ -671,6 +671,23 @@ var WorkoutPlan = {
 			$('#submitButton').unbind();
 			WorkoutPlan.submitForm();
 		});
+
+		/* TrainingPlanSet pogas click */
+		$('#submitButtonSet').click(function () {
+			$('#submitButtonSet').unbind();
+			WorkoutPlan.submitFormSet();
+	 	});		
+
+	
+		/* TrainingPlanSet select box izmainas*/
+		$('#setSetsId').live('change', function () {
+			var val= $("#setSetsId :selected").val();
+			if (val != 0)
+        		$('#submitButtonSet').removeClass('buttonNoActive').attr('disabled', false);
+        	else   
+        		$('#submitButtonSet').addClass('buttonNoActive').attr('disabled', true);
+	  	});	
+
 	},
 
 	changeType: function (element) {
@@ -750,6 +767,8 @@ var WorkoutPlan = {
 	resetActive: function () {
 		$('#search-link').removeClass('active');
 		$('#add-workout-plan-link').removeClass('active');
+		/*  deaktivizejam jauno sadalu */
+		$('#add-workout-plan-set-link').removeClass('active');
 	},
 	
 	addToMyPlans: function(trainingPlanId, element) {
@@ -759,7 +778,30 @@ var WorkoutPlan = {
 			$(element).parent().append('<i>Added to my plans</i>');
 			$(element).remove();
 		});
+	},
+
+	/* aktivizeet TrainingPlanSet sadalu */
+	addWorkoutPlanSet: function () {
+		this.exerciseCount = 1;
+		this.getForm('add-workout-plan-set');
+	},	
+	
+	/* nosuutit TrainingPlanSet datus uz aktivizesanu */	
+  	submitFormSet: function () {
+		$('.tooltip').val('');
+		$.post('/news-feed/add-training-plan-set', $('#add-training-plan-set-form').serialize(), function (result) {
+			WorkoutPlan.reloadPostsPlanSet();
+		});
+	},
+	
+	/* pecaktivizesanas fiskas */	
+	reloadPostsPlanSet: function () {
+		$.get('/workout/posts', function (result) {
+			$('#trainingPlanPosts').html(result);
+		});
+		this.getForm('add-workout-plan-set');
 	}
+
 };
 
 var Message = {
@@ -860,3 +902,12 @@ $(document).ready(function() {
 	
 	$(".numeric").numeric({ decimal: false, negative: false });
 });
+
+// funkcija, kas panem # no href, izmanto lai parslegtu lapu
+gup = function() {
+	var regexS = "([\\#][^]*)";
+	var regex = new RegExp(regexS);
+	var results = regex.exec( window.location.href );
+	if(results == null) return "";
+		else return results[0].replace("#","");
+} 
