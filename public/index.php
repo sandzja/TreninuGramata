@@ -18,6 +18,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 )));
 
 require_once 'location.php';
+
 // Define application environment
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
