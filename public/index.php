@@ -3,7 +3,7 @@
 // Set the initial include_path. You may need to change this to ensure that
 // Zend Framework is in the include_path; additionally, for performance
 // reasons, it's best to move this to your web server configuration or php.ini
-// for production.
+// for production. Test
 
 $path = '/var/www/blog.broka.lv/zend/library/';
 set_include_path('.'  . PATH_SEPARATOR .$path);
