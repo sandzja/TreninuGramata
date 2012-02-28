@@ -12,9 +12,9 @@ $path = '/var/www/blog.broka.lv/doctirne/DoctrineORM-2.1.6';
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 
 set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(dirname(__FILE__) . '/../library'),
-    realpath(dirname(__FILE__) . '/../..'),
-    get_include_path(),
+   realpath(dirname(__FILE__) . '/../library'),
+  realpath(dirname(__FILE__) . '/../..'),
+   get_include_path(),
 )));
 
 require_once 'location.php';
