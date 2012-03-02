@@ -690,6 +690,43 @@ var WorkoutPlan = {
 
 	},
 
+	/* SV training plan browse funcionality */
+	initNewsFeed: function (nr,max) {
+		self = this;
+		self.currentWorkoutPlan = nr;
+		self.maxWorkoutPlan = max;
+
+		self.initWorkoutPlanNav(nr);
+
+		// turp atpakal pogu aktivizesana
+		$('#nw_right').live('click',function () {
+			if (self.currentWorkoutPlan<self.maxWorkoutPlan)
+	  			WorkoutPlan.nextWorkoutPlan(self.currentWorkoutPlan+1);
+	 	});	
+		$('#nw_left').live('click',function () {
+			if (self.currentWorkoutPlan>1)
+				WorkoutPlan.nextWorkoutPlan(self.currentWorkoutPlan-1);
+	 	});	
+	},
+
+	initWorkoutPlanNav: function (nr) {
+		$('#nw_right').attr("src","/gfx/arrow_right_active.png");
+		$('#nw_left').attr("src","/gfx/arrow_left_active.png");
+
+		if (nr == 1) $('#nw_left').attr("src","/gfx/arrow_left.png");
+		if (nr == self.maxWorkoutPlan) $('#nw_right').attr("src","/gfx/arrow_right.png");
+	},
+
+	nextWorkoutPlan: function (nr) {
+		self = this;
+		$.post('/news-feed/next-workout', {nr: nr}, function (result) {
+			self.currentWorkoutPlan = nr;
+			$('#workout_next').html(result);
+			self.initWorkoutPlanNav(nr);
+		}); 
+      //
+	},
+
 	changeType: function (element) {
 		$(element).parent().parent().next().toggleClass('hidden');
 		$(element).parent().parent().next().next().toggleClass('hidden');

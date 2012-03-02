@@ -1,0 +1,92 @@
+<?php if (!$this->just_workout) { ?>
+	<div id="top" class="clear">
+		<h1>
+			<span>+ Your next </span> 
+			<a href="javascript:;" id="share-workout-link">Workout</a>
+		</h1>
+	</div>	
+	<style>
+	#nw_calendar {
+		margin-right:30px;
+		float: right;
+		width: 170px;
+		height: 45px;
+		margin-top: -15px;
+		text-align: center;
+	}
+	#nw_image {
+		margin-right:-100px;
+		margin-top: -35px;
+		float: right;
+	}
+	#nw_left, #nw_right {
+		cursor: pointer;
+	}
+	</style>
+<?php } ?>
+
+<?php if (!isset($this->treninu_plans)) { ?>
+	<style> a#nohover:hover { text-decoration: none;} </style> 
+	<div class="block clear" style="background-color: white; padding-left:38px;">
+			<div class="content" style="padding: 13px 0 10px 0;color: #CCC; font-size: 22px; font-weight: bold;text-decoration: none;">
+	<a href="\workout#plan" title="Choose a workout plan to achieve your fitness goals!" id="nohover">Choose a workout plan to achieve your fitness goals!</a>
+			</div>
+	</div>	
+<?php }  else { ?>
+<?php if (!$this->just_workout) { ?>
+<div class="block clear" style="background-color: white; padding-left:18px;" id="workout_next">
+<?php } ?>
+		<div class="content" style="padding: 13px 0 10px 0;">
+			<div class="clear">
+				<div class="goal">
+			    	<h1 style="margin: 0 0 2px 0;font-size: 16px;"><?=$this->treninu_plans['param_value'];?></h1>
+			    		<div id=nw_calendar>
+			    			<img id="nw_left" src="/gfx/arrow_left_active.png"> 
+			    			<span style="font-size: 26px;">
+			    			<?=$this->treninu_workout['execution_order'];?>/<?=$this->treninu_workout['execution_order_max'];?>
+			    			</span> <img id="nw_right" src="/gfx/arrow_right_active.png">
+			    			<br>
+			        		<span style="font-size: 12px;"><?=$this->treninu_workout['days_between'];?></span>
+			    		</div>
+					<h1><?=$this->kopa_html;?> <?=$this->treninu_workout['name'];?></h1>
+				</div>
+			</div>
+			<div class="workoutBarWrapper">
+				<div class="workoutBar clear">
+	        <?php $i=0; foreach ($this->data as $row) { ?>
+	        <?php if ($row['intensity']==4) $row['intensity']=0; ?>
+  				<div style="width: <?=($row[$this->goal_column]*100/$this->kopa);?>%;" class="workout0<?=($row['intensity']+1);?><?php if ($i==0) { ?> first<?php } ?><?php if ($i==count($this->data)-1) { ?> last<?php } ?>">
+  				  <?php if ($i<>count($this->data)-1) { ?><span></span><?php } ?>
+  				</div>
+	        <?php $i++; } ?>
+				</div>
+			</div>
+ 			<?php if (!empty($this->treninu_workout['image'])) { ?>
+ 				<div id="nw_image"><img title="<?=$this->treninu_plans['param_value'];?>" src="<?=$this->treninu_workout['image'];?>"></div>
+ 			<?php } ?>
+			<div class="showMore clear open">
+				<div class="">
+	        <?php $i=0; foreach ($this->data as $row) { ?>
+    	      <?php
+    	      $class="class=\"sub\"";
+    	      if ($i==0 or $i==count($this->data)-1) {$class="";}
+    	      if ($this->goal_column=='distance') {
+            	$goal_html = ($row['distance']/1000)." km";
+            } else {
+            	$goal_html = sec2hms($row['duration']);
+            } ?>
+	 			    <p <?=$class;?>><?=$goal_html;?> <?=$row['name'];?> <b><?=$this->intensity[$row['intensity']];?></b> <span class="infoText"> <?=$row['note'];?></span></p>
+          <?php $i++; } ?>
+				</div>
+			</div>
+		</div>
+	<?php if (!$this->just_workout) { ?>
+</div>	
+		<script type="text/javascript">
+			$(document).ready(function() {
+				WorkoutPlan.initNewsFeed(<?=$this->treninu_workout['execution_order'];?>,<?=$this->treninu_workout['execution_order_max'];?>);
+			});
+		</script>
+	<?php } ?>
+
+<?php } ?>

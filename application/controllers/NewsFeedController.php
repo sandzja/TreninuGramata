@@ -37,7 +37,136 @@ class NewsFeedController extends Zend_Controller_Action {
     	$this->view->type = $this->_getParam('type');
     	$this->view->currentUser = $this->userService->getCurrentUser();
     }
-    
+
+    // SV pievienots - action, kas raada current or workout
+    public function workoutAction() {
+        // mainiigais kas nosaka, vai ir ajax, vai nav
+        $this->view->just_workout = false;
+
+        if ($this->_request->isXmlHttpRequest()) {
+            $this->_helper->disableLayout();
+      
+            $this->view->just_workout = true;
+        }
+
+        $nr = $this->_getParam('nr');
+
+        $workout = $this->nextWorkout($nr);       
+
+        if (isset($workout['treninu_plans'])) {
+            $this->view->treninu_plans = $workout['treninu_plans'];
+            $this->view->data = $workout['data'];
+            $this->view->treninu_workout = $workout['treninu_workout'];
+            $this->view->goal_column = $workout['goal_column'];
+            $this->view->kopa_html = $workout['kopa_html'];
+            $this->view->kopa = $workout['kopa'];
+            $this->view->intensity = $workout['intensity'];
+        }
+
+    }
+    // funkcija ajax next_workout izsaukumam
+    public function nextWorkoutAction() {
+        $this->_helper->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        $this->_helper->redirector('workout', 'news-feed', null, array ('nr'=>$this->_getParam('nr')));
+    }
+
+    // funkcija next_workout saformesanai
+    private function nextWorkout($nr) {
+
+        $intensity=array('','Low intensity','Medium intensity','High intensity','');
+        $days_between=array('Today','Tomorrow');
+
+        $return_array = array();
+
+        function sec2hms ($sec)
+        {
+            $hms = "";
+            $hours = intval(intval($sec) / 3600);
+            $hms .= str_pad($hours, 2, "0", STR_PAD_LEFT). ':';
+            $minutes = intval(($sec / 60) % 60);
+            $hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT). ':';
+            $seconds = intval($sec % 60);
+            $hms .= str_pad($seconds, 2, "0", STR_PAD_LEFT);
+            return $ms.$hms;
+        }
+        
+        $currentUser = $this->userService->getCurrentUser();
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $user_id = $currentUser->getId();
+        $data = $db->fetchAll("SELECT * FROM UserConfig where user_id=$user_id and param_name='TrainingPlan'");   
+
+        if (isset($data[0])) {
+              
+            $treninu_plans = $data[0];
+            
+            if (empty($nr)) {
+                $data = $db->fetchAll(
+                    "SELECT 
+                        Sport.Name sport_name, 
+                        TrainingPlan.name name, 
+                        TrainingPlan.id, 
+                        date_format(TrainingPlan.date,'%W<br>%d %M') date,
+                        DATEDIFF( TrainingPlan.date, CURDATE() ) days_between,
+                        execution_order 
+                    FROM TrainingPlan, Sport 
+                    where TrainingPlan.sport_id=Sport.id 
+                    and TrainingPlan.user_id=$user_id 
+                    and TrainingPlan.set_id=".$treninu_plans['param_key']." 
+                    and (date(TrainingPlan.date)=curdate() 
+                        or TrainingPlan.date>now()) 
+                    order by TrainingPlan.date asc 
+                    limit 1");
+            } else {
+                $data = $db->fetchAll(
+                    "SELECT 
+                        Sport.Name sport_name, 
+                        TrainingPlan.name name, 
+                        TrainingPlan.id, 
+                        date_format(TrainingPlan.date,'%W<br>%d %M') date,
+                        DATEDIFF( TrainingPlan.date, CURDATE() ) days_between,
+                        execution_order 
+                    FROM TrainingPlan, Sport 
+                    where TrainingPlan.sport_id=Sport.id 
+                    and TrainingPlan.user_id=$user_id 
+                    and TrainingPlan.set_id=".$treninu_plans['param_key']." 
+                    and TrainingPlan.execution_order=$nr 
+                    ");
+            }       
+            
+            $treninu_workout = $data[0];
+
+            $data = $db->fetchCol("SELECT max(execution_order) FROM TrainingPlan where TrainingPlan.user_id=$user_id and TrainingPlan.set_id=".$treninu_plans['param_key']);
+            $treninu_workout['execution_order_max'] = $data[0];            
+
+            $data = $db->fetchCol("SELECT image FROM SetSets where id=".$treninu_plans['param_key']);
+            $treninu_workout['image'] = $data[0];            
+
+            if (isset($days_between[$treninu_workout['days_between']])) $treninu_workout['days_between']=$days_between[$treninu_workout['days_between']];
+                else $treninu_workout['days_between']=$treninu_workout['date'];
+        
+            $data = $db->fetchAll("SELECT * FROM Exercise, Goal where  Exercise.goal_id=Goal.id and trainingPlanId = '".$treninu_workout['id']."'");
+       
+            $goal_column='distance'; if ($data[0]['duration'] <> 0) $goal_column='duration';
+              
+            //visu sareekinam un samapojam
+            $kopa = 0; foreach ($data as $row) $kopa=$kopa+$row[$goal_column];
+            if ($goal_column=='distance') $kopa_html = ($kopa/1000)." km"; else $kopa_html = sec2hms($kopa);
+      
+            $return_array['treninu_plans'] = $treninu_plans;
+            $return_array['data'] = $data;
+            $return_array['treninu_workout'] = $treninu_workout;
+            $return_array['goal_column'] = $goal_column;
+            $return_array['kopa_html'] = $kopa_html;
+            $return_array['kopa'] = $kopa;
+            $return_array['intensity'] = $intensity;
+
+        }
+
+        return $return_array;
+    }
+
+
     public function postsAction() {
     	if ($this->_request->isXmlHttpRequest()) {
     		$this->_helper->disableLayout();
@@ -165,17 +294,19 @@ class NewsFeedController extends Zend_Controller_Action {
         // nodzesam ieprieksejo planu pec set_id
           if (isset($data[0])) {
             $old_set_id=$data[0];
-            //echo $set_id;
             
-            error_log("DELETE TrainingPlan, Exercise, Goal,FeedPost,FeedTrainingPlan FROM TrainingPlan INNER JOIN Exercise INNER JOIN Goal INNER JOIN FeedPost INNER JOIN FeedTrainingPlan
-           WHERE TrainingPlan.id=Exercise.trainingPlanId AND Exercise.goal_id=Goal.id and FeedTrainingPlan.training_plan_id=TrainingPlan.id and FeedPost.id=FeedTrainingPlan.id
-           and TrainingPlan.set_id=$old_set_id");
-            
-//          $db->query("DELETE TrainingPlan, Exercise, Goal,FeedPost,FeedTrainingPlan FROM TrainingPlan INNER JOIN Exercise INNER JOIN Goal INNER JOIN FeedPost INNER JOIN FeedTrainingPlan
-           //WHERE TrainingPlan.id=Exercise.trainingPlanId AND Exercise.goal_id=Goal.id and FeedTrainingPlan.training_plan_id=TrainingPlan.id and FeedPost.id=FeedTrainingPlan.id
-           //and TrainingPlan.set_id=$old_set_id");
-           
-           error_log("after");
+            $delete_data = $db->fetchAll("select * from FeedTrainingPlan where training_plan_id in (SELECT id FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id)");
+            foreach ($delete_data as $del) {
+                $db->query("delete from FeedTrainingPlan where id=".$del['id']);
+                $db->query("delete from FeedPost where id=".$del['id']);
+            }
+
+            $delete_data = $db->fetchAll("SELECT * FROM Exercise WHERE trainingPlanId in (SELECT id FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id)");
+            foreach ($delete_data as $del) {
+                $db->query("delete from Exercise where id=".$del['id']);
+                $db->query("delete from Goal where id=".$del['goal_id']);
+            }
+            $db->query("delete FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id");
         }
 
                 // nodzesam patreizejo, ja ir
