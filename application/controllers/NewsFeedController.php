@@ -68,7 +68,51 @@ class NewsFeedController extends Zend_Controller_Action {
     public function nextWorkoutAction() {
         $this->_helper->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
-        $this->_helper->redirector('workout', 'news-feed', null, array ('nr'=>$this->_getParam('nr')));
+
+        $nr = $this->_getParam('nr');
+
+        $workout = $this->nextWorkout($nr);       
+
+
+        $workout_text="";
+        $i=0; foreach ($workout['data'] as $row) {
+            $class="class=\"sub\"";
+            if ($i==0 or $i==count($workout['data'])-1) {$class="";}
+            if ($workout['goal_column']=='distance') {
+                $goal_html = ($row['distance']/1000)." km";
+            } else {
+                $goal_html = sec2hms($row['duration']);
+            }
+            $workout_text.="<p ".$class.">".$goal_html." ".$row['name']." <b>".$workout['intensity'][$row['intensity']]."</b> <span class=\"infoText\"> ".$row['note']."</span></p>";
+            $i++; 
+        }
+
+        $workout_graph="";
+        $i=0; foreach ($workout['data'] as $row) {
+            if ($row['intensity']==4) $row['intensity']=0;
+            $workout_graph.="<div style=\"width: ".($row[$workout['goal_column']]*100/$workout['kopa'])."%;\" class=\"workout0".($row['intensity']+1);
+            if ($i==0) $workout_graph.=" first";
+            if ($i==count($workout['data'])-1) $workout_graph.=" last";
+            $workout_graph.="\">";
+            if ($i<>count($workout['data'])-1) { $workout_graph.="<span></span>"; }
+            $workout_graph.="</div>";
+            $i++; 
+        }
+
+
+        //Some dummy data
+        $myArray = array(
+                     'workout_name'=> $workout['kopa_html'].' '.$workout['treninu_workout']['name'],
+                     'workout_execution_order' => $workout['treninu_workout']['execution_order'].'/'.$workout['treninu_workout']['execution_order_max'],
+                     'workout_days_between' => $workout['treninu_workout']['days_between'],
+                     'workout_text' => $workout_text,
+                     'workout_graph' => $workout_graph,
+                   );
+
+        $jsonData = Zend_Json::encode($myArray);
+        echo $jsonData;
+
+        //$this->_helper->redirector('workout', 'news-feed', null, array ('nr'=>$this->_getParam('nr')));
     }
 
     // funkcija next_workout saformesanai

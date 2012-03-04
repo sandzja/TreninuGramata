@@ -700,12 +700,16 @@ var WorkoutPlan = {
 
 		// turp atpakal pogu aktivizesana
 		$('#nw_right').live('click',function () {
-			if (self.currentWorkoutPlan<self.maxWorkoutPlan)
+			if (self.currentWorkoutPlan<self.maxWorkoutPlan) {
+	  			$('#nw_right').attr("src","/gfx/loader2018.gif");
 	  			WorkoutPlan.nextWorkoutPlan(self.currentWorkoutPlan+1);
+	  		}
 	 	});	
 		$('#nw_left').live('click',function () {
-			if (self.currentWorkoutPlan>1)
+			if (self.currentWorkoutPlan>1) {
+	  			$('#nw_left').attr("src","/gfx/loader2018.gif");
 				WorkoutPlan.nextWorkoutPlan(self.currentWorkoutPlan-1);
+			}
 	 	});	
 	},
 
@@ -719,12 +723,23 @@ var WorkoutPlan = {
 
 	nextWorkoutPlan: function (nr) {
 		self = this;
-		$.post('/news-feed/next-workout', {nr: nr}, function (result) {
+		//$.post('/news-feed/next-workout', {nr: nr}, function (result) {
+		//	self.currentWorkoutPlan = nr;
+		//	$('#workout_next').html(result);
+		//	self.initWorkoutPlanNav(nr);
+		//}); 
+
+		$.getJSON("/news-feed/next-workout", { nr: nr }, function(json) {
 			self.currentWorkoutPlan = nr;
-			$('#workout_next').html(result);
+			
+			$('#nw_workout_name').html(json.workout_name);
+			$('#nw_workout_execution_order').html(json.workout_execution_order);
+			$('#nw_workout_days_between').html(json.workout_days_between);
+			$('#nw_workout_text').html(json.workout_text);
+			$('#nw_workout_graph').html(json.workout_graph);
+			
 			self.initWorkoutPlanNav(nr);
-		}); 
-      //
+		});
 	},
 
 	changeType: function (element) {

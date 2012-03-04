@@ -42,17 +42,17 @@
 			    	<h1 style="margin: 0 0 2px 0;font-size: 16px;"><?=$this->treninu_plans['param_value'];?></h1>
 			    		<div id=nw_calendar>
 			    			<img id="nw_left" src="/gfx/arrow_left_active.png"> 
-			    			<span style="font-size: 26px;">
+			    			<span style="font-size: 26px;" id='nw_workout_execution_order'>
 			    			<?=$this->treninu_workout['execution_order'];?>/<?=$this->treninu_workout['execution_order_max'];?>
 			    			</span> <img id="nw_right" src="/gfx/arrow_right_active.png">
 			    			<br>
-			        		<span style="font-size: 12px;"><?=$this->treninu_workout['days_between'];?></span>
+			        		<span style="font-size: 12px;" id='nw_workout_days_between'><?=$this->treninu_workout['days_between'];?></span>
 			    		</div>
-					<h1><?=$this->kopa_html;?> <?=$this->treninu_workout['name'];?></h1>
+					<h1 id='nw_workout_name'><?=$this->kopa_html;?> <?=$this->treninu_workout['name'];?></h1>
 				</div>
 			</div>
 			<div class="workoutBarWrapper">
-				<div class="workoutBar clear">
+				<div class="workoutBar clear" id="nw_workout_graph">
 	        <?php $i=0; foreach ($this->data as $row) { ?>
 	        <?php if ($row['intensity']==4) $row['intensity']=0; ?>
   				<div style="width: <?=($row[$this->goal_column]*100/$this->kopa);?>%;" class="workout0<?=($row['intensity']+1);?><?php if ($i==0) { ?> first<?php } ?><?php if ($i==count($this->data)-1) { ?> last<?php } ?>">
@@ -65,7 +65,7 @@
  				<div id="nw_image"><img title="<?=$this->treninu_plans['param_value'];?>" src="<?=$this->treninu_workout['image'];?>"></div>
  			<?php } ?>
 			<div class="showMore clear open">
-				<div class="">
+				<div class="" id="nw_workout_text">
 	        <?php $i=0; foreach ($this->data as $row) { ?>
     	      <?php
     	      $class="class=\"sub\"";
