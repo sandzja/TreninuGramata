@@ -5,10 +5,10 @@
 // reasons, it's best to move this to your web server configuration or php.ini
 // for production. Test
 
-$path = '/var/www/blog.broka.lv/zend/library/';
+$path = '/var/www/trainingbook-dev.lv/zend/library/';
 set_include_path('.'  . PATH_SEPARATOR .$path);
 
-$path = '/var/www/blog.broka.lv/doctirne/DoctrineORM-2.1.6';
+$path = '/var/www/trainingbook-dev.lv/doctirne/DoctrineORM-2.1.6';
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 
 set_include_path(implode(PATH_SEPARATOR, array(

@@ -88,9 +88,14 @@ class NewsFeedController extends Zend_Controller_Action {
         }
 
         $workout_graph="";
-        $i=0; foreach ($workout['data'] as $row) {
+        $i=0; $proc_sum=0; foreach ($workout['data'] as $row) {
             if ($row['intensity']==4) $row['intensity']=0;
-            $workout_graph.="<div style=\"width: ".($row[$workout['goal_column']]*100/$workout['kopa'])."%;\" class=\"workout0".($row['intensity']+1);
+          
+            $proc = round(($row[$workout['goal_column']]*100/$workout['kopa']),2);
+            $proc_sum = $proc_sum + $proc;
+            if ($i==count($workout['data'])-1) $proc = $proc + (100-$proc_sum);
+
+            $workout_graph.="<div proc=\"".$proc_sum."\" style=\"width: ".$proc."%;\" class=\"workout0".($row['intensity']+1);
             if ($i==0) $workout_graph.=" first";
             if ($i==count($workout['data'])-1) $workout_graph.=" last";
             $workout_graph.="\">";
@@ -99,8 +104,6 @@ class NewsFeedController extends Zend_Controller_Action {
             $i++; 
         }
 
-
-        //Some dummy data
         $myArray = array(
                      'workout_name'=> $workout['kopa_html'].' '.$workout['treninu_workout']['name'],
                      'workout_execution_order' => $workout['treninu_workout']['execution_order'].'/'.$workout['treninu_workout']['execution_order_max'],
@@ -132,7 +135,7 @@ class NewsFeedController extends Zend_Controller_Action {
             $hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT). ':';
             $seconds = intval($sec % 60);
             $hms .= str_pad($seconds, 2, "0", STR_PAD_LEFT);
-            return $ms.$hms;
+            return $hms;
         }
         
         $currentUser = $this->userService->getCurrentUser();
@@ -205,8 +208,9 @@ class NewsFeedController extends Zend_Controller_Action {
             $return_array['kopa'] = $kopa;
             $return_array['intensity'] = $intensity;
 
-        }
+            $return_array['entity'] = $this->workoutService->getTrainingPlan($treninu_workout['id']);
 
+        }
         return $return_array;
     }
 

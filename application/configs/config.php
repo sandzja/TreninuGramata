@@ -20,8 +20,12 @@ return array (
 		'domainName' => 'http://trainingbook.broka.lv/',
 	),
 	'twitter' => array (
-		'consumerKey' => 'XCKtWHPKeoIbUhqqIanOWA',
-		'consumerSecret' => '9W9xTQutJ5EqKwQJUTaEnZZ1ASZ4VPjgU0sPGMeoiWo',
+/*		'consumerKey' => 'XCKtWHPKeoIbUhqqIanOWA',
+		'consumerSecret' => '9W9xTQutJ5EqKwQJUTaEnZZ1ASZ4VPjgU0sPGMeoiWo', */
+		'consumerKey' => 'cG180Oamw5px4ewQvp97gA',
+		'consumerSecret' => 'kK8WfoEN6yeBHgf11r2pp2Wql1jqfSWysmYMa8', 
+
+
 	),
 	'facebook' => array (
 /*		'appId' => '206959362723186',
