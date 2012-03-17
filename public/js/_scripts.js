@@ -692,11 +692,11 @@ var WorkoutPlan = {
 
 	/* SV training plan browse funcionality */
 	initNewsFeed: function (nr,max) {
-		self = this;
+		var self = this;
 		self.currentWorkoutPlan = nr;
 		self.maxWorkoutPlan = max;
 
-		self.initWorkoutPlanNav(nr);
+		this.initWorkoutPlanNav(nr);
 
 		// turp atpakal pogu aktivizesana
 		$('#nw_right').live('click',function () {
@@ -714,15 +714,17 @@ var WorkoutPlan = {
 	},
 
 	initWorkoutPlanNav: function (nr) {
+		this.currentWorkoutPlan = nr;
+
 		$('#nw_right').attr("src","/gfx/arrow_right_active.png");
 		$('#nw_left').attr("src","/gfx/arrow_left_active.png");
 
 		if (nr == 1) $('#nw_left').attr("src","/gfx/arrow_left.png");
-		if (nr == self.maxWorkoutPlan) $('#nw_right').attr("src","/gfx/arrow_right.png");
+		if (nr == this.maxWorkoutPlan) $('#nw_right').attr("src","/gfx/arrow_right.png");
 	},
 
 	nextWorkoutPlan: function (nr) {
-		self = this;
+		var self = this;
 		//$.post('/news-feed/next-workout', {nr: nr}, function (result) {
 		//	self.currentWorkoutPlan = nr;
 		//	$('#workout_next').html(result);
@@ -730,7 +732,6 @@ var WorkoutPlan = {
 		//}); 
 
 		$.getJSON("/news-feed/next-workout", { nr: nr }, function(json) {
-			self.currentWorkoutPlan = nr;
 			
 			$('#nw_workout_name').html(json.workout_name);
 			$('#nw_workout_execution_order').html(json.workout_execution_order);

@@ -24,6 +24,23 @@ class WorkoutController extends Zend_Controller_Action {
 		$this->view->type = $this->_getParam('type', 'my');
 		$this->view->name = $this->_getParam('name');
 		$this->view->search = $this->_getParam('search');
+
+
+        /* SV: Top WorkoutSets addon */
+        $db = Zend_Db_Table::getDefaultAdapter();
+        /* SV: Gets top workouts */
+        $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 order by likes desc limit 10");
+        $this->view->top_running_workout = $data;
+
+        $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by 2 desc limit 10");
+        
+        $coach = array();
+        foreach ($data as $row) {
+            $row['user']=$this->userService->getUser($row['coach_id']);
+            $coach[]=$row;
+        }
+        $this->view->top_coaches = $coach;
+
 	}
 	
  	public function postsAction() {
@@ -168,6 +185,13 @@ class WorkoutController extends Zend_Controller_Action {
     	$this->view->sport = $this->workoutService->getSport($this->_getParam('sportId'));
     	$this->view->intensity = $this->_getParam('intensity', null);
     	$this->view->sports = $this->workoutService->getUserSports();
+
+        /* SV: Gets all posible events */
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $data = $db->fetchAll("SELECT DISTINCT event FROM  SetSets");
+        $this->view->events = $data;
+        $this->view->event = $this->_getParam('event');
+
     }
     
     public function showAddWorkoutPlanFormAction() {

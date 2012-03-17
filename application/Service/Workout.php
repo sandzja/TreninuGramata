@@ -187,7 +187,7 @@ class Workout extends AbstractService {
 	public function getUserSports() {
 		return $this->em->getRepository('\Entity\Sport')->getUserSports($this->userService->getCurrentUser()->getId());
 	}
-	
+
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */

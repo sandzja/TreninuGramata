@@ -1,4 +1,4 @@
-<div id="top" class="clear">
+<div id="top" class="clear" style="padding-bottom:10px;">
 	<h1>
 		<a class="active" href="javascript:;" onclick="WorkoutPlan.search();" id="search-link">Search plans</a><span> or</span>
 		<a href="javascript:;" onclick="WorkoutPlan.addWorkoutPlan();" id="add-workout-plan-link">Create new plan</a><span> or</span>
@@ -9,32 +9,63 @@
 			'name' => $this->name
 		))?>
 	</div>
-	<div class="tabs clear">
-		<ul>
-			<li<?php if ($this->type == 'my'):?> class="active"<?php endif;?>><a href="/workout/index/type/my">My plans</a></li>
-			<li<?php if ($this->type == 'friends'):?> class="active"<?php endif;?>><a href="/workout/index/type/friends">Friends plans</a></li>
-			<li<?php if ($this->type == 'database'):?> class="active"<?php endif;?>><a href="/workout/index/type/database">Database</a></li>
-		</ul>
-	</div>
 </div>
+
 <?php echo $this->action('global', 'workout')?>
 
-<div id="trainingPlanPosts">
-	<?php echo $this->action('posts', 'workout', null, array (
-		'type' => $this->type,
-		'name' => $this->name,
-		'search' => $this->search,
-	))?>
-</div>
+<style>
+.span-tr, .span-trrow,.span-trimage,.span-trname {float:left;margin-right:10px;}
+.last {margin-right:0;}
+.span-tr {width:663px;}
+.span-trrow {width:325px;background-color: #EBEBEB;}
+.span-trrow h1 {margin: 5px 0 10px 5px;font-size: 16px;}
+
+.span-trimage {margin: 0 10px 10px 5px;width:60px;}
+.span-trname {width:245px;}
 
 
-<div class="block clear noBord">
-	<div class="more">
-		<a href="javascript:;" id="load-more">Load More Workout plans</a>
+</style>
+
+<div class="block clear" style="background-color: white; padding-left:18px;padding-top:15px;">
+	<h1>Top <span style="color: #1BD7F2;">Workout</span> Plans</h1>
+<div class="span-tr">
+	<div class="span-trrow">
+		<div class="span-trrow"><h1>Top running workouts</h1></div>
+		<?php foreach ($this->top_running_workout as $workout) { ?>
+		<div class="span-trrow" style="position:relative;">
+				<div class="span-trimage"><img width=60px src="<?=$workout['image'];?>" title="<?=$workout['name'];?>"></div>
+				<div class="span-trname last">
+					<div class="span-trname">
+						<?=$workout['name'];?>
+					</div>
+					<div class="span-trname last" style="position:absolute; bottom: 10px; left: 75px;">
+						<span style="color: #1BD7F2;">Preview Workout</span>
+					</div>
+				</div>
+		</div>
+		<?php } ?>
 	</div>
+	<div class="span-trrow last">
+		<h1>Top coaches</h1>
+		<?php foreach ($this->top_coaches as $coach) { ?>
+		<div class="span-trrow" style="position:relative;">
+				<div class="span-trimage"><img width=60px src="<?php echo $coach['user']->getProfileImageUrl()?>" title="<?=$workout['name'];?>"></div>
+				<div class="span-trname last">
+					<div class="span-trname">
+						<?php echo $coach['user']->getName()?>
+					</div>
+					<div class="span-trname last" style="position:absolute; bottom: 10px; left: 75px;">
+						<span style="color: #1BD7F2;">Show Workouts</span>
+					</div>
+				</div>
+		</div>
+		<?php } ?>
+	</div>
+</div>
 </div>
 
 <script type="text/javascript">
 	Pager.init('#trainingPlanPosts', '/workout/posts/type/<?php echo $this->type?>/name/<?php echo $this->name?>/search/<?php echo $this->search?>');
 	if (gup()=='plan') WorkoutPlan.addWorkoutPlanSet();
+	//$("#contentWrapper").css("background-color","#EBEBEB")
 </script>

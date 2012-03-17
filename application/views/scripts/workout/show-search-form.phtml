@@ -22,6 +22,17 @@
 			  <span class="select smaller"><?php if ($this->intensity != null):?><?php echo \Entity\Exercise::$intensities[$this->intensity]?><?php else:?>Intensity<?php endif;?></span>
 		  </div>
 		</div>
+		<div class="element">
+			<div class="left clear">
+				<select class="select smaller" title="Select one" name="event">
+					<option value="">Event</option>
+					<?php foreach ($this->events as $event):?>
+						<option value="<?php echo $event['event']?>" <?php if ($this->event == $event['event']):?>selected="selected"<?php endif;?>><?php echo $event['event']?></option>
+					<?php endforeach;?>
+				  </select>
+			  <span class="select smaller"><?php if ($this->event != null):?><?php echo $this->event?><?php else:?>Event<?php endif;?></span>
+		  </div>
+		</div>
 	</div>
 	<input type="text" class="text add<?php if ($this->name == null):?> tooltip<?php endif;?>" id="searchString" <?php if ($this->name == null):?>onclick="Click.clear(this);"<?php endif;?> name="name" value="<?php if ($this->name != null):?><?php echo $this->name ?><?php else:?>Search by name<?php endif;?>" />
 	<a class="search" href="javascript:;" onclick="if ($('#searchString').val() == 'Search by name') {$('#searchString').val('');}$('#searchForm').submit();"></a>
