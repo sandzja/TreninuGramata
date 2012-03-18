@@ -121,23 +121,23 @@ class NewsFeedController extends Zend_Controller_Action {
     // funkcija next_workout saformesanai
     private function nextWorkout($nr) {
 
+function sec2hms ($sec)
+{
+    $hms = "";
+    $hours = intval(intval($sec) / 3600);
+    $hms .= str_pad($hours, 2, "0", STR_PAD_LEFT). ':';
+    $minutes = intval(($sec / 60) % 60);
+    $hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT). ':';
+    $seconds = intval($sec % 60);
+    $hms .= str_pad($seconds, 2, "0", STR_PAD_LEFT);
+    return $hms;
+}        
+
         $intensity=array('','Low intensity','Medium intensity','High intensity','');
         $days_between=array('Today','Tomorrow');
 
         $return_array = array();
 
-        function sec2hms ($sec)
-        {
-            $hms = "";
-            $hours = intval(intval($sec) / 3600);
-            $hms .= str_pad($hours, 2, "0", STR_PAD_LEFT). ':';
-            $minutes = intval(($sec / 60) % 60);
-            $hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT). ':';
-            $seconds = intval($sec % 60);
-            $hms .= str_pad($seconds, 2, "0", STR_PAD_LEFT);
-            return $hms;
-        }
-        
         $currentUser = $this->userService->getCurrentUser();
         $db = Zend_Db_Table::getDefaultAdapter();
         $user_id = $currentUser->getId();
