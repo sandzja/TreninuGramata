@@ -12,5 +12,5 @@ INSERT INTO `SetSets` (`id`, `sport_id`, `coach_id`, `name`, `event`, `event_dat
 (6, 1, 129, '21km | Low intensity | 3 workouts per week', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg '),
 (7, 1, 129, '10km | Low intensity | 4 workouts per week', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg '),
 (8, 1, 129, '21km | Low intensity | 4 workouts per week', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg '),
-(9, 1, 129, '10km | Medium intensity | 3 workouts per week', 'Nordea Riga marathon', '2012-05-20', 2, 0, 0, '/partner/nordea_riga_marathon.jpg '),
-(10, 1, 129, '21km | Medium intensity | 3 workouts per week', 'Nordea Riga marathon', '2012-05-20', 2, 0, 0, '/partner/nordea_riga_marathon.jpg ');
+(9, 1, 128, '10km | Medium intensity | 3 workouts per week', 'Nordea Riga marathon', '2012-05-20', 2, 0, 0, '/partner/nordea_riga_marathon.jpg '),
+(10, 1, 128, '21km | Medium intensity | 3 workouts per week', 'Nordea Riga marathon', '2012-05-20', 2, 0, 0, '/partner/nordea_riga_marathon.jpg ');
