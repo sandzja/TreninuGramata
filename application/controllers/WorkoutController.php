@@ -32,7 +32,7 @@ class WorkoutController extends Zend_Controller_Action {
         $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 order by likes desc limit 10");
         $this->view->top_running_workout = $data;
 
-        $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by 2 desc limit 10");
+        $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by likes desc limit 10");
         
         $coach = array();
         foreach ($data as $row) {
