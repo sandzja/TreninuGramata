@@ -14,47 +14,47 @@
 <?php echo $this->action('global', 'workout')?>
 
 <style>
-.span-tr, .span-trrow,.span-trimage,.span-trname {float:left;margin-right:10px;}
+.span-tr,.span-trrow,.span-trimage,.span-trname {float:left; margin-right:10px;}
 .last {margin-right:0;}
-.span-tr {width:663px;}
-.span-trrow {width:325px;background-color: #EBEBEB;}
-.span-trrow h1 {margin: 5px 0 10px 5px;font-size: 16px;}
-
-.span-trimage {margin: 0 10px 10px 5px;width:60px;}
+.span-tr {width:663px; overflow: hidden;}
+.span-trrow {width:325px; background-color: #EBEBEB;}
+.span-trrow h1 {margin:5px 0 10px 5px; font-size:16px;}
+.span-trimage {margin:0 10px 10px 5px; width:60px;}
 .span-trname {width:245px;}
-
-
+.tr-preview {position:absolute; bottom:15px; left:75px;}
+.tr-sameheight {padding-bottom: 1000px; margin-bottom:-1000px;}
+.tr-relatvie {margin-bottom:5px; position:relative;}
 </style>
 
 <div class="block clear" style="background-color: white; padding-left:18px;padding-top:15px;">
 	<h1>Top <span style="color: #1BD7F2;">Workout</span> Plans</h1>
 <div class="span-tr">
-	<div class="span-trrow">
+	<div class="span-trrow tr-sameheight" style="margin-right: 5px;">
 		<div class="span-trrow"><h1>Top running workouts</h1></div>
 		<?php foreach ($this->top_running_workout as $workout) { ?>
-		<div class="span-trrow" style="position:relative;">
+		<div class="span-trrow tr-relatvie">
 				<div class="span-trimage"><img width=60px src="<?=$workout['image'];?>" title="<?=$workout['name'];?>"></div>
 				<div class="span-trname last">
 					<div class="span-trname">
 						<?=$workout['name'];?>
 					</div>
-					<div class="span-trname last" style="position:absolute; bottom: 10px; left: 75px;">
+					<div class="span-trname tr-preview last">
 						<span style="color: #1BD7F2;">Preview Workout</span>
 					</div>
 				</div>
 		</div>
 		<?php } ?>
 	</div>
-	<div class="span-trrow last">
-		<h1>Top coaches</h1>
+	<div class="span-trrow last tr-sameheight" style="margin-left: 5px;">
+		<div class="span-trrow"><h1>Top coaches</h1></div>
 		<?php foreach ($this->top_coaches as $coach) { ?>
-		<div class="span-trrow" style="position:relative;">
+		<div class="span-trrow tr-relatvie">
 				<div class="span-trimage"><img width=60px src="<?php echo $coach['user']->getProfileImageUrl()?>" title="<?=$workout['name'];?>"></div>
 				<div class="span-trname last">
 					<div class="span-trname">
 						<?php echo $coach['user']->getName()?>
 					</div>
-					<div class="span-trname last" style="position:absolute; bottom: 10px; left: 75px;">
+					<div class="span-trname tr-preview last">
 						<span style="color: #1BD7F2;">Show Workouts</span>
 					</div>
 				</div>
@@ -62,6 +62,7 @@
 		<?php } ?>
 	</div>
 </div>
+<h1>Top <span style="color: #1BD7F2;">Workout</span> Plans</h1>
 </div>
 
 <script type="text/javascript">
