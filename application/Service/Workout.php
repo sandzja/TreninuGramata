@@ -531,6 +531,19 @@ class Workout extends AbstractService {
 	
 		return $trainingPlans;
 	}
+
+	/**
+	 * SV Gets user trainingplans sets
+	 * @return Array
+	 */
+   	public function searchTrainingPlansSets($nr = 1, $sets = null, $coach = null, $sportId = null, $intensity = null, $event = null, $name = null, $limit = null, $offset = null) {
+   		$trainingPlans = array();
+
+		$trainingPlans = $this->em->getRepository('\Entity\SetSets')->searchTrainingPlans($nr, $sets, $coach, $sportId, $intensity, $event, $name, $limit, $offset);
+
+   		return $trainingPlans;
+   	}
+   /* SV end */
 	
 	public function getUserTrainingPlans(\Entity\User $user, $limit, $offset) {
 		return $this->em->getRepository('\Entity\TrainingPlan')->findBy(array (

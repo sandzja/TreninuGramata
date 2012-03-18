@@ -29,10 +29,10 @@ class WorkoutController extends Zend_Controller_Action {
         /* SV: Top WorkoutSets addon */
         $db = Zend_Db_Table::getDefaultAdapter();
         /* SV: Gets top workouts */
-        $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 order by likes desc limit 10");
+        $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 order by likes desc limit 5");
         $this->view->top_running_workout = $data;
 
-        $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by likes desc limit 10");
+        $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by likes desc limit 5");
         
         $coach = array();
         foreach ($data as $row) {
@@ -40,6 +40,7 @@ class WorkoutController extends Zend_Controller_Action {
             $coach[]=$row;
         }
         $this->view->top_coaches = $coach;
+        /* SV update end */
 
 	}
 	
@@ -58,6 +59,47 @@ class WorkoutController extends Zend_Controller_Action {
     	$this->view->currentUser = $this->userService->getCurrentUser();
     }
 	
+    /* SV sets search/show funcionality */
+    public function setsAction() {
+        if ($this->_request->isXmlHttpRequest()) {
+            $this->_helper->disableLayout();
+        }
+        
+        error_log('search');
+        error_log($this->_getParam('search'));
+
+        error_log('nr');
+        error_log($this->_getParam('nr',1));
+
+        error_log('name');
+        error_log($this->_getParam('name'));
+
+        error_log('sportId');
+        error_log($this->_getParam('sportId'));
+
+        error_log('intensity');
+        error_log($this->_getParam('intensity'));
+
+        error_log('event');
+        error_log($this->_getParam('event'));
+
+        error_log('sets');
+        error_log($this->_getParam('sets'));
+
+        error_log('coach');
+        error_log($this->_getParam('coach'));
+
+
+        $this->view->no_output = false;
+        if ($this->_getParam('search') != null or $this->_getParam('sets') != null or $this->_getParam('coach') != null) {
+            $this->view->trainingPlans = $this->workoutService->searchTrainingPlansSets($this->_getParam('nr',1), $this->_getParam('sets'), $this->_getParam('coach'), $this->_getParam('sportId'), $this->_getParam('intensity'), $this->_getParam('event'), $this->_getParam('name'), 10, $this->_getParam('page', 0) * 10);
+        } else {
+            $this->view->no_output = true;
+        }
+      
+    }
+    /* update end */
+
 	public function trackAction() {
 		$this->_helper->setLayout('live_track');
 		$this->view->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
