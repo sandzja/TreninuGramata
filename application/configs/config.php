@@ -31,7 +31,7 @@ return array (
 /*		'appId' => '206959362723186',
 		'secret' => 'f79f18a5170038eb3aaf0a66d54d6d32', */
 		'appId' => '115339601926091',
-		'secret' => 'ae760d072f652756c2be0182ee03505a',	
+		'secret' => 'bbf359861a08feeb7d5a3b8fdd914df4',	
 		'loginParams' => array (
 			'display' => 'popup',
 			'req_perms' => 'email,read_stream,publish_stream,user_about_me,user_birthday,friends_about_me',
