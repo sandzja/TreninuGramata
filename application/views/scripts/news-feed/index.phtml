@@ -5,7 +5,7 @@
 		<a href="javascript:;" onclick="ShareContent.note();" id="share-note-link">Note</a><span>,</span>
 		<a href="javascript:;" onclick="ShareContent.photo();" id="share-photo-link">Photo</a>
 		<span>or</span>
-		<a href="javascript:;" onclick="ShareContent.workout();" id="share-workout-link">Workout</a>
+		<a href="javascript:;" onclick="ShareContent.workout(<?php if ($this->gpxUploaded != null):?>true<?php else:?>false<?php endif;?>, <?php if ($this->error != null):?>true<?php else:?>false<?php endif;?>);" id="share-workout-link">Workout</a>
 	</h1>
 	<form method="post" id="shareContentForm" enctype="multipart/form-data">
 		<div id="shareContent"></div>
@@ -55,5 +55,14 @@
 	$(document).ready(function() {
 		ShareContent.init();
 		NewsFeed.init();
+
+		<?php if ($this->gpxUploaded != null):?>
+			$('#share-workout-link').click();
+			<?php if ($this->error == '1'):?>
+				setTimeout(function () {
+					$('#track A').click();
+				}, 600)
+			<?php endif;?>
+		<?php endif;?>
 	});
 </script>

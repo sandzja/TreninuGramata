@@ -1,8 +1,11 @@
 <div id="top" class="clear">
 	<form method="post" action="/friend/index/type/<?php echo $this->type ?>" id="friendsForm">
-		<h1>Search friends</h1>
-			<input type="text" autocomplete="off" class="text action <?php if ($this->name == null):?>tooltip<?php endif;?>" <?php if ($this->name == null):?>onclick="Click.clear(this);"<?php endif;?> name="name" value="<?php if ($this->name == null):?>Search by name<?php else:?><?php echo $this->name?><?php endif;?>" />
-			<a class="search" href="javascript:;" onclick="$('#friendsForm').submit()"></a>
+		<h1>
+			<a class="active" href="/friend/index">Search friends</a><span> or</span>
+			<a href="/friend/invite">Invite friends</a>
+		</h1>
+		<input type="text" autocomplete="off" class="text action <?php if ($this->name == null):?>tooltip<?php endif;?>" <?php if ($this->name == null):?>onfocus="Click.clear(this);"<?php endif;?> name="name" value="<?php if ($this->name == null):?>Search by name<?php else:?><?php echo $this->name?><?php endif;?>" />
+		<a class="search" href="javascript:;" onclick="$('#friendsForm').submit()"></a>
 		<div class="shareAction">
 			<input type="submit" class="button right"  value="Search"/>
 		</div>

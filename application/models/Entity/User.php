@@ -39,10 +39,10 @@ class User extends AbstractEntity {
 	protected $goal;
 	
 	/**
-	 * @Column(name="is_time_goal", type="boolean")
+	 * @Column(name="goal_type", type="decimal")
 	 * @var boolean
 	 */
-	protected $isTimeGoal;
+	protected $goalType;
 	
 	/**
 	 * @Column(type="decimal")
@@ -78,6 +78,18 @@ class User extends AbstractEntity {
 	 * @Column(type="string")
 	 * @var string
 	 */
+	protected $twitterOAuthToken;
+	
+	/**
+	 * @Column(type="string")
+	 * @var string
+	 */
+	protected $twitterOAuthTokenSecret;
+	
+	/**
+	 * @Column(type="string")
+	 * @var string
+	 */
 	protected $twitterUserId;
 	
 	/**
@@ -105,12 +117,6 @@ class User extends AbstractEntity {
 	protected $profileImageUrl;
 	
 	/**
-	 * @Column(name="is_featured", type="boolean")
-	 * @var boolean
-	 */
-	protected $isFeatured = false;
-	
-	/**
 	 * @OneToMany(targetEntity="\Entity\TrainingPlan", mappedBy="user", cascade={"persist"}, fetch="EXTRA_LAZY")
 	 * @var ArrayCollection
 	 */
@@ -126,6 +132,7 @@ class User extends AbstractEntity {
 	/**
 	 * @OneToMany(targetEntity="\Entity\Record", mappedBy="user", cascade={"persist"})
 	 * @var ArrayCollection
+	 * @OrderBy({"distance" = "ASC"})
 	 */
 	protected $records;
 	
@@ -146,6 +153,7 @@ class User extends AbstractEntity {
      *	joinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")},
      *	inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
      * )
+     * @OrderBy({"name" = "ASC"})
 	 */
 	protected $followers;
 	
@@ -157,6 +165,7 @@ class User extends AbstractEntity {
      *	joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
      *	inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
      * )
+     * @OrderBy({"name" = "ASC"})
 	 */
 	protected $followings;
 	
@@ -238,17 +247,17 @@ class User extends AbstractEntity {
 	}
 
 	/**
-	 * @return boolean $isTimeGoal
+	 * @return boolean $goalType
 	 */
-	public function isTimeGoal() {
-		return $this->isTimeGoal;
+	public function getGoalType() {
+		return $this->goalType;
 	}
 
 	/**
-	 * @param boolean $isTimeGoal
+	 * @param boolean $goalType
 	 */
-	public function setIsTimeGoal($isTimeGoal) {
-		$this->isTimeGoal = $isTimeGoal;
+	public function setGoalType($goalType) {
+		$this->goalType = $goalType;
 	}
 
 	/**
@@ -322,6 +331,34 @@ class User extends AbstractEntity {
 	}
 
 	/**
+	 * @return the $twitterOAuthToken
+	 */
+	public function getTwitterOAuthToken() {
+		return $this->twitterOAuthToken;
+	}
+
+	/**
+	 * @param string $twitterOAuthToken
+	 */
+	public function setTwitterOAuthToken($twitterOAuthToken) {
+		$this->twitterOAuthToken = $twitterOAuthToken;
+	}
+
+	/**
+	 * @return the $twitterOAuthTokenSecret
+	 */
+	public function getTwitterOAuthTokenSecret() {
+		return $this->twitterOAuthTokenSecret;
+	}
+
+	/**
+	 * @param string $twitterOAuthTokenSecret
+	 */
+	public function setTwitterOAuthTokenSecret($twitterOAuthTokenSecret) {
+		$this->twitterOAuthTokenSecret = $twitterOAuthTokenSecret;
+	}
+
+	/**
 	 * @return the $twitterUserId
 	 */
 	public function getTwitterUserId() {
@@ -382,21 +419,6 @@ class User extends AbstractEntity {
 	 */
 	public function setProfileImageUrl($profileImageUrl) {
 		$this->profileImageUrl = $profileImageUrl;
-	}
-
-	/**
-	 * @return boolean $isFeatured
-	 */
-	public function isFeatured() {
-		return $this->isFeatured;
-	}
-	
-
-	/**
-	 * @param boolean $isFeatured
-	 */
-	public function setFeatured($isFeatured = true) {
-		$this->isFeatured = $isFeatured;
 	}
 
 	/**
@@ -493,6 +515,17 @@ class User extends AbstractEntity {
 		}
 		
 		return $distance;
+	}
+	
+	public function countCalories() {
+		$calories = 0;
+		foreach ($this->workouts as $workout) /* @var $workout \Entity\Workout */ {
+			foreach ($workout->getTrainingPlanReports() as $trainingPlanReport) /* @var $trainingPlanReport \Entity\TrainingPlan\Report */ {
+				$calories += $trainingPlanReport->getBurnedCalories();
+			}
+		}
+	
+		return $calories;
 	}
 	
 	public function countTime() {

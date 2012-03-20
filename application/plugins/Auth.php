@@ -13,6 +13,7 @@ class Plugin_Auth extends Zend_Controller_Plugin_Abstract {
 		'iphone.trackpoint',
 		'iphone.friends',
 		'iphone.sync',
+		'workout.track',
 	);
 	
 	private function createPermissions(Zend_Controller_Request_Abstract $request) {

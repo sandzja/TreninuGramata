@@ -16,6 +16,8 @@ class User extends AbstractRepository {
 		
 		$sql = 'SELECT u1_.* FROM User u0_ INNER JOIN Friend f2_ ON u0_.id = f2_.user_id INNER JOIN User u1_ ON u1_.id = f2_.friend_user_id WHERE u0_.id = ? AND u1_.name LIKE ?';
 		
+		$sql .= ' ORDER BY u1_.name ASC';
+		
 		if ($limit != null) {
 		    $sql .= ' LIMIT ' . $limit;
 		}
@@ -40,6 +42,8 @@ class User extends AbstractRepository {
 		
 		$sql = 'SELECT u1_.* FROM User u0_ INNER JOIN Friend f2_ ON u0_.id = f2_.friend_user_id INNER JOIN User u1_ ON u1_.id = f2_.user_id WHERE u0_.id = ? AND u1_.name LIKE ?';
 		
+		$sql .= ' ORDER BY u1_.name ASC';
+		
 		if ($limit != null) {
 			$sql .= ' LIMIT ' . $limit;
 		}
@@ -58,7 +62,8 @@ class User extends AbstractRepository {
 	public function searchUsers($name, $limit = null, $offset = null) {
 		$query = $this->createQueryBuilder('User');
 		$query->where('User.name LIKE :name')->setParameter('name', '%' . $name . '%');
-	
+		$query->orderBy('User.name');
+		
 		if ($limit != null) {
 			$query->setMaxResults($limit);
 		}

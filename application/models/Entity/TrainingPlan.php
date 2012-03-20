@@ -67,6 +67,12 @@ class TrainingPlan extends AbstractEntity {
 	protected $isSynced = false;
 	
 	/**
+	 * @Column(name="is_featured", type="boolean")
+	 * @var boolean
+	 */
+	protected $isFeatured = false;
+	
+	/**
 	 * @ManyToOne(targetEntity="\Entity\User", inversedBy="trainingPlans")
 	 * @JoinColumn(name="user_id")
 	 * @var User
@@ -147,7 +153,7 @@ class TrainingPlan extends AbstractEntity {
 	}
 
 	/**
-	 * @return DateTime the $date
+	 * @return \DateTime the $date
 	 */
 	public function getDate() {
 		return $this->date;
@@ -246,6 +252,21 @@ class TrainingPlan extends AbstractEntity {
 	 */
 	public function setSynced($isSynced) {
 		$this->isSynced = $isSynced;
+	}
+	
+	/**
+	 * @return boolean $isFeatured
+	 */
+	public function isFeatured() {
+		return $this->isFeatured;
+	}
+	
+	
+	/**
+	 * @param boolean $isFeatured
+	 */
+	public function setFeatured($isFeatured = true) {
+		$this->isFeatured = $isFeatured;
 	}
 	
 	/**

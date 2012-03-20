@@ -1,0 +1,40 @@
+<div id="top" class="clear">
+	<form method="post" action="/friend/send-email-invitation" id="friendsForm">
+		<h1>
+			<a href="/friend/index">Search friends</a><span> or</span>
+			<a class="active" href="/friend/invite">Invite friends</a>
+		</h1>
+		<input type="text" autocomplete="off" class="text action tooltip" onfocus="Click.clear(this);" name="emails[]" value="Enter email address" />
+		<a class="search" href="javascript:;" onclick="$('#friendsForm').submit()"></a>
+		<div class="shareAction">
+			<input type="submit" class="button right"  value="Invite"/>
+		</div>
+	</form>
+	<div class="tabs">
+		<ul>
+			<?php if ($this->type == 'facebook'):?>
+				<li<?php if ($this->type == 'facebook' || $this->type == ''):?> class="active"<?php endif;?>><a href="/friend/invite/type/facebook">Facebook friends</a></li>
+			<?php endif;?>
+			<?php if ($this->type == 'twitter'):?>
+				<li<?php if ($this->type == 'twitter'):?> class="active"<?php endif;?>><a href="/friend/invite/type/twitter">Twitter followers</a></li>
+			<?php endif;?>
+		</ul>
+	</div>
+</div>
+
+<div id="friends">
+	<?php echo $this->action('invite-external-friends-posts', 'friend', null, array (
+		'type' => $this->type,
+		'page' => $this->page,
+	));?>
+</div>
+
+<div class="block clear noBord">
+	<div class="more">
+		<a href="javascript:;" id="load-more">Load More Users</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	Pager.init('#friends', '/friend/invite-external-friends-posts/type/<?php echo $this->type?>');
+</script>

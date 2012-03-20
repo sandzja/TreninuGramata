@@ -1,21 +1,21 @@
 <div class="block clear noBord">
-	<?php foreach ($this->users as $user): /* @var $user \Entity\User */?>
+	<?php foreach ($this->trainingPlans as $trainingPlan): /* @var $trainingPlan \Entity\TrainingPlan */?>
 		<div class="blockElement">
 			<div class="thumbnail">
-				<?php if ($user->getProfileImageUrl() != null):?>
-					<img alt="" src="<?php echo $user->getProfileImageUrl()?>" />
+				<?php if ($trainingPlan->getUser()->getProfileImageUrl() != null):?>
+					<img alt="" src="<?php echo $trainingPlan->getUser()->getProfileImageUrl()?>" />
 				<?php endif;?>
 			</div>
 			<div class="info">
-				<p class="name"><a href="/user/profile/id/<?php echo $user->getId()?>"><?php echo $user->getName()?></a></p>
-				<?php if (count($user->getSports()) > 0):?>
+				<p class="name"><a href="/user/profile/id/<?php echo $trainingPlan->getUser()->getId()?>"><?php echo $trainingPlan->getUser()->getName()?></a></p>
+				<?php if (count($trainingPlan->getUser()->getSports()) > 0):?>
 					<p>
-						<?php foreach ($user->getSports() as $i => $sport):?>
+						<?php foreach ($trainingPlan->getUser()->getSports() as $i => $sport):?>
 							<?php if ($i == 0):?>, <?php endif;?><?php echo $sport->getName()?>
 						<?php endforeach;?>
 					</p>
 				<?php endif;?>
-				<p><?php echo $user->getTrainingPlans()->count()?> Workout plans</p>
+				<p><?php echo $trainingPlan->getUser()->getTrainingPlans()->count()?> Workout plans</p>
 			</div>
 		</div>
 	<?php endforeach;?>

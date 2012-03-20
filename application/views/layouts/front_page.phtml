@@ -17,6 +17,7 @@
 </head>
 <body id="frontpage">
 	<div id="home">
+		<div id="mapWrapper"></div>
 		<div id="container">
 			<?php echo $this->action('header', 'layout')?>
 			<div id="content" class="clear">
@@ -29,7 +30,7 @@
 					<h1>Fun & Social</h1>
 					<h2>Share your emotions, goals and music playlists</h2>
 					<a href="javascript:;" onclick="Modal.open('.signIn');" class="join">Join us now</a>
-					<a href="#" class="appStore right">App Store</a>
+					<a href="http://itunes.apple.com/us/app/trainingbook/id489151679?ls=1&mt=8" target="_blank" class="appStore right">App Store</a>
 				</div>
 			</div>
 			<div class="quote">
@@ -61,20 +62,17 @@
 		<?php echo $this->action('about', 'page')?>
 	</div>
 	
-	<script type="text/javascript">
-
+<script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-28972354-1']);
   _gaq.push(['_setDomainName', 'trainingbook.com']);
   _gaq.push(['_setAllowLinker', true]);
   _gaq.push(['_trackPageview']);
-
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl&#39; : 'http://www&#39;) + '.google-analytics.com/ga.js';
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
-
 </script>
 </body>
 </html>

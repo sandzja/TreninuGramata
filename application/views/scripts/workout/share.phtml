@@ -1,0 +1,22 @@
+<div class="text share clear">
+	<h1>choose from friends</h1>
+	<div class="list clear">
+		<?php foreach ($this->users as $user):?>
+			<div class="block clear">
+				<div class="thumbnail">
+					<img src="<?php echo $user['profileImage']?>" alt="">
+				</div>
+				<div class="content">
+					<div class="clear">
+						<?php if ($this->isTwitter):?>
+							<span class="highlight right"><a href="javascript:;" onclick="Friend.sendTwitterShare(<?php echo $user['id']?>, this)">Share</a></span>
+						<?php else:?>
+							<span class="highlight right"><a href="javascript:;" onclick="Friend.sendFacebookShare(<?php echo $user['id']?>, this)">Share</a></span>
+						<?php endif;?>
+					</div>
+					<h1><?php echo $user['name']?></h1>
+				</div>
+			</div>
+		<?php endforeach;?>
+	</div>
+</div>

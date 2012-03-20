@@ -9,6 +9,36 @@ use Repository\AbstractRepository;
 
 class Record extends AbstractRepository {
 	
+	public function getUserRecordsByCriteria(array $record, \Entity\User $user, $sport = null) {
+		$query = $this->createQueryBuilder('Record');
+		
+		$query->where('Record.isTimeRecord = :isTimeRecord')->setParameter('isTimeRecord', $record['isTimeRecord']);
+		$query->andWhere('Record.isMiles = :isMiles')->setParameter('isMiles', $record['isInMiles']);
+		$query->andWhere('Record.user = :user')->setParameter('user', $user);
+		
+		if ($record['duration'] == null) {
+			$query->andWhere('Record.distance = :distance')->setParameter('distance', $record['distance']);
+			$query->orderBy('Record.duration', 'asc');
+		}
+		
+		if ($record['distance'] == null) {
+			$query->andWhere('Record.duration = :duration')->setParameter('duration', $record['duration']);
+			$query->orderBy('Record.distance', 'asc');
+		}
+		
+		if ($sport != null) {
+			$query->andWhere('Record.sport = :sport')->setParameter('sport', $sport);
+			$query->setMaxResults(1);
+			
+			return $query->getQuery()->getOneOrNUllResult();
+		}
+		
+		$query->groupBy('Record.sport');
+		
+		 
+		return $query->getQuery()->getResult();
+	}
+	
 	public function getRecord(\Entity\Sport $sport, \Entity\User $user = null) {
 		$query = $this->createQueryBuilder('Record');
 		$query->where('Record.sport = :sportId')->setParameter('sportId', $sport->getId());

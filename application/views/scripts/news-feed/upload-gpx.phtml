@@ -1,0 +1,11 @@
+<div class="text recommend clear">
+	<?php if ($this->error == 'true'):?>
+		<span style="color:red;"><b>Error with proccessing data</b></span>
+	<?php endif;?>
+	<h1>upload GPX file</h1>
+	
+	<form method="post" action="/news-feed/upload-gpx" enctype="multipart/form-data">
+		<input type="file" name="gpx" value="" /><br/><br/>
+		<input type="submit" class="button right" name="uploadGpx" value="Upload" />
+	</form>
+</div>

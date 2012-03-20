@@ -36,6 +36,9 @@ class Login {
 	public function twitter($TwitterUID, $TwitterOAuthToken, $TwitterOAuthTokenSecret) {
 		
 		$user = $this->userService->createTwitterUser($TwitterUID, $TwitterOAuthToken, $TwitterOAuthTokenSecret);
+		$user->setTwitterOAuthToken($TwitterOAuthToken);
+		$user->setTwitterOAuthTokenSecret($TwitterOAuthTokenSecret);
+		
 		$this->userService->updateSessionTime($user);
 		
 		return $this->response($user);

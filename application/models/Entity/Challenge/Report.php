@@ -26,14 +26,14 @@ class Report extends AbstractEntity {
 	protected $didWinChallenge;
 	
 	/**
-	 * @OneToOne(targetEntity="\Entity\TrainingPlan\Report", mappedBy="challengeReport")
+	 * @OneToOne(targetEntity="\Entity\TrainingPlan\Report", mappedBy="challengeReport", cascade={"remove"})
 	 * @JoinColumn(name="training_plan_report_id")
 	 * @var \Entity\TrainingPlan\Report
 	 */
 	protected $trainingPlanReport;
 	
 	/**
-	 * @OneToOne(targetEntity="\Entity\Challenge")
+	 * @OneToOne(targetEntity="\Entity\Challenge", cascade={"remove"})
 	 * @JoinColumn(name="challenge_id")
 	 * @var \Entity\Challenge
 	 */

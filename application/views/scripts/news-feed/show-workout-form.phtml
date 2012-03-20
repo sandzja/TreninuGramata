@@ -1,34 +1,34 @@
 <div class="block noBord clear">
 	<div class="distance left clear">
 		<select class="select" title="Select one" name="sportId" onchange="Workout.getTrainingPlansBySport(this);" id="sportId">
-			<option value="">Sport type</option>
+			<option value="">Sport type*</option>
 			<?php foreach ($this->sports as $sport):?>
 				<option value="<?php echo $sport->getId()?>"><?php echo $sport->getName()?></option>
 			<?php endforeach;?>
 		</select>
-		<span class="select">Sport type</span>
+		<span class="select">Sport type*</span>
 	</div>
 	<div class="left clear">
 		<select class="select" title="Select one" name="trainingPlanId" id="trainingPlanId">
-			<option value="">Workout plan</option>
+			<option value="">Workout plan*</option>
 		</select>
-		<span class="select">Workout plan</span>
+		<span class="select">Workout plan*</span>
 	</div>
 </div>
 <div class="navi clear">
-	<input type="text" class="text medium tooltip" name="location" onclick="Click.clear(this);" value="Where?" />
+	<input type="text" class="text medium tooltip" name="location" onfocus="Click.clear(this);" value="Where?" />
 	<div id="track">
-		<span class="track"><a href="#">Track</a></span>
-		<!-- <span class="tooltipBox"><span></span>Map it</span> -->
+		<span class="track"><a href="javascript:;" onmouseover="$('#track .tooltipBox').removeClass('hidden');" onmouseout="$('#track .tooltipBox').addClass('hidden');" onclick="Modal.ajax('/news-feed/upload-gpx<?php if ($this->error == 'true'):?>/error/true<?php endif;?>', '.recommend')">Track</a></span>
+		<span class="tooltipBox hidden"><span></span>Select route</span>
 	</div>
 	<div id="mapIt" class="clear">
 		<span class="mapIt">
-			<a href="javascript:;" onclick="$('#map-canvas').toggleClass('hidden');initialize();$('#lineDistance').click();">Map it</a>
+			<a href="javascript:;" onmouseover="$('#mapIt .tooltipBox').removeClass('hidden');" onmouseout="$('#mapIt .tooltipBox').addClass('hidden');" onclick="$('#map-canvas').toggleClass('hidden');initialize();$('#lineDistance').click();">Map it</a>
 		</span>
-		<!-- <span class="tooltipBox"><span></span>Map it</span> -->
+		<span class="tooltipBox hidden"><span></span>Map it</span>
 	</div>
 	<br/>
-	<div id="map-canvas" style="height: 200px; width: 100%;" class="hidden"></div>
+	<div id="map-canvas" style="height: 400px; width: 100%;" class="hidden"></div>
 </div>
 <div class="line"></div>
 <div class="block noBord set clear">
@@ -37,14 +37,14 @@
 			  <span class="label left w65">Distance</span>
 		  </div>
 	</div>
-	<div class="element"><input type="text" class="text small tooltip numeric" value="Value" name="distance" id="lineDistance" onclick="Click.clear(this);"/></div>
+	<div class="element"><input type="text" class="text small tooltip numeric" value="Value" name="distance" id="lineDistance" onfocus="Click.clear(this);"/></div>
 	<div class="element">
 			<div class="left clear">
 				<select class="select smaller" name="unit" id="unit" title="Select one">
-					<option value="1">m</option>
 					<option value="1000">km</option>
+					<option value="1609.344">mile</option>
 			  </select>
-			  <span class="select smaller">m</span>
+			  <span class="select smaller">km</span>
 		  </div>
 	</div>
 </div>
@@ -55,9 +55,9 @@
 		</div>
 	</div>
 	<div class="element">
-		<input type="text" class="text min tooltip numeric" value="HH" name="hours" onclick="Click.clear(this);"/>
-		<input type="text" class="text min tooltip numeric" value="MM" name="minutes" onclick="Click.clear(this);"/>
-		<input type="text" class="text min tooltip numeric" value="SS" name="seconds" onclick="Click.clear(this);"/>
+		<input type="text" class="text min tooltip numeric" value="HH" name="hours" onfocus="Click.clear(this);"/>
+		<input type="text" class="text min tooltip numeric" value="MM" name="minutes" onfocus="Click.clear(this);"/>
+		<input type="text" class="text min tooltip numeric" value="SS" name="seconds" onfocus="Click.clear(this);"/>
 	</div>
 </div>
 <div id="parameters" style="display: none;">
@@ -102,12 +102,23 @@
 	<input type="hidden" name="rating" id="rateValue" value="" />
 </div>
 
-<textarea rows="" cols="" class="tooltip" name="comment" id="comment" onclick="Click.clear(this);">Your comment</textarea>
+<textarea rows="" cols="" class="tooltip" name="comment" id="comment" onfocus="Click.clear(this);">Your comment</textarea>
 
 <div id="trackPoints"></div>
 
 <script type="text/javascript">
 	Select.init();
 	Click.check('#publishButton', ['#sportId', '#trainingPlanId']);
-	$(".numeric").numeric({ decimal: false, negative: false });
+	$(".numeric").numeric({negative: false });
+
+	<?php if ($this->gpxUploaded == 'true' && $this->error != 'true'):?>
+		$('#mapIt A').click();
+		
+		<?php foreach ($this->gpxData as $data): ?>
+			addNewPoint(new google.maps.LatLng(<?php echo $data->latitude?>, <?php echo $data->longitude?>));
+		<?php endforeach;?>
+		var bounds = new google.maps.LatLngBounds();
+		bounds.extend(new google.maps.LatLng(<?php echo $data->latitude?>, <?php echo $data->longitude?>));
+	    map.fitBounds(bounds);
+	<?php endif;?>
 </script>

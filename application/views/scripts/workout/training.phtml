@@ -2,6 +2,11 @@
 $workout = $this->workout; /* @var $workout \Entity\Workout */
 $post = $workout->getFeedPost();
 ?>
+<?php $this->headMeta($workout->getTrainingPlanReports()->get(0)->getTrainingPlan()->getSport()->getName() . ' ' . round($workout->getTrainingPlanReports()->get(0)->getDistance() / 1000, 2) .  'km', 'og:title', 'property');?>
+<?php $this->headMeta('http://trainingbook.com/gfx/sociallogo.png', 'og:image', 'property');?>
+<?php $this->headMeta('activity', 'og:type', 'property');?>
+<?php $this->headMeta($workout->getTrainingPlanReports()->get(0)->getTrainingPlan()->getSport()->getName() . ' ' . round($workout->getTrainingPlanReports()->get(0)->getDistance() / 1000, 2) .  'km', 'og:description', 'property');?>
+
 <div id="top" class="clear">
 	<?php if ($this->currentUser->getId() != $workout->getUser()->getId()):?>
 		<div class="thumbnailSmall">
@@ -28,7 +33,7 @@ $post = $workout->getFeedPost();
 			<span></span>
 		</div> -->
 	</div>
-	<span class="infoText"><?php echo $workout->getFeedPost()->getDateAdded()->format('d M Y H:i')?></span>
+	<span class="infoText"><?php echo Helper_Date::format($workout->getFeedPost()->getDateAdded())?></span>
 	<!-- <span>3 km goal workout</span> -->
 	<div class="block noBord clear">
 		<div class="thumbnailLeft">
@@ -57,39 +62,31 @@ $post = $workout->getFeedPost();
 				<table class="data attribute">
 						<tr>
 							<td>Speed</td>
-							<td>Average <?php echo $trainingPlanReport->getAverageSpeed()?> km/h</td>
-							<td>Highest <?php echo $trainingPlanReport->getHighestSpeed()?> km/h</td>
+							<td>Average <?php if ($trainingPlanReport->getDistance() != null && $trainingPlanReport->getDuration() != null):?><?php echo round($trainingPlanReport->getDistance() / $trainingPlanReport->getDuration() * 3.6, 2)?><?php else:?><?php echo $trainingPlanReport->getAverageSpeed() != 0 ? round($trainingPlanReport->getAverageSpeed() * 3.6, 2) : 'Na'?><?php endif;?> km/h</td>
+							<td>Highest <?php echo $trainingPlanReport->getHighestSpeed() != 0 ? round($trainingPlanReport->getHighestSpeed() * 3.6, 2) : 'Na'?> km/h</td>
 						</tr>
-						<?php if ($trainingPlanReport->getPace() == null):?>
-							<tr>
-								<td>Pace</td>
-								<td>Average <?php echo $trainingPlanReport->getAveragePace()?> steps/min</td>
-								<td>Highest <?php echo $trainingPlanReport->getHighestPace()?> steps/min</td>
-							</tr>
-						<?php else:?>
-							<tr>
-								<td>Pace</td>
-								<td><?php echo $trainingPlanReport->getPace()?> steps/min</td>
-								<td></td>
-							</tr>
-						<?php endif;?>
+						<tr>
+							<td>Pace</td>
+							<td>Average <?php echo $trainingPlanReport->getAveragePace() != 0 ? $trainingPlanReport->getAveragePace() : 'Na' ?> min/km</td>
+							<td></td>
+						</tr>
 						<?php if ($trainingPlanReport->getHeartRate() == null):?>
 							<tr>
 								<td>Heart rate</td>
-								<td>Average <?php echo $trainingPlanReport->getAverageHeartRate()?> bpm</td>
-								<td>Highest <?php echo $trainingPlanReport->getHighestHeartRate()?> bpm</td>
+								<td>Average <?php echo $trainingPlanReport->getAverageHeartRate() != 0 ? $trainingPlanReport->getAverageHeartRate() : 'Na'?> bpm</td>
+								<td>Highest <?php echo $trainingPlanReport->getHighestHeartRate() != 0 ? $trainingPlanReport->getHighestHeartRate() : 'Na'?> bpm</td>
 							</tr>
 						<?php else:?>
 							<tr>
 								<td>Heart rate</td>
-								<td><?php echo $trainingPlanReport->getHeartRate()?> bpm</td>
+								<td><?php echo $trainingPlanReport->getHeartRate() != 0 ? $trainingPlanReport->getHeartRate() : 'Na'?> bpm</td>
 								<td></td>
 							</tr>
 						<?php endif;?>
 						<?php if ($trainingPlanReport->getBurnedCalories() != null):?>
 							<tr>
 								<td>Calories</td>
-								<td><?php echo $trainingPlanReport->getBurnedCalories()?> kcal</td>
+								<td><?php echo $trainingPlanReport->getBurnedCalories() != 0 ? $trainingPlanReport->getBurnedCalories() : 'Na'?> kcal</td>
 								<td></td>
 							</tr>
 						<?php endif;?>
@@ -108,7 +105,7 @@ $post = $workout->getFeedPost();
 	<div class="thumbnail"></div>
 	<div class="content">
 		<div class="social">
-			<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $post->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+			<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>workout/training/id/<?php echo $post->getWorkout()->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
 			<span></span>
 			<span class="highlight"><a href="javascript:;"><?php if ($post->getComments()->count() > 0):?><?php echo $post->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
 		</div>

@@ -20,6 +20,27 @@ class Workout extends AbstractService {
 		return $this->em->find('\Entity\Workout', (int) $id);
 	}
 	
+	public function removeWorkout(\Entity\Workout $workout) {
+		$newsFeed = new \Service\NewsFeed();
+		if ($workout->getFeedPost() != null) { 
+			$newsFeed->removePost($workout->getFeedPost());
+		}
+		
+		foreach ($workout->getTrainingPlanReports() as $trainingPlanReport) /* @var $trainingPlanReport \Entity\TrainingPlan\Report */ {
+			if ($trainingPlanReport->getChallengeReport() != null) {
+				$this->removeChallenge($trainingPlanReport->getChallengeReport());
+			}
+		}
+		if ($workout->getRecord() != null) {
+ 			$this->removeRecord($workout->getRecord());
+		}
+		$this->em->remove($workout);
+	}
+	
+	public function removeChallenge($challenge) {
+		$this->em->remove($challenge);
+	}
+	
 	public function persistWorkout(\Entity\Workout $workout) {
 		$this->em->persist($workout);
 		
@@ -97,6 +118,9 @@ class Workout extends AbstractService {
 		$trainingPlan->setWorkoutGoal((boolean) $trainingPlanDTO->hasWorkoutGoal);
 		$trainingPlan->setChallenge((boolean) $trainingPlanDTO->isChallenge);
 		$trainingPlan->setSynced($trainingPlanDTO->synced);
+		if ($trainingPlanDTO->deletedTime != null) {
+			$trainingPlan->setDeletedTime($trainingPlanDTO->deletedTime);
+		}
 
 		foreach ($trainingPlanDTO->exercises as $i => $exerciseDTO) {
 			$goal = $this->saveGoal($exerciseDTO->goalDistance, $exerciseDTO->unit, $exerciseDTO->goalDuration, $exerciseDTO->goalIsChallenge, $exerciseDTO->synced);
@@ -142,7 +166,8 @@ class Workout extends AbstractService {
 		$trainingPlan = $this->getTrainingPlan($workoutDTO->trainingPlanId);
 	
 		$trainingPlanReport = new \Entity\TrainingPlan\Report();
-		$trainingPlanReport->setDistance($workoutDTO->distance);
+		$trainingPlanReport->setDistance($workoutDTO->distance * $workoutDTO->unit);
+		$trainingPlanReport->setDuration($workoutDTO->duration);
 	
 		if ($workoutDTO->startTime == null && $workoutDTO->endTime == null && $workoutDTO->duration != null) {
 			$startTime = new \DateTime();
@@ -187,7 +212,7 @@ class Workout extends AbstractService {
 	public function getUserSports() {
 		return $this->em->getRepository('\Entity\Sport')->getUserSports($this->userService->getCurrentUser()->getId());
 	}
-
+	
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */
@@ -201,6 +226,7 @@ class Workout extends AbstractService {
 	public function getTrainingPlansByUserAndSport($userId, $sportId) {
 		return $this->em->getRepository('\Entity\TrainingPlan')->findBy(array (
 			'user' => (int) $userId,
+			'deletedTime' => null,
 			'sport' => (int) $sportId,
 		));
 	}
@@ -335,6 +361,10 @@ class Workout extends AbstractService {
 	 */
 	public function getRecordBySport($sportId, $userId = null) {
 		return $this->em->getRepository('\Entity\Record')->getRecord($this->getSport($sportId), $this->userService->getUser($userId));
+	}
+	
+	public function getUserRecordsByCriteria(array $record, \Entity\User $user, $sport = null) {
+		return $this->em->getRepository('\Entity\Record')->getUserRecordsByCriteria($record, $user, $sport);
 	}
 	
 	/**
@@ -506,6 +536,12 @@ class Workout extends AbstractService {
 		return $trainingPlans;
 	}
 	
+	public function getFeaturedTrainingPlans() {
+		return $this->em->getRepository('\Entity\TrainingPlan')->findBy(array (
+				'isFeatured' => true,
+		));
+	}
+	
 	/**
 	 * Gets user trainingplans
 	 * @param \Entity\User $user
@@ -543,14 +579,10 @@ class Workout extends AbstractService {
 
    		return $trainingPlans;
    	}
-   /* SV end */
+    /* SV end */
 	
 	public function getUserTrainingPlans(\Entity\User $user, $limit, $offset) {
-		return $this->em->getRepository('\Entity\TrainingPlan')->findBy(array (
-			'user' => $user->getId(),
-		), array (
-			'id' => 'DESC'
-		), $limit, $offset);
+		return $this->em->getRepository('\Entity\TrainingPlan')->getUserTrainingPlans($user, $limit, $offset);
 	}
 	
 	public function getFriendsTrainingPlans(\Entity\User $user, $limit = null, $offset = null) {
@@ -583,8 +615,15 @@ class Workout extends AbstractService {
 		$percents = array ();
 		$max = array_sum($intensityDistances);
 		if ($max > 0) {
-			foreach ($intensityDistances as $distance) {
-				$percents[] = round($distance / $max * 100, 2);
+			$sum = 0;
+			foreach ($intensityDistances as $i => $distance) {
+				$percent = round($distance / $max * 100, 0);
+				if (count($intensityDistances) - 1 != $i) {
+					$percents[] = $percent;
+				} else {
+					$percents[] = 100 - $sum;
+				}
+				$sum += $percent;
 			}
 		}
 		
@@ -605,6 +644,7 @@ class Workout extends AbstractService {
 		
 		$myTrainingPlan->setUser($this->userService->getCurrentUser());
 		$myTrainingPlan->setOriginalTrainingPlan($this->getFirstOriginalTrainingPlan($originalTrainingPlan));
+		$myTrainingPlan->setSynced(false);
 		
 		foreach ($originalTrainingPlan->getExercises() as $exercise) {
 			$newExercise = clone $exercise;
@@ -724,6 +764,15 @@ class Workout extends AbstractService {
 	    }
 	}
 	
+	public function deleteTrainingPlan($id) {
+		$trainingPlan = $this->getTrainingPlan($id);
+		if ($trainingPlan->getUser() == $this->userService->getCurrentUser()) {
+			$trainingPlan->setDeletedTime(new \DateTime());
+		
+			$this->em->persist($trainingPlan);
+		}
+	}
+	
 	public function createDefaultTrainingData(\Entity\User $user) {
 		
 		$trainingPlans = array (
@@ -738,6 +787,7 @@ class Workout extends AbstractService {
 								'goalDistance' => null,
 								'goalDuration' => null,
 								'intensity' => \Entity\Exercise::INTENSITY_NONE,
+								'note' => 'Try planned workout for better results',
 							)
 						),
 					),
@@ -749,24 +799,28 @@ class Workout extends AbstractService {
 								'goalDistance' => null,
 								'goalDuration' => 5*60,
 								'intensity' => \Entity\Exercise::INTENSITY_WC,
+								'note' => 'Warm up',
 							),
 							array (
 								'exerciseName' => 'Work phase',
 								'goalDistance' => null,
 								'goalDuration' => 30*60,
 								'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+								'note' => 'Relax and run easy',
 							),
-							array (
-								'exerciseName' => 'Rest phase',
-								'goalDistance' => null,
-								'goalDuration' => null,
-								'intensity' => \Entity\Exercise::INTENSITY_NONE,
-							),
+// 							array (
+// 								'exerciseName' => 'Rest phase',
+// 								'goalDistance' => null,
+// 								'goalDuration' => null,
+// 								'intensity' => \Entity\Exercise::INTENSITY_NONE,
+// 								'note' => '',
+// 							),
 							array (
 								'exerciseName' => 'Cool down',
 								'goalDistance' => null,
 								'goalDuration' => 5*60,
 								'intensity' => \Entity\Exercise::INTENSITY_WC,
+								'note' => 'Cool down',
 							),
 						),
 					),
@@ -778,72 +832,84 @@ class Workout extends AbstractService {
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_WC,
+									'note' => 'Warm up',
 							),
 							array (
 									'exerciseName' => 'Rest phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_LOW,
+									'note' => 'Prepare for the work phase',
 							),
 							array (
 									'exerciseName' => 'Work phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+									'note' => 'Run near the top of your Medium pace',
 							),
 							array (
 									'exerciseName' => 'Rest phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_LOW,
+									'note' => 'Recovery 5min',
 							),
 							array (
 									'exerciseName' => 'Work phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+									'note' => 'Run near the top of your Medium pace',
 							),
 							array (
 									'exerciseName' => 'Rest phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_LOW,
+									'note' => 'Recovery 5min',
 							),
 							array (
 									'exerciseName' => 'Work phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+									'note' => 'Run near the top of your Medium pace',
 							),
 							array (
 									'exerciseName' => 'Rest phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_LOW,
+									'note' => 'Recovery 5min',
 							),
 							array (
 									'exerciseName' => 'Work phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+									'note' => 'Run near the top of your Medium pace',
 							),
 							array (
 									'exerciseName' => 'Rest phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_LOW,
+									'note' => 'Recovery 5min',
 							),
 							array (
 									'exerciseName' => 'Work phase',
 									'goalDistance' => null,
 									'goalDuration' => 5*60,
 									'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+									'note' => 'Run near the top of your Medium pace',
 							),
 							array (
 									'exerciseName' => 'Cool down',
 									'goalDistance' => null,
 									'goalDuration' => 10*60,
 									'intensity' => \Entity\Exercise::INTENSITY_WC,
+									'note' => 'Cool down',
 							),
 						),
 					),
@@ -860,6 +926,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -871,24 +938,28 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Warm up',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 40*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Relax and go easy',
 												),
-												array (
-														'exerciseName' => 'Rest phase',
-														'goalDistance' => null,
-														'goalDuration' => null,
-														'intensity' => \Entity\Exercise::INTENSITY_NONE,
-												),
+// 												array (
+// 														'exerciseName' => 'Rest phase',
+// 														'goalDistance' => null,
+// 														'goalDuration' => null,
+// 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+// 														'note' => '',
+// 												),
 												array (
 														'exerciseName' => 'Cool down',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Cool down',
 												),
 										),
 								),
@@ -900,72 +971,85 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Warm up',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Prepare for the work phase',
+														
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Cool down',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Cool down',
 												),
 										),
 								),
@@ -982,6 +1066,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -993,24 +1078,28 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Warm up',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 30*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Relax and go easy',
 												),
-												array (
-														'exerciseName' => 'Rest phase',
-														'goalDistance' => null,
-														'goalDuration' => null,
-														'intensity' => \Entity\Exercise::INTENSITY_NONE,
-												),
+// 												array (
+// 														'exerciseName' => 'Rest phase',
+// 														'goalDistance' => null,
+// 														'goalDuration' => null,
+// 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+// 														'note' => '',
+// 												),
 												array (
 														'exerciseName' => 'Cool down',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Cool down',
 												),
 										),
 								),
@@ -1022,72 +1111,84 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Warm up',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Prepare for the work phase',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Walk near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Walk near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Walk near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Walk near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Walk near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Cool down',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Cool down',
 												),
 										),
 								),
@@ -1104,6 +1205,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1115,24 +1217,27 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Warm up',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 40*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Relax and go easy',
 												),
-												array (
-														'exerciseName' => 'Rest phase',
-														'goalDistance' => null,
-														'goalDuration' => null,
-														'intensity' => \Entity\Exercise::INTENSITY_NONE,
-												),
+// 												array (
+// 														'exerciseName' => 'Rest phase',
+// 														'goalDistance' => null,
+// 														'goalDuration' => null,
+// 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+// 												),
 												array (
 														'exerciseName' => 'Cool down',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Cool down',
 												),
 										),
 								),
@@ -1144,72 +1249,85 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Warm up',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Prepare for the work phase',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
+														
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Rest phase',
 														'goalDistance' => null,
 														'goalDuration' => 5*60,
 														'intensity' => \Entity\Exercise::INTENSITY_LOW,
+														'note' => 'Recovery 5min',
 												),
 												array (
 														'exerciseName' => 'Work phase',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_MEDIUM,
+														'note' => 'Bike near the top of your Medium pace',
 												),
 												array (
 														'exerciseName' => 'Cool down',
 														'goalDistance' => null,
 														'goalDuration' => 10*60,
 														'intensity' => \Entity\Exercise::INTENSITY_WC,
+														'note' => 'Cool down',
 												),
 										),
 								),
@@ -1226,6 +1344,7 @@ class Workout extends AbstractService {
 								'goalDistance' => null,
 								'goalDuration' => null,
 								'intensity' => \Entity\Exercise::INTENSITY_NONE,
+								'note' => 'Try planned workout for better results',
 							)
 						),
 					),
@@ -1242,6 +1361,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1258,6 +1378,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1274,6 +1395,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1290,6 +1412,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1306,6 +1429,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1322,6 +1446,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1338,6 +1463,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1354,6 +1480,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1370,6 +1497,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1386,6 +1514,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1402,6 +1531,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1418,6 +1548,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1434,6 +1565,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1450,6 +1582,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1466,6 +1599,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1482,6 +1616,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1498,6 +1633,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1514,6 +1650,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1530,6 +1667,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1546,6 +1684,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1562,6 +1701,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1578,6 +1718,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1594,6 +1735,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1610,6 +1752,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1626,6 +1769,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1642,6 +1786,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1658,6 +1803,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1674,6 +1820,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1690,6 +1837,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1706,6 +1854,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1722,6 +1871,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1738,6 +1888,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1754,6 +1905,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1770,6 +1922,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1786,6 +1939,7 @@ class Workout extends AbstractService {
 														'goalDistance' => null,
 														'goalDuration' => null,
 														'intensity' => \Entity\Exercise::INTENSITY_NONE,
+														'note' => 'Try planned workout for better results',
 												)
 										),
 								),
@@ -1825,7 +1979,7 @@ class Workout extends AbstractService {
 	                $exercise = new \Entity\Exercise();
 	                $exercise->setIntensity($attributes['intensity']);
 	                $exercise->setName($attributes['exerciseName']);
-	                $exercise->setNote('');
+	                $exercise->setNote(isset($attributes['note']) ? $attributes['note'] : '');
 	                $exercise->setGoal($goal);
 	                $exercise->setTrainingPlan($trainingPlanEntity);
 	                $this->em->persist($exercise);
@@ -1834,6 +1988,199 @@ class Workout extends AbstractService {
 	        }
 	    }
 	}
+	
+	public function importGpx($fileName) {
+		$xml = new \SimpleXMLElement(file_get_contents($fileName));
+		
+		$gpxData = array ();
+		foreach ($xml as $element) {
+			if ($element->getName() != 'wpt') {
+				continue;
+			}
+			$lat = $element->attributes()->lat;
+			$lon = $element->attributes()->lon;
+			$time = new \DateTime($element->time);
+			
+			$data = new \stdClass();
+			$data->latitude = (double) $lat;
+			$data->longitude = (double) $lon;
+			$data->time = $time;
+			
+			$gpxData[] = $data;
+			
+		}
+	
+		@unlink($fileName);
+		
+		return $gpxData;
+	}
+	
+	public function getAllStaticRecords() {
+		return array (
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 1 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 3 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 5 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 10 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 20 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 30 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 40 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 50 * 1000,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 100 * 1000,
+						'isInMiles' => false,
+				),
+				
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 1 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 3 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 5 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 10 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 20 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 30 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 40 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 50 * 1609.34,
+						'isInMiles' => true,
+				),
+				array (
+						'isTimeRecord' => false,
+						'duration' => null,
+						'distance' => 100 * 1609.34,
+						'isInMiles' => true,
+				),
+				
+				array (
+					'name' => 'Half-Marathon',
+					'isTimeRecord' => false,
+					'duration' => null,
+					'distance' => 21097.5,
+					'isInMiles' => false,
+				),
+				array (
+					'name' => 'Marathon',
+					'isTimeRecord' => false,
+					'duration' => null,
+					'distance' => 42195.0,
+					'isInMiles' => false,
+				),
+				
+				array (
+						'isTimeRecord' => true,
+						'duration' => 60 * 0.5,
+						'distance' => null,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => true,
+						'duration' => 60 * 1,
+						'distance' => null,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => true,
+						'duration' => 60 * 2,
+						'distance' => null,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => true,
+						'duration' => 60 * 3,
+						'distance' => null,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => true,
+						'duration' => 60 * 4,
+						'distance' => null,
+						'isInMiles' => false,
+				),
+				array (
+						'isTimeRecord' => true,
+						'duration' => 60 * 5,
+						'distance' => null,
+						'isInMiles' => false,
+				),
+		);
+	}
+
 }
 
 

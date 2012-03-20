@@ -23,42 +23,147 @@ $workoutService = $this->workoutService;
 		<p><?php echo count($user->getWorkouts())?> Workouts</p>
 		<p>Duration <?php echo $this->secondsToHours($user->countTime())?></p>
 		<p>Distance <?php echo round($user->countDistances() / 1000, 2)?> Km</p>
-		<h2>Goal: <?php echo round($this->user->getGoal() / 1000, 2)?> km</h2>
 		
-		<div class="bar">
-			<?php if ($this->user->countDistances() == 0):?>
-				<span style="width: 100%;" class="noProgress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
-			<?php else:?>
+		<?php if ($this->user->getGoalType() == 'distance' || $this->user->getGoalType() == null):?>
+			<h2>Goal: <?php echo round($this->user->getGoal() / 1000, 2)?> km</h2>
+			<div class="bar">
 				<?php if ($this->user->getGoal() == 0):?>
-					<span style="width: 100%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+					<span style="width: 100%;" class="progress"></span>
+					<span class="value"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
 				<?php else:?>
-					<span style="width: <?php echo round($this->user->countDistances() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countDistances() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+					<span style="width: <?php echo round($this->user->countDistances() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countDistances() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"></span>
+					<span class="value"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
 				<?php endif;?>
-			<?php endif;?>
-		</div>
+			</div>
+		<?php endif;?>
+		
+		<?php if ($this->user->getGoalType() == 'time'):?>
+			<h2>Goal: <?php echo $this->secondsToHours($this->user->getGoal())?></h2>
+			<div class="bar">
+				<?php if ($this->user->getGoal() == 0):?>
+					<span style="width: 100%;" class="progress"></span>
+					<span class="value"><?php echo $this->secondsToHours($this->user->countTime())?></span>
+				<?php else:?>
+					<span style="width: <?php echo $this->user->countTime() / $this->user->getGoal() * 100 < 100 ? $this->user->countTime() / $this->user->getGoal() * 100 : 100  ?>%;" class="progress"></span>
+					<span class="value"><?php echo $this->secondsToHours($this->user->countTime())?></span>
+				<?php endif;?>
+			</div>
+		<?php endif;?>
+		
+		<?php if ($this->user->getGoalType() == 'calories'):?>
+			<h2>Goal: <?php echo round($this->user->getGoal(), 2)?> kcal</h2>
+			<div class="bar">
+				<?php if ($this->user->getGoal() == 0):?>
+					<span style="width: 100%;" class="progress"></span>
+					<span class="value"><?php echo round($this->user->countCalories(), 2)?> kcal</span>
+				<?php else:?>
+					<span style="width: <?php echo round($this->user->countCalories() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countCalories() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"></span>
+					<span class="value"><?php echo round($this->user->countCalories(), 2)?> kcal</span>
+				<?php endif;?>
+			</div>
+		<?php endif;?>
+		
+		<?php if ($this->user->getGoalType() == 'workout'):?>
+			<h2>Goal: <?php echo round($this->user->getGoal(), 0)?> workouts</h2>
+			<div class="bar">
+				<?php if ($this->user->getGoal() == 0):?>
+					<span style="width: 100%;" class="progress"></span>
+					<span class="value"><?php echo round($this->user->getWorkouts()->count(), 0)?> workouts</span>
+				<?php else:?>
+					<span style="width: <?php echo round($this->user->getWorkouts()->count() / $this->user->getGoal() * 100, 0) < 100 ? round($this->user->getWorkouts()->count() / $this->user->getGoal() * 100, 0) : 100  ?>%;" class="progress"></span>
+					<span class="value"><?php echo round($this->user->getWorkouts()->count(), 0)?> workouts</span>
+				<?php endif;?>
+			</div>
+		<?php endif;?>
 	</div>
 	<div class="rightBlock">
 		<table class="data">
 			<tr>
-				<th colspan="3">User's personal bests</th>
+				<th colspan="2">User's personal bests</th>
 				<th>Your bests</th>
 			</tr>
-			<?php foreach ($user->getRecords()->slice(0, 10) as $record): /* @var $record \Entity\Record */?>
-				<tr>
-					<td><?php echo $record->getSport()->getName()?></td>
-					<td>
-						<?php echo round($record->getDistance() / 1000, 2)?> Km
-					</td>
-					<td><?php echo $this->secondsToHours($record->getDuration())?></td>
-					<td>
-						<?php $currentUserRecord = $workoutService->getRecordBySport($record->getSport()->getId(), $this->currentUser->getId());?>
-						<?php if ($currentUserRecord != null):?>
-							<?php echo $this->secondsToHours($currentUserRecord->getDuration())?>
-						<?php else:?>
+			<?php foreach ($this->workoutService->getAllStaticRecords() as $record):?>
+				<?php $realRecords = $this->workoutService->getUserRecordsByCriteria($record, $this->user);?>
+				<?php if (count($realRecords) == 0):?>
+					<tr>
+						<td>
+							<?php if (isset($record['name'])):?>
+								<?php echo $record['name']?>
+							<?php else:?>
+								<?php if ($record['isTimeRecord']):?>
+									<?php if ($record['duration'] < 60):?>
+										<?php echo $record['duration']?> min
+									<?php else:?>
+										<?php echo $record['duration'] / 60?> h
+									<?php endif;?>
+								<?php else:?>
+									<?php if ($record['isInMiles']):?>
+										<?php echo round($record['distance'] / 1609.34,0)?> miles
+									<?php else:?>
+										<?php echo round($record['distance'] / 1000,0)?> km
+									<?php endif;?>
+								<?php endif;?>
+							<?php endif;?>
+						</td>
+						<td>
 							-
-						<?php endif;?>
-					</td>
-				</tr>
+						</td>
+						<td>
+							-
+						</td>
+					</tr>
+				<?php else:?>
+					<?php foreach ($realRecords as $realRecord):?>
+						<tr>
+							<td>
+								<?php if (isset($record['name'])):?>
+									<?php echo $realRecord->getSport()->getName()?> <?php echo $record['name']?>
+								<?php else:?>
+									<?php if ($record['isTimeRecord']):?>
+										<?php if ($record['duration'] < 60):?>
+											<?php echo $record['duration']?> min <?php echo $realRecord->getSport()->getName()?>
+										<?php else:?>
+											<?php echo $record['duration'] / 60?> h <?php echo $realRecord->getSport()->getName()?>
+										<?php endif;?>
+									<?php else:?>
+										<?php if ($record['isInMiles']):?>
+											<?php echo round($record['distance'] / 1609.34, 0)?> miles <?php echo $realRecord->getSport()->getName()?>
+										<?php else:?>
+											<?php echo round($record['distance'] / 1000,0 )?> km <?php echo $realRecord->getSport()->getName()?>
+										<?php endif;?>
+									<?php endif;?>
+								<?php endif;?>
+							</td>
+							<td>
+								<?php if (!$realRecord->isTimeRecord()):?>
+									<?php echo $this->secondsToHours($realRecord->getDuration())?>
+								<?php else:?>
+									<?php if ($realRecord->isMiles()):?>
+										<?php echo round($realRecord->getDistance() / 1609.34, 0)?> miles
+									<?php else:?>
+										<?php echo round($realRecord->getDistance() / 1000, 0)?> km
+									<?php endif;?>
+								<?php endif;?>
+							</td>
+							<td>
+								<?php $userRecord = $this->workoutService->getUserRecordsByCriteria($record, $this->currentUser, $realRecord->getSport());?>
+								<?php if ($userRecord != null):?>
+									<?php if (!$userRecord->isTimeRecord()):?>
+										<?php echo $this->secondsToHours($userRecord->getDuration())?>
+									<?php else:?>
+										<?php if ($userRecord->isMiles()):?>
+											<?php echo round($userRecord->getDistance() / 1609.34, 0)?> miles
+										<?php else:?>
+											<?php echo round($userRecord->getDistance() / 1000, 0)?> km
+										<?php endif;?>
+									<?php endif;?>
+								<?php else:?>
+									-
+								<?php endif;?>
+							</td>
+						</tr>
+					<?php endforeach;?>
+				<?php endif;?>
 			<?php endforeach;?>
 		</table>
 	</div>

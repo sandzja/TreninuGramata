@@ -4,7 +4,7 @@
 		<h2>Your records</h2>
 		<div id="searchSmall">
 			<form method="post" action="" id="challenge-friend">
-				<input type="text" class="text action<?php if ($this->friendName == null):?> tooltip<?php endif;?>" onclick="Click.clear(this)" name="friendName" value="<?php if ($this->friendName == null):?>Compare with a friend<?php else:?><?php echo $this->friendName?><?php endif;?>" />
+				<input type="text" class="text action<?php if ($this->friendName == null):?> tooltip<?php endif;?>" onfocus="Click.clear(this)" name="friendName" value="<?php if ($this->friendName == null):?>Compare with a friend<?php else:?><?php echo $this->friendName?><?php endif;?>" />
 				<a class="search" href="javascript:;" onclick="$('#challenge-friend').submit();">Search</a>
 			</form>
 		</div>
@@ -17,7 +17,11 @@
 					<?php if ($record->isTimeRecord()):?>
 						<?php echo $this->secondsToHours($record->getDuration())?>
 					<?php else:?>
-						<?php echo round($record->getDistance() / 1000, 2)?> km
+						<?php if ($record->isMiles()):?>
+							<?php echo round($record->getDistance() / 1609, 2)?> miles
+						<?php else:?>
+							<?php echo round($record->getDistance() / 1000, 2)?> km
+						<?php endif;?>
 					<?php endif;?>
 				</td>
 				<?php
@@ -32,7 +36,11 @@
 						<?php if ($best->isTimeRecord()):?>
 							<?php echo $this->secondsToHours($best->getDuration())?>
 						<?php else:?>
-							<?php echo round($best->getDistance() / 1000, 2)?> km
+							<?php if ($best->isMiles()):?>
+								<?php echo round($best->getDistance() / 1609, 2)?> miles
+							<?php else:?>
+								<?php echo round($best->getDistance() / 1000, 2)?> km
+							<?php endif;?>
 						<?php endif;?>
 					<?php else:?>
 						-

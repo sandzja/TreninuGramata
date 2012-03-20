@@ -30,7 +30,7 @@ class Challenge extends AbstractEntity {
 	protected $record;
 	
 	/**
-	 * @ManyToOne(targetEntity="\Entity\Workout", inversedBy="challenges")
+	 * @ManyToOne(targetEntity="\Entity\Workout", inversedBy="challenges", cascade={"remove"})
 	 * @JoinColumn(name="workout_id")
 	 * @var \Entity\Workout
 	 */

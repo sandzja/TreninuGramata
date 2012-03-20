@@ -12,7 +12,8 @@ function initialize() {
 	// Try HTML5 geolocation
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+			var pos = new google.maps.LatLng(position.coords.latitude,
+					position.coords.longitude);
 
 			map.setCenter(pos);
 		}, function() {
@@ -31,13 +32,16 @@ function initialize() {
 
 	line.setMap(map);
 
-	google.maps.event.addListener(map, 'click', addNewPoint);
-	
+	google.maps.event.addListener(map, 'click', function(e) {
+		addNewPoint(e.latLng)
+	});
+
 	google.maps.LatLng.prototype.kmTo = function(a) {
 		var e = Math, ra = e.PI / 180;
 		var b = this.lat() * ra, c = a.lat() * ra, d = b - c;
 		var g = this.lng() * ra - a.lng() * ra;
-		var f = 2 * e.asin(e.sqrt(e.pow(e.sin(d / 2), 2) + e.cos(b) * e.cos(c) * e.pow(e.sin(g / 2), 2)));
+		var f = 2 * e.asin(e.sqrt(e.pow(e.sin(d / 2), 2) + e.cos(b) * e.cos(c)
+				* e.pow(e.sin(g / 2), 2)));
 		return f * 6378.137;
 	};
 
@@ -60,25 +64,27 @@ function handleNoGeolocation(errorFlag) {
 	map.setCenter(options.position);
 }
 
-function addNewPoint(e) {
+function addNewPoint(location) {
 	var path = line.getPath();
-	path.push(e.latLng);
+	path.push(location);
 
 	var marker = new google.maps.Marker({
-		position : e.latLng,
+		position : location,
 		map : map,
 		draggable : true
 	});
 	markers.push(marker);
-	$('#trackPoints').append('<input type="hidden" name="trackPoints[]" id="trackPoint-' + (markers.length - 1) + '" value="" />');
-	$('#trackPoint-' + (markers.length - 1)).val(marker.getPosition().lat() + ";" + marker.getPosition().lng());
-	$('#unit :nth-child(2)').attr('selected', 'selected');
-	$('#unit').next().html('m');
-	
+	$('#trackPoints').append(
+			'<input type="hidden" name="trackPoints[]" id="trackPoint-'
+					+ (markers.length - 1) + '" value="" />');
+	$('#trackPoint-' + (markers.length - 1)).val(
+			marker.getPosition().lat() + ";" + marker.getPosition().lng());
+
 	google.maps.event.addListener(marker, 'drag', function() {
 		drawPolyline(marker);
 	});
-	$('#lineDistance').val(Math.round(line.inKm() * 1000));
+	$('#lineDistance').removeClass('tooltip');
+	$('#lineDistance').val(Math.round(line.inKm() * 10) / 10);
 }
 
 function drawPolyline(marker) {
@@ -92,7 +98,7 @@ function drawPolyline(marker) {
 
 	line.getPath().setAt(m, newpos);
 	$('#trackPoint-' + m).val(newpos.lat() + ";" + newpos.lng());
-	$('#lineDistance').val(Math.round(line.inKm() * 1000));
+	$('#lineDistance').val(Math.round(line.inKm() * 10) / 10);
 }
 
 var Workout = {
@@ -100,10 +106,17 @@ var Workout = {
 		$.getJSON('/workout/get-training-plans', {
 			'sportId' : $(sport).val()
 		}, function(trainingPlans) {
-			$('#trainingPlanId').html('');
+			$('#trainingPlanId')
+					.html('<option value="">Workout plan*</option>');
+			$('#trainingPlanId').next().html('Workout plan*');
+			$('#trainingPlanId').attr('selected', '');
 			for ( var id in trainingPlans) {
-				$('#trainingPlanId').append('<option value="' + id + '">' + trainingPlans[id] + '</option>');
+				$('#trainingPlanId').append(
+						'<option value="' + id + '">' + trainingPlans[id]
+								+ '</option>');
 			}
+			Select.init();
+			Click.check('#publishButton', [ '#sportId', '#trainingPlanId' ]);
 		});
 	},
 
@@ -117,11 +130,12 @@ var Workout = {
 			}
 		});
 	},
-	
-	addParameters: function (element) {
+
+	addParameters : function(element) {
 		$('#parameters').show();
 		$('.buttonLight').hide();
-	},
+	}
+
 };
 
 var LiveTracking = {
@@ -155,15 +169,22 @@ var LiveTracking = {
 	},
 
 	pollTrackPoints : function(id) {
-		$.getJSON('/workout/get-track-points', {
-			reportId : id,
-			timestamp : LiveTracking.lastTrackPointTimestamp
-		}, function(trackPoints) {
-			for ( var i in trackPoints) {
-				LiveTracking.line.getPath().push(new google.maps.LatLng(trackPoints[i].lat, trackPoints[i].lon));
-				LiveTracking.lastTrackPointTimestamp = trackPoints[i].timestamp;
-			}
-		});
+		$
+				.getJSON(
+						'/workout/get-track-points',
+						{
+							reportId : id,
+							timestamp : LiveTracking.lastTrackPointTimestamp
+						},
+						function(trackPoints) {
+							for ( var i in trackPoints) {
+								LiveTracking.line.getPath().push(
+										new google.maps.LatLng(
+												trackPoints[i].lat,
+												trackPoints[i].lon));
+								LiveTracking.lastTrackPointTimestamp = trackPoints[i].timestamp;
+							}
+						});
 	},
 
 	getCenterPoint : function() {
@@ -173,12 +194,13 @@ var LiveTracking = {
 			return this.geoLocationCenter();
 		}
 	},
-	
-	geoLocationCenter: function () {
+
+	geoLocationCenter : function() {
 		// Try HTML5 geolocation
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
-				var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+				var pos = new google.maps.LatLng(position.coords.latitude,
+						position.coords.longitude);
 				LiveTracking.map.setCenter(pos);
 			}, function() {
 				LiveTracking.map.setCenter(new google.maps.LatLng(10, 10));
@@ -192,12 +214,12 @@ var LiveTracking = {
 		this.points.push(new google.maps.LatLng(lat, lng));
 		this.lastTrackPointTimestamp = timestamp;
 	},
-	
-	loadData: function (id) {
+
+	loadData : function(id) {
 		setInterval(function() {
 			$.getJSON('/workout/get-track-data', {
-				id: id
-			}, function (result) {
+				id : id
+			}, function(result) {
 				$('#duration').html(result.duration);
 				$('#distance').html(result.distance);
 				$('#speed').html(result.speed);
@@ -209,41 +231,41 @@ var LiveTracking = {
 };
 
 var UserGraph = {
-	
-	init: function () {
+
+	init : function() {
 		UserGraph.overallTimeGraph();
-		$('#overall-time-link').click(function () {
+		$('#overall-time-link').click(function() {
 			UserGraph.overallTimeGraph();
 		});
-		$('#distance-link').click(function () {
+		$('#distance-link').click(function() {
 			UserGraph.distanceGraph();
 		});
-		$('#workouts-link').click(function () {
+		$('#workouts-link').click(function() {
 			UserGraph.workoutsGraph();
 		});
 	},
-		
-	overallTimeGraph: function () {
+
+	overallTimeGraph : function() {
 		this.doRequest('overall-time');
 	},
-	
-	distanceGraph: function () {
+
+	distanceGraph : function() {
 		this.doRequest('distance');
 	},
-	
-	workoutsGraph: function() {
+
+	workoutsGraph : function() {
 		this.doRequest('workouts');
 	},
-	
-	doRequest: function(action) {
-		$.get('/user/' + action + '-graph', function (result) {
+
+	doRequest : function(action) {
+		$.get('/user/' + action + '-graph', function(result) {
 			UserGraph.resetActive();
 			$('#' + action + '-link').addClass('active');
 			$('#userGraph').html(result);
 		});
 	},
-	
-	resetActive: function () {
+
+	resetActive : function() {
 		$('#overall-time-link').removeClass('active');
 		$('#distance-link').removeClass('active');
 		$('#workouts-link').removeClass('active');
@@ -251,26 +273,26 @@ var UserGraph = {
 };
 
 var ShareContent = {
-	action: null,
-	
-	init: function () {
+	action : null,
+
+	init : function() {
 		this.resetForm();
-		
+
 		$('#private-share').click(function() {
 			$('#share-facebook').removeClass('facebookActive');
 			$('#post-facebook').val(0);
-			
+
 			$('#share-twitter').removeClass('twitterActive');
 			$('#post-twitter').val(0);
 		});
-		$('#share-social').click(function () {
+		$('#share-social').click(function() {
 			$('#share-facebook').addClass('facebookActive');
 			$('#post-facebook').val(1);
-			
+
 			$('#share-twitter').addClass('twitterActive');
 			$('#post-twitter').val(1);
 		});
-		
+
 		$('#share-facebook').click(function() {
 			if ($(this).hasClass('facebookActive')) {
 				$(this).removeClass('facebookActive');
@@ -280,7 +302,7 @@ var ShareContent = {
 				$('#post-facebook').val(1);
 			}
 		});
-		
+
 		$('#share-twitter').click(function() {
 			if ($(this).hasClass('twitterActive')) {
 				$(this).removeClass('twitterActive');
@@ -291,72 +313,78 @@ var ShareContent = {
 			}
 		});
 	},
-	
-	initFileUpload: function () {
-		$('#fileUpload').change(function () {
-			$('#fileUploadValue').val($(this).val().replace('C:\\fakepath\\', ''));
-		});
+
+	initFileUpload : function() {
+		$('#fileUpload').change(
+				function() {
+					$('#fileUploadValue').val(
+							$(this).val().replace('C:\\fakepath\\', ''));
+				});
 		$('#shareContentForm').attr('target', 'photoUploadIframe');
 		$('#shareContentForm').attr('action', '/news-feed/add-picture');
 		$('#publishButton').unbind();
-		$('#publishButton').click(function () {
+		$('#publishButton').click(function() {
 			$('#shareContentForm').submit();
 		});
 	},
-	
-	photo: function () {
+
+	photo : function() {
 		this.getForm('photo');
 	},
-	
-	note: function () {
+
+	note : function() {
 		this.getForm('note');
 	},
-	
-	workout: function () {
-		this.getForm('workout');
+
+	workout : function(gpxUploaded, error) {
+		this.getForm('workout', {
+			gpxUploaded : gpxUploaded,
+			error : error
+		});
 	},
-	
-	getForm: function(action) {
+
+	getForm : function(action, attribs) {
 		this.action = action;
 		$('.shareAction').removeClass('hidden');
 		$('.shareAction').show();
 		$('#shareContent').show();
-		$.get('/news-feed/show-' + action + '-form', function (result) {
+		$.get('/news-feed/show-' + action + '-form', attribs, function(result) {
 			ShareContent.resetActive();
 			$('#share-' + action + '-link').addClass('active');
 			$('#shareContent').html(result);
 		});
 	},
-	
-	closeForm: function () {
+
+	closeForm : function() {
 		$('.shareAction').hide();
 		$('#shareContent').hide();
 		this.resetActive();
 	},
-	
-	submitForm: function() {
+
+	submitForm : function() {
 		$('.tooltip').val('');
-		$.post('/news-feed/add-' + this.action, $('#shareContentForm').serialize(), function (result) {
+		$.post('/news-feed/add-' + this.action, $('#shareContentForm')
+				.serialize(), function(result) {
 			ShareContent.closeForm();
 			NewsFeed.reloadPosts();
 		});
 	},
-	
-	closeAndReload: function () {
+
+	closeAndReload : function() {
 		ShareContent.closeForm();
 		NewsFeed.reloadPosts();
 	},
-	
-	resetActive: function () {
+
+	resetActive : function() {
 		$('#share-note-link').removeClass('active');
 		$('#share-photo-link').removeClass('active');
 		$('#share-workout-link').removeClass('active');
 		this.resetForm();
 	},
-	
-	resetForm: function () {
+
+	resetForm : function() {
 		$('#publishButton').unbind();
-		$('#publishButton').click(function () {
+		$('#publishButton').click(function() {
 			$('#publishButton').unbind();
 			ShareContent.submitForm();
 		});
@@ -366,53 +394,59 @@ var ShareContent = {
 };
 
 var NewsFeed = {
-	
-	currentPage: 0,
-		
-	init: function () {
-		$('#load-more').click(function () {
+
+	currentPage : 0,
+
+	init : function() {
+		$('#load-more').click(function() {
 			NewsFeed.nextPage();
 		});
 	},
-		
-	showComments: function (postId) {
+
+	showComments : function(postId, added) {
+		if (!added && $('#commentWrapper-' + postId).html().length > 0) {
+			$('#commentWrapper-' + postId).html('');
+			return;
+		}
+
 		$.get('/news-feed/show-comments', {
-			postId: postId
-		}, function (result) {
+			postId : postId
+		}, function(result) {
 			$('#commentWrapper-' + postId).html(result);
-			
+
 			$('#comment-' + postId).keypress(function(e) {
-			    if(e.keyCode == 13) {
-			    	$('#comment-' + postId).unbind('keypress');
-			    	$('#comment-' + postId).keypress(function () {
-			    		return false;
-			    	});
-			        NewsFeed.addComment(postId);
-			        return false;
-			    }
+				if (e.keyCode == 13) {
+					$('#comment-' + postId).unbind('keypress');
+					$('#comment-' + postId).keypress(function() {
+						return false;
+					});
+					NewsFeed.addComment(postId);
+					return false;
+				}
 			});
 		});
 	},
-	
-	addComment: function (postId) {
+
+	addComment : function(postId) {
 		if ($('#comment-' + postId).val() != '') {
-			$.post('/news-feed/add-comment', $('#addCommentForm-' + postId).serialize(), function (result) {
-				NewsFeed.showComments(postId);
+			$.post('/news-feed/add-comment', $('#addCommentForm-' + postId)
+					.serialize(), function(result) {
+				NewsFeed.showComments(postId, true);
 			});
 		}
 	},
-	
-	reloadPosts: function () {
-		$.get('/news-feed/posts', function (result) {
+
+	reloadPosts : function() {
+		$.get('/news-feed/posts', function(result) {
 			$('#newsFeedPosts').html(result);
 		});
 	},
-	
-	appendPosts: function () {
+
+	appendPosts : function() {
 		$.get('/news-feed/posts', {
-			page: this.currentPage,
-			type: $('#typeValue').val()
-		}, function (result) {
+			page : this.currentPage,
+			type : $('#typeValue').val()
+		}, function(result) {
 			if (result == '') {
 				$('#load-more').text('No more news');
 				return;
@@ -420,13 +454,13 @@ var NewsFeed = {
 			$('#newsFeedPosts').append(result);
 		});
 	},
-	
-	nextPage: function () {
+
+	nextPage : function() {
 		this.currentPage++;
 		this.appendPosts();
 	},
-	
-	showTrainingPlanContent: function (postId) {
+
+	showTrainingPlanContent : function(postId) {
 		$('#show-more-link-' + postId).toggleClass('hidden');
 		$('#show-more-content-' + postId).toggleClass('hidden');
 		$('#show-more-content-' + postId).parent().toggleClass('open');
@@ -434,13 +468,13 @@ var NewsFeed = {
 };
 
 var Click = {
-		
-	oldValues: new Object (),
-	checkElements: null,
-	checkElement: null,
-	bindElement: null,
-	
-	check: function (element, elements) {
+
+	oldValues : new Object(),
+	checkElements : null,
+	checkElement : null,
+	bindElement : null,
+
+	check : function(element, elements) {
 		if (elements != undefined) {
 			this.checkElements = elements;
 		}
@@ -451,43 +485,52 @@ var Click = {
 			return null;
 		}
 		var hasClass = false;
-		$(this.checkElements.join(', ')).each(function () {
+		$(this.checkElements.join(', ')).each(function() {
 			if ($(this).hasClass('tooltip') || $(this).val() == '') {
 				hasClass = true;
 			}
 			$(this).unbind('keyup');
-			$(this).keyup(function () {
+			$(this).keyup(function() {
 				Click.check();
 			});
 			$(this).unbind('change');
-			$(this).change(function () {
+			Select.init();
+			$(this).change(function() {
 				Click.check();
 			});
+			Select.init();
+
+			if (hasClass) {
+				return false;
+			}
 		});
-		
+
 		if (hasClass) {
-			$(this.checkElement).addClass('buttonNoActive').attr('disabled', true);
+			$(this.checkElement).addClass('buttonNoActive').attr('disabled',
+					true);
 		} else {
-			$(this.checkElement).removeClass('buttonNoActive').attr('disabled', false);
+			$(this.checkElement).removeClass('buttonNoActive').attr('disabled',
+					false);
 		}
 	},
-	
-	clear: function (element) {
+
+	clear : function(element) {
 		var element = $(element);
 		if (this.oldValues[element.attr('name')] == undefined) {
 			this.oldValues[element.attr('name')] = element.val();
 		}
-		if (element.val() == '' || element.val() == this.oldValues[element.attr('name')]) {
+		if (element.val() == ''
+				|| element.val() == this.oldValues[element.attr('name')]) {
 			element.val('');
 			element.removeClass('tooltip');
-			element.blur(function () {
+			element.blur(function() {
 				Click.restore(this);
 			});
 		}
 		this.check();
 	},
-	
-	restore: function (element) {
+
+	restore : function(element) {
 		var element = $(element);
 		if (element.val() == '') {
 			element.val(Click.oldValues[element.attr('name')]);
@@ -498,155 +541,196 @@ var Click = {
 };
 
 var Modal = {
-	open: function (element) {
+	open : function(element) {
 		Modal.close();
 		$('BODY').append('<div id="overlay"></div>');
 		var width = parseInt($(element).width());
 		var screenWidth = parseInt($(window).width());
-		
+
 		$(element).css('margin-left', (screenWidth - width) / 2);
-		
+
 		$(element).css('visibility', 'visible');
 		$(element).show(100);
-		
+
 		Modal.addEvents();
 	},
-	
-	close: function () {
+
+	close : function() {
 		$('#modal').children().hide(100);
 		$('#overlay').remove();
 	},
-	
-	addEvents: function () {
-		$('#overlay').click(function () {
+
+	addEvents : function() {
+		$('#overlay').click(function() {
 			Modal.close();
 		});
 		document.onkeyup = function(e) {
 			var code;
-			if (!e) var e = window.event;
-			if (e.keyCode) code = e.keyCode;
-			else if (e.which) code = e.which;
-			if (code == 27){
+			if (!e)
+				var e = window.event;
+			if (e.keyCode)
+				code = e.keyCode;
+			else if (e.which)
+				code = e.which;
+			if (code == 27) {
 				Modal.close();
 			}
 		}
+	},
+
+	ajax : function(url, element) {
+		$.get(url, {}, function(result) {
+			$('BODY').append('<div id="overlay"></div>');
+
+			if ($(element).length == 0) {
+				$('#modal').append(result);
+			} else {
+				$(element).replaceWith(result);
+			}
+
+			var width = parseInt($(element).width());
+			var screenWidth = parseInt($(window).width());
+
+			$(element).css('margin-left', (screenWidth - width) / 2);
+
+			$(element).css('visibility', 'visible');
+			$(element).show(100);
+
+			Modal.addEvents();
+		});
 	}
 };
 
 var Goal = {
-	showForm: function () {
-		$.get('/user/show-goal-form', function (result) {
+	showForm : function() {
+		$.get('/user/show-goal-form', function(result) {
 			$('#goalForm').html(result);
 			$('.setGoal').hide();
-			
-			$('#setGoalButton').click(function () {
+
+			$('#setGoalButton').click(function() {
 				Goal.submitForm();
 			});
 		});
 	},
-	
-	closeForm: function () {
+
+	changeType : function(element) {
+		$('.goals').addClass('hidden');
+		$('#' + $(element).val()).removeClass('hidden');
+	},
+
+	closeForm : function() {
 		$('#goalForm').html('');
 		$('.setGoal').show();
 	},
-	
-	submitForm: function () {
-		$.post('/user/set-goal', $('#newGoalForm').serialize(), function () {
+
+	submitForm : function() {
+		$.post('/user/set-goal', $('#newGoalForm').serialize(), function() {
 			Goal.closeForm();
 			Goal.reload();
 		});
 	},
-	
-	reload: function () {
-		$.get('/user/show-goal', function (result) {
+
+	reload : function() {
+		$.get('/user/show-goal', function(result) {
 			$('#goal').html(result);
 		});
 	}
 };
 
 var Select = {
-	init: function() {
-		$('select.select').each(function(){
+	init : function() {
+		$('select.select').each(function() {
 			var title = $(this).attr('title');
-			if( $('option:selected', this).val() != ''  ) title = $('option:selected',this).text();
-			$(this)
-				.css({'z-index':10,'opacity':0,'-khtml-appearance':'none'})
-				.change(function(){
-					val = $('option:selected',this).text();
-					$(this).next().text(val);
-					});
+			if ($('option:selected', this).val() != '')
+				title = $('option:selected', this).text();
+			$(this).css({
+				'z-index' : 10,
+				'opacity' : 0,
+				'-khtml-appearance' : 'none'
+			}).change(function() {
+				val = $('option:selected', this).text();
+				$(this).next().text(val);
+			});
 		});
 	}
 };
 
 var Rate = {
-	set: function (i) {
+	set : function(i) {
 		$('#rate').attr('class', 'rate0' + i);
 		$('#rateValue').val(i);
 	}
 };
 
 var MyTrainingsGraph = {
-	
-	method: 'daily',
-	endTime: undefined,
-	sportId: undefined,
-	
-	reload: function (endTime) {
+
+	method : 'daily',
+	endTime : undefined,
+	sportId : undefined,
+
+	reload : function(endTime) {
 		if (endTime == undefined) {
 			endTime = this.endTime;
 		} else {
 			this.endTime = endTime;
 		}
 		$.get('/my-trainings/graph-' + this.method, {
-			endTime: endTime,
-			sportId: this.sportId,
-		}, function (result) {
+			endTime : endTime,
+			sportId : this.sportId,
+		}, function(result) {
 			$('#trainingGraphContent').html(result);
 		});
 	},
-	
-	filterSport: function (sport) {
+
+	filterSport : function(sport) {
 		this.sportId = $(sport).val();
 		this.reload();
 	},
-	
-	filterGraph: function (method) {
+
+	filterGraph : function(method) {
 		this.method = method;
 		this.resetActive();
 		$('#' + method + '-filter-link').addClass('active');
 		this.reload();
 	},
-	
-	resetActive: function () {
+
+	resetActive : function() {
 		$('#daily-filter-link').removeClass('active');
 		$('#weekly-filter-link').removeClass('active');
 		$('#monthly-filter-link').removeClass('active');
 	},
 };
 
+function refresh() {
+	if ($.browser.msie) {
+		$('input.text').each(function() {
+			$(this).val($(this).val());
+		});
+	}
+}
+
 var WorkoutPlan = {
-		
-	exerciseCount: 1,
-	action: null,
-	
-	init: function () {
+
+	exerciseCount : 1,
+	action : null,
+
+	init : function() {
 
 		$('#private-share').click(function() {
 			$('#share-facebook').removeClass('facebookActive');
 			$('#post-facebook').val(0);
-			
+
 			$('#share-twitter').removeClass('twitterActive');
 			$('#post-twitter').val(0);
 		});
-		$('#share-social').click(function () {
+		$('#share-social').click(function() {
 			$('#share-facebook').addClass('facebookActive');
 			$('#post-facebook').val(1);
-			
+
 			$('#share-twitter').addClass('twitterActive');
 			$('#post-twitter').val(1);
 		});
-		
+
 		$('#share-facebook').click(function() {
 			if ($(this).hasClass('facebookActive')) {
 				$(this).removeClass('facebookActive');
@@ -656,7 +740,7 @@ var WorkoutPlan = {
 				$('#post-facebook').val(1);
 			}
 		});
-		
+
 		$('#share-twitter').click(function() {
 			if ($(this).hasClass('twitterActive')) {
 				$(this).removeClass('twitterActive');
@@ -666,8 +750,8 @@ var WorkoutPlan = {
 				$('#post-twitter').val(1);
 			}
 		});
-		
-		$('#submitButton').click(function () {
+
+		$('#submitButton').click(function() {
 			$('#submitButton').unbind();
 			WorkoutPlan.submitForm();
 		});
@@ -743,91 +827,106 @@ var WorkoutPlan = {
 		});
 	},
 
-	changeType: function (element) {
+
+	changeType : function(element) {
 		$(element).parent().parent().next().toggleClass('hidden');
 		$(element).parent().parent().next().next().toggleClass('hidden');
+
+		$(element).parent().parent().next().find('.required').removeClass(
+				'required');
 		Select.init();
+
+		// BIG SCALE IE HACK
+		refresh();
 	},
-	
-	addExercise: function () {
+
+	addExercise : function() {
 		this.exerciseCount++;
 		var newHtml = $('#sample-exercise').clone();
-		
+
 		newHtml.find('\\:css3-container').remove(); // PIE fix for IE
-		
-		newHtml.html(newHtml.html().replace('text tooltip', 'text tooltip shortNote'));
-		newHtml.html(newHtml.html().replace('exercise-type-distance-1', 'exercise-type-distance-' + this.exerciseCount));
-		newHtml.html(newHtml.html().replace('exercise-type-time-1', 'exercise-type-time-' + this.exerciseCount));
-		$('#exercise-data-' + (this.exerciseCount - 1)).after('<div id="exercise-data-' + this.exerciseCount +'">' + newHtml.html() + '</div>');
+
+		newHtml.html(newHtml.html().replace('text tooltip',
+				'text tooltip shortNote'));
+		newHtml.html(newHtml.html().replace('exercise-type-distance-1',
+				'exercise-type-distance-' + this.exerciseCount));
+		newHtml.html(newHtml.html().replace('exercise-type-time-1',
+				'exercise-type-time-' + this.exerciseCount));
+		$('#exercise-data-' + (this.exerciseCount - 1)).after(
+				'<div id="exercise-data-' + this.exerciseCount + '">'
+						+ newHtml.html() + '</div>');
 		Select.init();
-		$(".numeric").numeric({ decimal: false, negative: false });
-		Click.check('#submitButton', ['#workoutPlanName', 'FORM .required']);
+		$(".numeric").numeric({
+			decimal : false,
+			negative : false
+		});
+		Click.check('#submitButton', [ '#workoutPlanName', 'FORM .required' ]);
 	},
-	
-	removeExercise: function (element) {
+
+	removeExercise : function(element) {
 		this.exerciseCount--;
 		$(element).parent().parent().remove();
-		Click.check('#submitButton', ['.shortNote', '#workoutPlanName']);
+		Click.check('#submitButton', [ '#workoutPlanName', 'FORM .required' ]);
 	},
-	
-	submitForm: function () {
+
+	submitForm : function() {
 		$('.tooltip').val('');
-		$.post('/news-feed/add-training-plan', $('#add-training-plan-form').serialize(), function (result) {
+		$.post('/news-feed/add-training-plan', $('#add-training-plan-form')
+				.serialize(), function(result) {
 			WorkoutPlan.reloadPosts();
 		});
 	},
-	
-	reloadPosts: function () {
-		$.get('/workout/posts', function (result) {
+
+	reloadPosts : function() {
+		$.get('/workout/posts', function(result) {
 			$('#trainingPlanPosts').html(result);
 		});
 		this.getForm('search');
 	},
-	
-	appendPosts: function () {
-		$.get('/workout-plan/posts', {
-		}, function (result) {
+
+	appendPosts : function() {
+		$.get('/workout-plan/posts', {}, function(result) {
 			$('#trainingPlanPosts').append(result);
 		});
 	},
-	
-	search: function () {
+
+	search : function() {
 		this.getForm('search');
 	},
-	
-	addWorkoutPlan: function () {
+
+	addWorkoutPlan : function() {
 		this.exerciseCount = 1;
 		this.getForm('add-workout-plan');
 	},
-	
-	getForm: function(action) {
+
+	getForm : function(action) {
 		this.action = action;
 		$('.shareAction').removeClass('hidden');
 		$('.shareAction').show();
 		$('#shareContent').show();
-		$.get('/workout/show-' + action + '-form', function (result) {
+		$.get('/workout/show-' + action + '-form', function(result) {
 			WorkoutPlan.resetActive();
 			$('#' + action + '-link').addClass('active');
 			$('#shareContent').html(result);
 			Select.init();
 		});
 	},
-	
-	closeForm: function () {
+
+	closeForm : function() {
 		$('#add-training-plan-form').html('');
 	},
-	
-	resetActive: function () {
+
+	resetActive : function() {
 		$('#search-link').removeClass('active');
 		$('#add-workout-plan-link').removeClass('active');
 		/*  deaktivizejam jauno sadalu */
 		$('#add-workout-plan-set-link').removeClass('active');
 	},
-	
-	addToMyPlans: function(trainingPlanId, element) {
+
+	addToMyPlans : function(trainingPlanId, element) {
 		$.get('/workout/add-to-my-plans', {
-			id: trainingPlanId
-		}, function () {
+			id : trainingPlanId
+		}, function() {
 			$(element).parent().append('<i>Added to my plans</i>');
 			$(element).remove();
 		});
@@ -853,54 +952,122 @@ var WorkoutPlan = {
 			$('#trainingPlanPosts').html(result);
 		});
 		this.getForm('add-workout-plan-set');
-	}
+	},
 
+	deletePlan : function(trainingPlanId, element) {
+		if (confirm('Are you sure you want to delete this workout plan?')) {
+			$.get('/workout/delete-training-plan', {
+				id : trainingPlanId
+			}, function() {
+				$(element).parent().parent().parent().parent().remove();
+			});
+		}
+		return false;
+	}
 };
 
 var Message = {
-	send: function (workoutId) {
-		$.post('/workout/send-pep-talk', {
-			workoutId: workoutId,
-			message: $('#message').val()
-		}, function () {
-			$('#messageSent').remove();
-			$('.talk DIV').prepend('<i id="messageSent" class="clear">Your message has been sent!</i>');
-			$('#message').val('');
-		});
+	send : function(workoutId) {
+		$
+				.post(
+						'/workout/send-pep-talk',
+						{
+							workoutId : workoutId,
+							message : $('#message').val()
+						},
+						function() {
+							$('#messageSent').remove();
+							$('.talk DIV')
+									.prepend(
+											'<i id="messageSent" class="clear">Your message has been sent!</i>');
+							$('#message').val('');
+						});
 	}
 };
 
 var Friend = {
-	add: function (id) {
+	add : function(id) {
 		$.get('/user/add-friend', {
-			id: id
-		}, function () {
-			$('#friend-' + id).html('<a href="javascript:;" onclick="Friend.remove(' + id + ')">Unfollow</a>');
+			id : id
+		}, function() {
+			$('#friend-' + id).html(
+					'<a href="javascript:;" onclick="Friend.remove(' + id
+							+ ')">Unfollow</a>');
+		});
+	},
+
+	remove : function(id) {
+		$.get('/user/remove-friend', {
+			id : id
+		}, function() {
+			$('#friend-' + id).html(
+					'<a href="javascript:;" onclick="Friend.add(' + id
+							+ ')">Add to my friends</a>');
+		});
+	},
+
+	sendFacebookInvitation : function(id, element) {
+		$.get('/friend/send-facebook-invitation', {
+			id : id,
+		}, function() {
+			$(element).parent().removeClass('highlight').html('<b>Done</b>');
+		});
+	},
+
+	sendTwitterInvitation : function(id, element) {
+		$.get('/friend/send-twitter-invitation', {
+			id : id,
+		}, function() {
+			$(element).parent().removeClass('highlight').html('<b>Done</b>');
 		});
 	},
 	
-	remove: function (id) {
-		$.get('/user/remove-friend', {
-			id: id
-		}, function () {
-			$('#friend-' + id).html('<a href="javascript:;" onclick="Friend.add(' + id + ')">Add to my friends</a>');
+	sendFacebookShare : function(id, element) {
+		$.get('/friend/send-facebook-share', {
+			id : id,
+		}, function() {
+			$(element).parent().removeClass('highlight').html('<b>Done</b>');
+		});
+	},
+
+	sendTwitterShare : function(id, element) {
+		$.get('/friend/send-twitter-share', {
+			id : id,
+		}, function() {
+			$(element).parent().removeClass('highlight').html('<b>Done</b>');
+		});
+	},
+	
+	sendFacebookRecommend : function(id, element) {
+		$.get('/friend/send-facebook-recommend', {
+			id : id,
+		}, function() {
+			$(element).parent().removeClass('highlight').html('<b>Done</b>');
+		});
+	},
+
+	sendTwitterRecommend : function(id, element) {
+		$.get('/friend/send-twitter-recommend', {
+			id : id,
+		}, function() {
+			$(element).parent().removeClass('highlight').html('<b>Done</b>');
 		});
 	}
 };
 
 var Pager = {
-	currentPage: 0,
-		
-	init: function (element, url) {
-		$('#load-more').click(function () {
+	currentPage : 0,
+
+	init : function(element, url) {
+		$('#load-more').click(function() {
 			Pager.nextPage(element, url);
 		});
 	},
-	
-	appendPosts: function (element, url) {
+
+	appendPosts : function(element, url) {
 		$.get(url, {
-			page: this.currentPage,
-		}, function (result) {
+			page : this.currentPage,
+		}, function(result) {
 			if (result == '') {
 				$('#load-more').text('No more entries');
 				return;
@@ -908,52 +1075,57 @@ var Pager = {
 			$(element).append(result);
 		});
 	},
-	
-	nextPage: function (element, url) {
+
+	nextPage : function(element, url) {
 		this.currentPage++;
 		this.appendPosts(element, url);
 	},
 };
 
 var Facebook = {
-		login: function (url) {
-			Util.openWindow(url, 400, 300);
-		},
-	};
+	login : function(url) {
+		Util.openWindow(url, 400, 300);
+	},
+};
 
-	var Twitter = {
-		login: function (url) {
-			Util.openWindow(url, 800, 450);
-		},
-	};
+var Twitter = {
+	login : function(url) {
+		Util.openWindow(url, 800, 450);
+	},
+};
 
 var Util = {
-		
-		loading: function() {
-			return '<img style="margin: 50px 225px;" src="/gfx/ajax-loading.gif" />';
-			
-		},
-		
-		openWindow: function (url, width, height) {
-		    var left = parseInt((screen.availWidth/2) - (width/2));
-		    var top = parseInt((screen.availHeight/2) - (height/2));
-		    var windowFeatures = "width=" + width + ",height=" + height + ",status,resizable,left=" + left + ",top=" + top + "screenX=" + left + ",screenY=" + top;
-		    myWindow = window.open(url, "subWind", windowFeatures);
-		    return myWindow;
-		}
-	};
+
+	loading : function() {
+		return '<img style="margin: 50px 225px;" src="/gfx/ajax-loading.gif" />';
+
+	},
+
+	openWindow : function(url, width, height) {
+		var left = parseInt((screen.availWidth / 2) - (width / 2));
+		var top = parseInt((screen.availHeight / 2) - (height / 2));
+		var windowFeatures = "width=" + width + ",height=" + height
+				+ ",status,resizable,left=" + left + ",top=" + top + "screenX="
+				+ left + ",screenY=" + top;
+		myWindow = window.open(url, "subWind", windowFeatures);
+		return myWindow;
+	}
+};
 
 $(document).ready(function() {
 	Select.init();
 	UserGraph.init();
-	
+
 	$('#userAction').hover(function() {
 		$('#userMenu').slideDown(200);
-	}, function () {
+	}, function() {
 		$('#userMenu').hide();
 	});
-	
-	$(".numeric").numeric({ decimal: false, negative: false });
+
+	$(".numeric").numeric({
+		decimal : false,
+		negative : false
+	});
 });
 
 // funkcija, kas panem # no href, izmanto lai parslegtu lapu

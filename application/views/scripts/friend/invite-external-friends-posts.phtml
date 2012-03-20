@@ -1,0 +1,17 @@
+<?php foreach ($this->users as $user):?>
+	<div class="block clear noBord">
+		<div class="thumbnail">
+			<?php if ($user['profileImage'] != null):?>
+				<img alt="" src="<?php echo $user['profileImage'] ?>" />
+			<?php endif;?>
+		</div>
+		<div class="content friendsList">
+			<?php if ($this->type == 'facebook'):?>
+				<span class="right highlight"><a href="javascript:;" onclick="Friend.sendFacebookInvitation(<?php echo $user['id']?>, this)">Send invitation</a></span>
+			<?php else:?>
+				<span class="right highlight"><a href="javascript:;" onclick="Friend.sendTwitterInvitation(<?php echo $user['id']?>, this)">Send invitation</a></span>
+			<?php endif;?>
+			<h1><?php echo $user['name']?></h1>
+		</div>
+	</div>
+<?php endforeach;?>

@@ -36,6 +36,8 @@ class NewsFeedController extends Zend_Controller_Action {
     	$this->view->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
     	$this->view->type = $this->_getParam('type');
     	$this->view->currentUser = $this->userService->getCurrentUser();
+    	$this->view->gpxUploaded = $this->_getParam('gpxUploaded');
+    	$this->view->error = $this->_getParam('error');
     }
 
     // SV pievienots - action, kas raada current or workout
@@ -64,6 +66,7 @@ class NewsFeedController extends Zend_Controller_Action {
         }
 
     }
+
     // funkcija ajax next_workout izsaukumam
     public function nextWorkoutAction() {
         $this->_helper->disableLayout();
@@ -213,8 +216,7 @@ function sec2hms ($sec)
         }
         return $return_array;
     }
-
-
+    
     public function postsAction() {
     	if ($this->_request->isXmlHttpRequest()) {
     		$this->_helper->disableLayout();
@@ -320,7 +322,7 @@ function sec2hms ($sec)
     	}
     	
     }
- 
+
     /* pievientos no SV - treninu plana izveidosana*/
     public function addTrainingPlanSetAction() {
         $this->_helper->disableView();
@@ -408,20 +410,27 @@ function sec2hms ($sec)
     		$exercisesData = $this->_getParam('exercises');
     		$exercises = array ();
     		$cooldown = null;
-    		for ($i = 0; $i < count($exercisesData['type']); $i++) {
+    		for ($i = 0; $i < count($exercisesData['intensity']); $i++) {
+    			if ($exercisesData['intensity'][$i] == '') {
+    				continue;
+    			}
     			$exerciseDTO = new \Service\DTO\Exercise();
     			if ($i == 0) {
     				$exerciseDTO->name = 'Warmup';
     			} else if ($i == 1) {
     				$exerciseDTO->name = 'Cooldown';
     			} else {
-    				$exerciseDTO->name = 'Exercise ' . $i;
+    				if ((int) $exercisesData['distance'][$i] != 0) {
+    					$exerciseDTO->name = round($exercisesData['distance'][$i] / 1000, 2) . ' km ';
+    				} else {
+    					$exerciseDTO->name = $exercisesData['minutes'][$i] . ' min ';
+    				}
     			}
     			$exerciseDTO->unit = $exercisesData['unit'][$i];
     			$exerciseDTO->note = $exercisesData['note'][$i];
     			$exerciseDTO->goalDistance = $exercisesData['distance'][$i];
     			$exerciseDTO->intensity = $exercisesData['intensity'][$i];
-    			$exerciseDTO->goalDuration = ((int) $exercisesData['hours'][$i] * 60 * 60) + ((int) $exercisesData['minutes'][$i] * 60) + ((int) $exercisesData['seconds'][$i]);
+    			$exerciseDTO->goalDuration = ((int) $exercisesData['hours'][$i] * 60 * 60) + ($exercisesData['minutes'][$i] + ((int) $exercisesData['seconds'][$i]));
     			if ($i == 1) {
     				$cooldown = $exerciseDTO;
     			} else {
@@ -437,7 +446,7 @@ function sec2hms ($sec)
     		}
     	
     		if ($this->_getParam('postTwitter') != 0) {
-//     			$this->newsFeedService->postTwitter($workout);
+     			$this->newsFeedService->postTwitter($trainingPlan);
     		}
     	
     	}
@@ -468,8 +477,11 @@ function sec2hms ($sec)
 	public function showWorkoutFormAction() {
 		$this->_helper->disableLayout();
     	$this->view->sports = $this->workoutService->getUserSports();
+    	$this->view->gpxUploaded = $this->_getParam('gpxUploaded');
     	
-    	
+    	$gpxSession = new Zend_Session_Namespace('gpx');
+    	$this->view->gpxData = unserialize($gpxSession->data);
+    	$this->view->error = $this->_getParam('error');
 //    	$this->view->trainingPlans = $this->userService->getCurrentUser()->getTrainingPlans();
     }
     
@@ -477,6 +489,38 @@ function sec2hms ($sec)
     	$this->_helper->disableLayout();
     	
     	$this->view->post = $this->newsFeedService->getPost($this->_getParam('postId'));
+    }
+    
+    public function uploadGpxAction() {
+    	$this->_helper->disableLayout();
+    	
+    	$form = new Zend_Form();
+    	$gpx = new Zend_Form_Element_File('gpx');
+    	$gpx->setDestination(APPLICATION_PATH . '/data/gpx');
+    	$form->addElement($gpx);
+    	
+    	$this->view->error = $this->_getParam('error');
+    	
+    	$error = false;
+    	
+    	if ($this->_request->isPost()) {
+    		if ($form->isValid($this->_request->getPost())) {
+    			$gpxData = array ();
+    			try {
+    				$gpxData = $this->workoutService->importGpx(APPLICATION_PATH . '/data/gpx/' . $form->gpx->getValue());
+    				
+    			} catch (\Exception $e) {
+    				$error = true;
+    			}
+    			$gpxSession = new Zend_Session_Namespace('gpx');
+    			$gpxSession->data = serialize($gpxData);
+    			
+    			$this->_helper->redirector('index', null, null, array (
+    				'gpxUploaded' => true,
+    				'error' => $error,
+    			));
+    		}
+    	}
     }
 }
 	

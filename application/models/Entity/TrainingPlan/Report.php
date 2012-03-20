@@ -75,7 +75,7 @@ class Report extends AbstractEntity {
 	protected $trainingPlan;
 	
 	/**
-	 * @ManyToOne(targetEntity="\Entity\Workout", inversedBy="trainingPlanReports")
+	 * @ManyToOne(targetEntity="\Entity\Workout", inversedBy="trainingPlanReports", cascade={"remove"})
 	 * @JoinColumn(name="workout_id")
 	 * @var Workout
 	 */
@@ -95,7 +95,7 @@ class Report extends AbstractEntity {
 	protected $sport;
 	
 	/**
-	 * @OneToOne(targetEntity="\Entity\Challenge\Report", mappedBy="trainingPlanReport")
+	 * @OneToOne(targetEntity="\Entity\Challenge\Report", mappedBy="trainingPlanReport", cascade={"remove"})
 	 * @var \Entity\Challenge\Report
 	 */
 	protected $challengeReport;
@@ -302,36 +302,30 @@ class Report extends AbstractEntity {
 	}
 	
 	public function getAveragePace() {
-		$pace = 0;
-		$trackPointsCount = 0;
-		foreach ($this->getExerciseReports() as $exerciseReport) /* @var $exerciseReport \Entity\Exercise\Report */ {
-			foreach ($exerciseReport->getTrackPoints() as $trackPoint) /* @var $trackPoint \Entity\Exercise\TrackPoint */ {
-				$pace += $trackPoint->getPulse();
-				$trackPointsCount++;
-			}
-		}
-	
-		if ($trackPointsCount == 0) {
+		if ($this->duration == 0 || $this->distance == 0) {
+			
 			return 0;
 		}
 		
-		return round($pace / $trackPointsCount, 2);
+		$pace = ($this->duration / 60) / ($this->distance / 1000);
+	
+		return round($pace, 2);
 	}
 	
-	public function getHighestPace() {
-		$pace = 0;
-		$trackPointsCount = 0;
-		foreach ($this->getExerciseReports() as $exerciseReport) /* @var $exerciseReport \Entity\Exercise\Report */ {
-			foreach ($exerciseReport->getTrackPoints() as $trackPoint) /* @var $trackPoint \Entity\Exercise\TrackPoint */ {
-				if ($pace < $trackPoint->getPulse()) {
-					$pace = $trackPoint->getPulse();
-					$trackPointsCount++;
-				}
-			}
-		}
+// 	public function getHighestPace() {
+// 		$pace = 0;
+// 		$trackPointsCount = 0;
+// 		foreach ($this->getExerciseReports() as $exerciseReport) /* @var $exerciseReport \Entity\Exercise\Report */ {
+// 			foreach ($exerciseReport->getTrackPoints() as $trackPoint) /* @var $trackPoint \Entity\Exercise\TrackPoint */ {
+// 				if ($pace < $trackPoint->getPulse()) {
+// 					$pace = $trackPoint->getPulse();
+// 					$trackPointsCount++;
+// 				}
+// 			}
+// 		}
 	
-		return $pace;
-	}
+// 		return $pace;
+// 	}
 	
 	public function getAverageHeartRate() {
 		$heart = 0;

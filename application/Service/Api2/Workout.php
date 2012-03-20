@@ -52,7 +52,7 @@ class Workout {
 		$trainingPlanDTO->hasWorkoutGoal = $trainingPlan['hasWorkoutGoal'];
 		$trainingPlanDTO->note = $trainingPlan['note'];
 		$trainingPlanDTO->userId = $userId;
-		$trainingPlanDTO->isPrivate = true;
+		$trainingPlanDTO->isPrivate = false;
 		$trainingPlanDTO->synced = true;
 		
 		foreach ($trainingPlan['exercises'] as $exercise) {
@@ -62,6 +62,9 @@ class Workout {
 			$exerciseDTO->goalDistance = $exercise['goalDistance'];
 			$exerciseDTO->goalDuration = $exercise['goalDuration'];
 			$exerciseDTO->goalIsChallenge = $exercise['goalIsChallenge'];
+			if (isset($exercise['exerciseNote'])) {
+				$exerciseDTO->note = $exercise['exerciseNote'];
+			}
 			$exerciseDTO->synced = true;
 			$trainingPlanDTO->exercises[] = $exerciseDTO;
 		}
@@ -118,7 +121,7 @@ class Workout {
 		$user = $userService->checkAndUpdateSession($userId, $sessionId);
 		
 		$planReport = $this->workoutService->getTrainingPlanReport($trainingPlanReport['planReportID']);
-		$planReport->setBurnedCalories($trainingPlanReport['calories']);
+		$planReport->setBurnedCalories(@$trainingPlanReport['calories']);
 		$planReport->setEndTime(new \DateTime('@' . (int) $trainingPlanReport['endTime']));
 		$planReport->setDuration($trainingPlanReport['duration']);
 		$planReport->setDistance($trainingPlanReport['distance']);
@@ -126,13 +129,13 @@ class Workout {
 		
 		$this->workoutService->persistTrainingPlanReport($planReport);
 		
-		if ($user->getFacebookUserId() != null) {
-			$this->newsFeedService->postWorkoutToFacebook($planReport->getWorkout());
-		}
+// 		if ($user->getFacebookUserId() != null) {
+// 			$this->newsFeedService->postWorkoutToFacebook($planReport->getWorkout());
+// 		}
 		
-		if ($user->getTwitterUserId() != null) {
-			$this->newsFeedService->postWorkoutToTwitter($planReport->getWorkout());
-		}
+// 		if ($user->getTwitterUserId() != null) {
+// 			$this->newsFeedService->postWorkoutToTwitter($planReport->getWorkout());
+// 		}
 		
 		$response = \Zend_Json::encode(array (
 				'Response' => 'OK',
@@ -223,12 +226,14 @@ class Workout {
 
 		$this->workoutService->persistWorkout($workoutEntity);
 		
+		$multipleWorkouts = $workoutEntity->getTrainingPlanReports()->count() > 1;
+		
 		if ($workout['facebook'] != 0) {
-		    $this->newsFeedService->postWorkoutToFacebook($workoutEntity, $user);
+		    $this->newsFeedService->postWorkoutToFacebook($workoutEntity, $user, $multipleWorkouts);
 		}
 		
     	if ($workout['twitter'] != 0) {
-		//	$this->newsFeedService->postTwitter($workoutEntity);
+			$this->newsFeedService->postWorkoutToTwitter($workoutEntity, $multipleWorkouts, $user);
 		}
 		
 		$response = \Zend_Json::encode(array (
@@ -322,6 +327,10 @@ class Workout {
 	    if ($this->workoutService->getWorkout($workoutID)->getEndTime() != null) {
 	        throw new \Zend_Exception('End time has set', 14);
 	    }
+	    
+	    $workout = $this->workoutService->getWorkout($workoutID);
+	    
+	    $this->workoutService->removeWorkout($workout);
 	    
 	    $response = \Zend_Json::encode(array (
 				'Response' => 'OK',
@@ -539,7 +548,7 @@ class Workout {
 				'PlanReportIds' => $planReportIds,
 				'WorkoutDistance' => $workout->getDistance(),
 				'WorkoutDuration' => $workout->getDuration(),
-				'WorkoutStartTime' => $workout->getStartTime()->getTimestamp(),
+				'WorkoutStartTime' => $workout->getStartTime() != null ? $workout->getStartTime()->getTimestamp() : null,
 				'WorkoutEndTime' => $workout->getEndTime() != null ? $workout->getEndTime()->getTimestamp() : null,
 			);
 		}

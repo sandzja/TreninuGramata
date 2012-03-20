@@ -24,7 +24,8 @@ class WorkoutController extends Zend_Controller_Action {
 		$this->view->type = $this->_getParam('type', 'my');
 		$this->view->name = $this->_getParam('name');
 		$this->view->search = $this->_getParam('search');
-
+		$this->view->sportId = $this->_getParam('sportId');
+		$this->view->intensity = $this->_getParam('intensity');
 
         /* SV: Top WorkoutSets addon */
         $db = Zend_Db_Table::getDefaultAdapter();
@@ -58,38 +59,13 @@ class WorkoutController extends Zend_Controller_Action {
     	$this->view->workoutService = $this->workoutService;
     	$this->view->currentUser = $this->userService->getCurrentUser();
     }
-	
+
     /* SV sets search/show funcionality */
     public function setsAction() {
         if ($this->_request->isXmlHttpRequest()) {
             $this->_helper->disableLayout();
         }
         
-        error_log('search');
-        error_log($this->_getParam('search'));
-
-        error_log('nr');
-        error_log($this->_getParam('nr',1));
-
-        error_log('name');
-        error_log($this->_getParam('name'));
-
-        error_log('sportId');
-        error_log($this->_getParam('sportId'));
-
-        error_log('intensity');
-        error_log($this->_getParam('intensity'));
-
-        error_log('event');
-        error_log($this->_getParam('event'));
-
-        error_log('sets');
-        error_log($this->_getParam('sets'));
-
-        error_log('coach');
-        error_log($this->_getParam('coach'));
-
-
         $this->view->no_output = false;
         if ($this->_getParam('search') != null or $this->_getParam('sets') != null or $this->_getParam('coach') != null) {
             $this->view->trainingPlans = $this->workoutService->searchTrainingPlansSets($this->_getParam('nr',1), $this->_getParam('sets'), $this->_getParam('coach'), $this->_getParam('sportId'), $this->_getParam('intensity'), $this->_getParam('event'), $this->_getParam('name'), 10, $this->_getParam('page', 0) * 10);
@@ -99,7 +75,7 @@ class WorkoutController extends Zend_Controller_Action {
       
     }
     /* update end */
-
+	
 	public function trackAction() {
 		$this->_helper->setLayout('live_track');
 		$this->view->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
@@ -192,7 +168,7 @@ class WorkoutController extends Zend_Controller_Action {
     			$coordinates[] = array (
     				'lat' => $trackPoint->getLat(),
     				'lon' => $trackPoint->getLon(),
-    				'timestamp' => $trackPoint->getTime(),
+    				'timestamp' => $trackPoint->getTime()->getTimestamp(),
     			);
     		}
     		
@@ -233,7 +209,6 @@ class WorkoutController extends Zend_Controller_Action {
         $data = $db->fetchAll("SELECT DISTINCT event FROM  SetSets");
         $this->view->events = $data;
         $this->view->event = $this->_getParam('event');
-
     }
     
     public function showAddWorkoutPlanFormAction() {
@@ -244,7 +219,7 @@ class WorkoutController extends Zend_Controller_Action {
     	$this->view->sports = $this->workoutService->getUserSports();
     	$this->view->currentUser = $this->userService->getCurrentUser();
     }
-   
+
     /* pievienoja SV - WorkautPlanSet izveles lapa */
     public function showAddWorkoutPlanSetFormAction() {
     	if ($this->_request->isXmlHttpRequest()) {
@@ -266,8 +241,7 @@ class WorkoutController extends Zend_Controller_Action {
 
     	$this->view->currentUser = $this->userService->getCurrentUser();
     }    
-
-
+       
     public function trainingAction() {
     	$this->view->headScript()->appendFile('http://maps.google.com/maps/api/js?sensor=false');
     	
@@ -284,20 +258,62 @@ class WorkoutController extends Zend_Controller_Action {
 	}
     
 	public function globalAction() {
-		$users = $this->userService->getFeaturedUsers();
-		shuffle($users);
+		$trainingPlans = $this->workoutService->getFeaturedTrainingPlans();
+		shuffle($trainingPlans);
 		
-		$randomUsers = array ();
+		$randomTrainingPlans = array ();
 		$c = 0;
-		foreach ($users as $user) {
+		foreach ($trainingPlans as $trainingPlan) {
 			if ($c > 2) {
 				break;
 			}
 			
-			$randomUsers[] = $user;
+			$randomTrainingPlans[] = $trainingPlan;
 			$c++;
 		}
 		
-		$this->view->users = $randomUsers;
+		$this->view->trainingPlans = $randomTrainingPlans;
+	}
+	
+	public function recommendAction() {
+		if ($this->_request->isXmlHttpRequest()) {
+			$this->_helper->disableLayout();
+		}
+		
+		$session = new Zend_Session_Namespace('twitter');
+		
+		if ($session->oauthToken != null) {
+			$users = $this->userService->getTwitterFriends($this->userService->getCurrentUser());
+		} else {
+			$users = $this->userService->getFacebookFriends($this->userService->getCurrentUser());
+		}
+		
+		$this->view->users = $users;
+		$this->view->isTwitter = $session->oauthToken != null;
+	}
+	
+	public function shareAction() {
+		if ($this->_request->isXmlHttpRequest()) {
+			$this->_helper->disableLayout();
+		}
+	
+		$session = new Zend_Session_Namespace('twitter');
+	
+		if ($session->oauthToken != null) {
+			$users = $this->userService->getTwitterFriends($this->userService->getCurrentUser());
+		} else {
+			$users = $this->userService->getFacebookFriends($this->userService->getCurrentUser());
+		}
+	
+		$this->view->users = $users;
+		$this->view->isTwitter = $session->oauthToken != null;
+	}
+	
+	public function deleteTrainingPlanAction() {
+		if ($this->_request->isXmlHttpRequest()) {
+			$this->_helper->disableView();
+		}
+		
+		$this->workoutService->deleteTrainingPlan($this->_getParam('id'));
 	}
 }

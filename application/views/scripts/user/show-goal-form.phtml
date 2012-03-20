@@ -3,22 +3,46 @@
 		<h2>New goal</h2>
 		<div class="select clear">
 			<div>
-				<select class="select small" name="type">
+				<select class="select small" name="type" onchange="Goal.changeType(this)">
 					<option value="distance">Distance</option>
+					<option value="time">Time</option>
+					<option value="calories">Calories</option>
+					<option value="workout">Workouts</option>
 				</select>
 				<span class="select small">Distance</span>
 			</div>
 		</div>
-		<div class="element">
-			<input type="text" class="text min tooltip" value="Value" name="value" onclick="Click.clear(this);" />
+		<div class="goals" id="distance">
+			<div class="element" style="margin-top: 13px;">
+				<input type="text" class="text min tooltip" value="Value" name="distance" onfocus="Click.clear(this);" />
+			</div>
+			<div class="element">
+				<div>
+					<select class="select min" name="unit">
+						<option value="1000">km</option>
+						<option value="1609.344">mile</option>
+					</select>
+					<span class="select min">km</span>
+				</div>
+			</div>
 		</div>
-		<div class="element">
-			<div>
-				<select class="select min" name="unit">
-					<option value="1">m</option>
-					<option value="1000">km</option>
-				</select>
-				<span class="select min">m</span>
+		<div class="goals element hidden" id="time">
+			<div class="element">
+				<div class="element">
+					<input type="text" style="width: 39px;" class="text min tooltip numeric" value="HH" onfocus="Click.clear(this);" name="hours" />
+					<input type="text" style="width: 39px;" class="text min tooltip numeric" value="MM" onfocus="Click.clear(this);" name="minutes" />
+					<input type="text" style="width: 40px;" class="text min tooltip numeric" value="SS" onfocus="Click.clear(this);" name="seconds" />
+				</div>
+			</div>
+		</div>
+		<div class="goals hidden" id="calories">
+			<div class="element">
+				<input type="text" class="text tooltip" value="Value" name="calories" onfocus="Click.clear(this);" />
+			</div>
+		</div>
+		<div class="goals hidden" id="workout">
+			<div class="element">
+				<input type="text" class="text tooltip" value="Workout number" name="workout" onfocus="Click.clear(this);" />
 			</div>
 		</div>
 		<input type="button" value="Set" name="setGoal" id="setGoalButton" class="button blue right">

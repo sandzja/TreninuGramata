@@ -16,5 +16,5 @@
 <?php endforeach;?>
 <form method="post" id="addCommentForm-<?php echo $this->post->getId()?>">
 	<input type="hidden" name="postId" value="<?php echo $this->post->getId()?>" />
-	<input type="text" class="text tooltip" name="comment" value="Add a comment" onclick="Click.clear(this);" id="comment-<?php echo $this->post->getId()?>" />
+	<input type="text" class="text tooltip" name="comment" value="Add a comment" onfocus="Click.clear(this);" id="comment-<?php echo $this->post->getId()?>" />
 </form>

@@ -1,6 +1,8 @@
 <?php
 namespace Service;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 class User extends AbstractService {
 	
 	/**
@@ -73,7 +75,7 @@ class User extends AbstractService {
 		$auth->clearIdentity();
 		\Zend_Session::destroy();
 		$fbKey = 'fbs_' . $this->config->facebook->appId;
-		setcookie($fbKey, '', time()-3600, '/');
+		setcookie($fbKey, '', time()-3600, '/', '.' . $_SERVER['HTTP_HOST']);
 	}
 	
 	public function getFacebookLoginUrl() {
@@ -98,7 +100,7 @@ class User extends AbstractService {
 		if ($facebookApi->getUser() == null) {
 			return false;
 		}
-		
+
 		$facebookSession = $facebookApi->getSession();
 		$user = $this->createFacebookUser($facebookApi->getUser(), $facebookSession['access_token']);
 		$user->setFacebookAccessToken($facebookSession['access_token']);
@@ -133,7 +135,11 @@ class User extends AbstractService {
 		$userInfo = $twitter->get('/account/verify_credentials.json');
 
 		$user = $this->createTwitterUser($userInfo->response['id'], $twitter->getAccessToken(), null);
+		$user->setTwitterOAuthToken($token->oauth_token);
+		$user->setTwitterOAuthTokenSecret($token->oauth_token_secret);
 		$this->saveUserToSession($user);
+		
+		$this->syncTwitterFriends();
 		
 		return true;
 	}
@@ -193,12 +199,12 @@ class User extends AbstractService {
 			$user->setTwitterUserId($userInfo->id);
 			$user->setName($userInfo->name);
 			$user->setUpdatedTime(new \DateTime());
-			$user->setProfileImageUrl($userInfo->profile_image_url);
+			$user->setProfileImageUrl('https://api.twitter.com/1/users/profile_image?screen_name=' . $userInfo->screen_name . '&size=original');
 			
 			$this->em->persist($user);
 			
 			$newsFeedService = new \Service\NewsFeed();
-			$newsFeedService->postTwitter('I just created my personal workout\'s Trainingbook. Now I have a training assistant who will add fun and effectiveness to my workouts and let me track and share my progress.');
+			$newsFeedService->postTwitter('I just created my personal workout\'s Trainingbook. Now I have a training assistant who will add fun and effectiveness to my workouts and let me track and share my progress.', $user);
 			
 			$workoutService = new \Service\Workout();
 			$workoutService->createDefaultTrainingData($user);
@@ -279,7 +285,7 @@ class User extends AbstractService {
 		$userInfo = $twitter->get('/followers/ids.json', array (
 			'user_id' => $user->getTwitterUserId(),
 		));
-		
+
 		$friendIds = $userInfo->response;
 		
 		foreach ($friendIds as $friendId) {
@@ -391,19 +397,223 @@ class User extends AbstractService {
 	}
 	
 	public function getAllUsers($limit = null, $offset = null) {
-		return $this->em->getRepository('\Entity\User')->findBy(array (), null, $limit, $offset);
+		return $this->em->getRepository('\Entity\User')->findBy(array (), array ('name' => 'asc'), $limit, $offset);
 	}
 	
-	public function setGoal(\Entity\User $user, $goal, $value, $unit) {
+	public function setDistanceGoal(\Entity\User $user, $goal, $value, $unit) {
 		$user->setGoal($value * (int) $unit);
-		$user->setIsTimeGoal($goal == 'distance' ? true : false);
+		$user->setGoalType('distance');
 		
 		$this->em->persist($user);
 	}
 	
-	public function getFeaturedUsers() {
-		return $this->em->getRepository('\Entity\User')->findBy(array (
-			'isFeatured' => true,
-		));
+	public function setTimeGoal(\Entity\User $user, $goal, $hours, $minutes, $seconds) {
+		$user->setGoal(((int) $hours * 60 * 60) + ((int) $minutes * 60) + ((int) $seconds));
+		$user->setGoalType('time');
+	
+		$this->em->persist($user);
 	}
+	
+	public function setCaloriesGoal(\Entity\User $user, $goal, $value) {
+		$user->setGoal($value);
+		$user->setGoalType('calories');
+		
+		$this->em->persist($user);
+	}
+	
+	public function setWorkoutGoal(\Entity\User $user, $goal, $value) {
+		$user->setGoal($value);
+		$user->setGoalType('workout');
+	
+		$this->em->persist($user);
+	}
+	
+	public function inviteFacebook(\Entity\User $user, $facbookFriendId, $message) {
+		$facebook = new \Facebook_Graph($this->config->facebook->toArray());
+		
+		$params = array (
+				'message' => stripslashes(htmlspecialchars($message)),
+		);
+		
+		if ($user != null) {
+			$params['access_token'] = $user->getFacebookAccessToken();
+		}
+		
+		$params['link'] = 'http://trainingbook.com';
+		$params['name'] = 'TrainingBook';
+		
+		try {
+			$result = $facebook->api($facbookFriendId . '/feed', 'POST', $params);
+		} catch (\Facebook_GraphApiException $e) {
+			return null;
+		}
+		
+	}
+	
+	public function inviteTwitter(\Entity\User $user, $facbookFriendId, $message) {
+	}
+	
+	public function invviteEmail(\Entity\User $user, $email) {
+		$mail = new \Zend_Mail();
+		$mail->setFrom($user->getEmail(), $user->getName());
+		$mail->addTo($email);
+		$mail->setSubject($user->getName() . ' has invited you to use Trainingbook application');
+		$mail->setBodyText('
+Hi ' . $email . '!
+	
+I\'m using Trainingbook.com application on my phone. Please check it out at http://trainingbook.com. 
+
+Trainingbook purpose is to motivate people being active and healthy by bringing fun and sense to their workouts 
+
+Trainingbook.com is every person\'s personal training partner – smart (tracks training progress, provides sports and nutrition advices), 
+communicable (allows to share and enrich the training experience) and fun (motivates to go out and have the best emotion out of every move).
+
+Trainingbook.com is my virtual motivator in living active and healthy life!');
+		$mail->send();
+	}
+	
+	public function getUnsignedFacebookFriends(\Entity\User $user) {
+		$facebook = new \Facebook_Graph($this->config->facebook->toArray());
+		$params = array ();
+		$params['access_token'] = $user->getFacebookAccessToken();
+		
+		$friendsData = (object) $facebook->api('/' . $user->getFacebookUserId() . '/friends', 'GET', $params);
+		$friends = $friendsData->data;
+		
+		$unsignedFriends = array ();
+		foreach ($friends as $facebookFriend) {
+			$facebookFriend = (object) $facebookFriend;
+			$friend = $this->getUserByFacebook($facebookFriend->id);
+				
+			if ($friend == null) {
+				$unsignedFriends[] = array (
+					'id' => $facebookFriend->id,
+					'name' => $facebookFriend->name,
+					'profileImage' => 'https://graph.facebook.com/' . $facebookFriend->id . '/picture?type=large'
+				);
+			}
+		}
+		
+		return new ArrayCollection($unsignedFriends);
+	}
+	
+	public function getFacebookFriends(\Entity\User $user) {
+		$facebook = new \Facebook_Graph($this->config->facebook->toArray());
+		$params = array ();
+		$params['access_token'] = $user->getFacebookAccessToken();
+	
+		$friendsData = (object) $facebook->api('/' . $user->getFacebookUserId() . '/friends', 'GET', $params);
+		$friends = $friendsData->data;
+	
+		$unsignedFriends = array ();
+		foreach ($friends as $facebookFriend) {
+			$facebookFriend = (object) $facebookFriend;
+	
+			$unsignedFriends[] = array (
+					'id' => $facebookFriend->id,
+					'name' => $facebookFriend->name,
+					'profileImage' => 'https://graph.facebook.com/' . $facebookFriend->id . '/picture?type=large'
+			);
+		}
+	
+		return new ArrayCollection($unsignedFriends);
+	}
+	
+	public function getTwitterFriends(\Entity\User $user) {
+		require_once 'Twitter/EpiCurl.php';
+		require_once 'Twitter/EpiOAuth.php';
+		require_once 'Twitter/EpiTwitter.php';
+		require_once 'Twitter/twitteroauth.php';
+	
+		$user = $this->getCurrentUser();
+		if ($user == null) {
+			return null;
+		}
+	
+		if ($user->getTwitterUserId() == null) {
+			return null;
+		}
+	
+		$config = $this->config->twitter;
+		$twitterSession = new \Zend_session_Namespace('twitter');
+	
+		$twitter = new \EpiTwitter($config->consumerKey, $config->consumerSecret, $twitterSession->oauthToken, $twitterSession->oauthSecret);
+	
+		$userInfo = $twitter->get('/followers/ids.json', array (
+				'user_id' => $user->getTwitterUserId(),
+		));
+	
+		$friendIds = $userInfo->response['ids'];
+	
+		$twitteroauth = new \TwitterOAuth($config->consumerKey, $config->consumerSecret, $twitterSession->oauthToken, $twitterSession->oauthSecret);
+		$unsignedFriends = array ();
+		foreach ($friendIds as $friendId) {
+			$userInfo = $twitteroauth->get('users/show', array (
+					'user_id' => $friendId,
+			));
+				
+			if (isset($userInfo->error) || $userInfo == null) {
+				throw new \Zend_Exception('Access token is invalid', 0);
+			}
+				
+			$unsignedFriends[] = array (
+					'id' => $userInfo->id,
+					'name' => $userInfo->name,
+					'profileImage' => $userInfo->profile_image_url
+			);
+		}
+	
+		return new ArrayCollection($unsignedFriends);
+	}
+	
+	public function getUnsignedTwitterFriends(\Entity\User $user) {
+		require_once 'Twitter/EpiCurl.php';
+		require_once 'Twitter/EpiOAuth.php';
+		require_once 'Twitter/EpiTwitter.php';
+		require_once 'Twitter/twitteroauth.php';
+		
+		$user = $this->getCurrentUser();
+		if ($user == null) {
+			return null;
+		}
+	
+		if ($user->getTwitterUserId() == null) {
+			return null;
+		}
+	
+		$config = $this->config->twitter;
+		$twitterSession = new \Zend_session_Namespace('twitter');
+	
+		$twitter = new \EpiTwitter($config->consumerKey, $config->consumerSecret, $twitterSession->oauthToken, $twitterSession->oauthSecret);
+	
+		$userInfo = $twitter->get('/followers/ids.json', array (
+				'user_id' => $user->getTwitterUserId(),
+		));
+	
+		$friendIds = $userInfo->response['ids'];
+	
+		$twitteroauth = new \TwitterOAuth($config->consumerKey, $config->consumerSecret, $twitterSession->oauthToken, $twitterSession->oauthSecret);
+		$unsignedFriends = array ();
+		foreach ($friendIds as $friendId) {
+			$userInfo = $twitteroauth->get('users/show', array (
+				'user_id' => $friendId,
+			));
+			
+			if (isset($userInfo->error) || $userInfo == null) {
+				throw new \Zend_Exception('Access token is invalid', 0);
+			}
+			
+			$friend = $this->getUserByTwitter($friendId);
+			if ($friend == null) {
+				$unsignedFriends[] = array (
+						'id' => $userInfo->id,
+						'name' => $userInfo->name,
+						'profileImage' => $userInfo->profile_image_url
+				);
+			}
+		}
+
+		return new ArrayCollection($unsignedFriends);
+	}
+	
 }

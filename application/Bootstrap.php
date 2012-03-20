@@ -56,7 +56,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		$front->registerPlugin(new Zend_Controller_Plugin_ErrorHandler());
 		$front->registerPlugin(new Plugin_Auth());
 		$front->throwExceptions(false);
- 		date_default_timezone_set('Europe/Tallinn');
+ 		date_default_timezone_set('UTC');
  		$locale = new Zend_Locale();
 		Zend_Registry::set('Zend_Locale', $locale->getDefault());
 	}
@@ -80,8 +80,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		$view->headMeta()->appendName('Keywords', $config->defaultKeywords);
 		$view->headMeta()->appendName('Description', $config->defaultDescription);
 		$view->headMeta()->appendName('Author', 'BitWeb OÜ');
-		// SV nezkaapeec sis nestraadaa
-		//$view->headMeta('', 'og:description', 'property');
+		//$view->headMeta($config->defaultDescription, 'og:description', 'property');
 		$view->headLink(array('rel' => 'icon', 'href' => '/favicon.ico', 'type' => 'image/x-icon'));
 
 		$this->view->headLink()->appendStylesheet('/gfx/_styles_screen.css');

@@ -32,9 +32,9 @@
 				  </select>
 			  <span class="select smaller"><?php if ($this->event != null):?><?php echo $this->event?><?php else:?>Event<?php endif;?></span>
 		  </div>
-		</div>
+		</div>		
 	</div>
-	<input type="text" class="text add<?php if ($this->name == null):?> tooltip<?php endif;?>" id="searchString" <?php if ($this->name == null):?>onclick="Click.clear(this);"<?php endif;?> name="name" value="<?php if ($this->name != null):?><?php echo $this->name ?><?php else:?>Search by name<?php endif;?>" />
+	<input type="text" class="text add<?php if ($this->name == null):?> tooltip<?php endif;?>" id="searchString" <?php if ($this->name == null):?>onfocus="Click.clear(this);"<?php endif;?> name="name" value="<?php if ($this->name != null):?><?php echo $this->name ?><?php else:?>Search by name<?php endif;?>" />
 	<a class="search" href="javascript:;" onclick="if ($('#searchString').val() == 'Search by name') {$('#searchString').val('');}$('#searchForm').submit();"></a>
 	<input type="hidden" name="search" value="1" />
 </form>

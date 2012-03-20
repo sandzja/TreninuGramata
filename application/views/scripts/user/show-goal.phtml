@@ -1,16 +1,58 @@
 <div class="block">
-	<h2>Goal: <?php echo round($this->user->getGoal() / 1000, 2)?> km</h2>
-	<span  class="setGoal"><a href="javascript:;" onclick="Goal.showForm();">Set New</a></span>
-	<div class="bar">
-		<?php if ($this->user->countDistances() == 0):?>
-			<span style="width: 100%;" class="noProgress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
-		<?php else:?>
+	<?php if ($this->user->getGoalType() == 'distance' || $this->user->getGoalType() == null):?>
+		<h2>Goal: <?php echo round($this->user->getGoal() / 1000, 2)?> km</h2>
+		<span  class="setGoal"><a href="javascript:;" onclick="Goal.showForm();">Set New</a></span>
+		<div class="bar">
 			<?php if ($this->user->getGoal() == 0):?>
-				<span style="width: 100%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+				<span style="width: 100%;" class="progress"></span>
+				<span class="value"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
 			<?php else:?>
-				<span style="width: <?php echo round($this->user->countDistances() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countDistances() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
+				<span style="width: <?php echo round($this->user->countDistances() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countDistances() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"></span>
+				<span class="value"><?php echo round($this->user->countDistances() / 1000, 2)?> km</span>
 			<?php endif;?>
-		<?php endif;?>
-	</div>
+		</div>
+	<?php endif;?>
+	
+	<?php if ($this->user->getGoalType() == 'time'):?>
+		<h2>Goal: <?php echo $this->secondsToHours($this->user->getGoal())?></h2>
+		<span  class="setGoal"><a href="javascript:;" onclick="Goal.showForm();">Set New</a></span>
+		<div class="bar">
+			<?php if ($this->user->getGoal() == 0):?>
+				<span style="width: 100%;" class="progress"></span>
+				<span class="value"><?php echo $this->secondsToHours($this->user->countTime())?></span>
+			<?php else:?>
+				<span style="width: <?php echo $this->user->countTime() / $this->user->getGoal() * 100 < 100 ? $this->user->countTime() / $this->user->getGoal() * 100 : 100  ?>%;" class="progress"></span>
+				<span class="value"><?php echo $this->secondsToHours($this->user->countTime())?></span>
+			<?php endif;?>
+		</div>
+	<?php endif;?>
+	
+	<?php if ($this->user->getGoalType() == 'calories'):?>
+		<h2>Goal: <?php echo round($this->user->getGoal(), 2)?> kcal</h2>
+		<span  class="setGoal"><a href="javascript:;" onclick="Goal.showForm();">Set New</a></span>
+		<div class="bar">
+			<?php if ($this->user->getGoal() == 0):?>
+				<span style="width: 100%;" class="progress"></span>
+				<span class="value"><?php echo round($this->user->countCalories(), 2)?> kcal</span>
+			<?php else:?>
+				<span style="width: <?php echo round($this->user->countCalories() / $this->user->getGoal() * 100, 2) < 100 ? round($this->user->countCalories() / $this->user->getGoal() * 100, 2) : 100  ?>%;" class="progress"></span>
+				<span class="value"><?php echo round($this->user->countCalories(), 2)?> kcal</span>
+			<?php endif;?>
+		</div>
+	<?php endif;?>
+	
+	<?php if ($this->user->getGoalType() == 'workout'):?>
+		<h2>Goal: <?php echo round($this->user->getGoal(), 0)?> workouts</h2>
+		<span  class="setGoal"><a href="javascript:;" onclick="Goal.showForm();">Set New</a></span>
+		<div class="bar">
+			<?php if ($this->user->getGoal() == 0):?>
+				<span style="width: 100%;" class="progress"></span>
+				<span class="value"><?php echo round($this->user->getWorkouts()->count(), 0)?> workouts</span>
+			<?php else:?>
+				<span style="width: <?php echo round($this->user->getWorkouts()->count() / $this->user->getGoal() * 100, 0) < 100 ? round($this->user->getWorkouts()->count() / $this->user->getGoal() * 100, 0) : 100  ?>%;" class="progress"></span>
+				<span class="value"><?php echo round($this->user->getWorkouts()->count(), 0)?> workouts</span>
+			<?php endif;?>
+		</div>
+	<?php endif;?>
 	<div id="goalForm"></div>
 </div>

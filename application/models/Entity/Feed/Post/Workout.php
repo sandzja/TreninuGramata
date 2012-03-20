@@ -13,7 +13,7 @@ class Workout extends \Entity\Feed\Post {
 
 	/**
 	 * @var \Entity\Workout
-	 * @OneToOne(targetEntity="Entity\Workout")
+	 * @OneToOne(targetEntity="Entity\Workout", cascade={"remove"})
 	 * @JoinColumn(name="workout_id")
 	 */
 	protected $workout;

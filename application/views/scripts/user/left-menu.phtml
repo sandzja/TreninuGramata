@@ -19,10 +19,11 @@
 <div id="goal">
 	<?php echo $this->action('show-goal', 'user')?>
 </div>
-<?php if (count($this->user->getRecords())):?>
-	<div class="line"></div>
-	<div class="block">
-		<h2>Personal Bests</h2>
+
+<div class="line"></div>
+<div class="block">
+	<h2>Personal Bests</h2>
+	<?php if (count($this->user->getRecords())):?>
 		<table class="data">
 			<tr>
 				<th></th>
@@ -52,5 +53,7 @@
 				</tr>
 			<?php endforeach;?>
 		</table>
-	</div>
-<?php endif;?>
+	<?php else:?>
+		<p>All your Personal Bests will be stored.</p>
+	<?php endif;?>
+</div>

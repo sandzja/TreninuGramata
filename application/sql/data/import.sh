@@ -1,5 +1,8 @@
-mysql -u trainingbook --password=zjfDHUZCxNUvet9B trainingbook < treninu_plans_1.sql 
+mysql -u trainingbook --password=zjfDHUZCxNUvet9B trainingbook < treninu_plans_init.sql
 
+mysql -u trainingbook --password=zjfDHUZCxNUvet9B trainingbook < treninu_plans_set.sql 
+
+mysql -u trainingbook --password=zjfDHUZCxNUvet9B trainingbook < treninu_plans_1.sql 
 
 mysql -u trainingbook --password=zjfDHUZCxNUvet9B trainingbook < treninu_plans_3.sql 
 

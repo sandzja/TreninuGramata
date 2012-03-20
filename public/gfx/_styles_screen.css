@@ -11,7 +11,7 @@
 	vertical-align, white-space, overflow, cursor, list-style
 */
 HTML {
-	background: url(bg_01.png) repeat-x;
+	background: url(/gfx/bg_01.png) repeat-x;
 }
 
 HTML,BODY {
@@ -20,7 +20,7 @@ HTML,BODY {
 	font-size: 13px;
 	font-family: Helvetica, Arial, sans-serif, Verdana, "Trebuchet MS",
 		Tahoma;
-	background: url(bg_02.png) repeat;
+	background: url(/gfx/bg_02.png) repeat;
 }
 
 H1 {
@@ -74,11 +74,13 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 */
 #frontpage,#liveTracking {
 	position: relative;
-	background: url(home_header_bg.png) repeat-x;
+	background: url(/gfx/home_header_bg.png) repeat-x;
 }
 
-#home {
-	background: url(front_bg.png) no-repeat center 89px;
+#home #mapWrapper {
+	height: 515px;
+	background: #1b1b1b url(/gfx/front_bg.png) no-repeat center;
+	margin: 89px 0 -604px 0;
 }
 
 #home #container {
@@ -108,12 +110,12 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 90px;
 	height: 24px;
 	margin-top: 15px;
-	background: url(facebook_login.png) no-repeat;
+	background: url(/gfx/facebook_login.png) no-repeat;
 }
 
 .twitterLogin {
 	margin-left: 5px;
-	background: url(twitter_login.png) no-repeat;
+	background: url(/gfx/twitter_login.png) no-repeat;
 }
 
 .facebookLogin A,.twitterLogin A {
@@ -130,7 +132,7 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	float: left;
 	height: 587px;
 	width: 270px;
-	background: url(phone_icon.png) no-repeat;
+	background: url(/gfx/phone_icon.png) no-repeat;
 }
 
 #home H1 {
@@ -157,7 +159,7 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	height: 71px;
 	margin-top: 25px;
 	text-indent: -5000px;
-	background: url(join_button.png) no-repeat;
+	background: url(/gfx/join_button.png) no-repeat;
 }
 
 #home A.appStore {
@@ -165,7 +167,7 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 185px;
 	height: 60px;
 	margin: -40px -350px 0 0; text-indent : -5000px;
-	background: url(app_store.png) no-repeat;
+	background: url(/gfx/app_store.png) no-repeat;
 	text-indent: -5000px;
 }
 
@@ -241,7 +243,7 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 #home .quote SPAN {
 	display: block;
 	height: 74px;
-	background: url(quote.png) no-repeat;
+	background: url(/gfx/quote.png) no-repeat;
 }
 
 #home .quote P {
@@ -295,12 +297,12 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	height: 290px;
 	padding: 30px 15px;
 	text-align: center;
-	background: url(modal_bg.png) repeat-x;
+	background: url(/gfx/modal_bg.png) repeat-x;
 	border: 10px solid #e2dddd;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 	opacity: 1;
 	filter: alpha(opacity = 100);
 }
@@ -333,12 +335,12 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 210px;
 	height: 39px;
 	margin: 0 auto 15px auto;
-	background: url(withFacebook.png) no-repeat;
+	background: url(/gfx/withFacebook.png) no-repeat;
 }
 
 #modal .signIn .withTwitter {
 	margin-bottom: 30px;
-	background: url(withTwitter.png) no-repeat;
+	background: url(/gfx/withTwitter.png) no-repeat;
 }
 
 #modal .signIn .withFacebook A,#modal .signIn .withTwitter A {
@@ -348,12 +350,14 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	text-indent: -5000px;
 }
 
-#modal .text {
-	width: 700px;
-	height: auto; text-align : left;
-	background: #e7e7e7 url(modal_bg.png) repeat-x;
-	text-align: left;
-}
+#modal .text,
+.recommend,
+.share {
+    width: 700px;
+    height: auto; text-align : left;
+    background: #e7e7e7 url(modal_bg.png) repeat-x;
+    text-align: left;
+} 
 
 #modal .text H1 {
 	margin-bottom: 20px; padding-bottom : 10px;
@@ -376,6 +380,78 @@ FRONTPAGE_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	line-height: 18px;
 	margin-bottom: 10px;
 }
+
+.recommend H1,
+.share H1 {
+    color: #bcabab;
+    font-size: 24px !important;
+    font-weight: normal !important;
+}
+
+.recommend,
+.share  {
+    width: 290px !important;
+    padding-bottom: 12px;
+    text-align: center;
+}
+
+.recommend .list,
+.share .list {
+    width: 290px;
+    border: 1px solid #e6e6e6;
+    height: 325px;
+    overflow: auto;
+    background-color: #fff;
+    -moz-box-shadow: inset -3px 0 13px #787378;
+    -webkit-box-shadow: inset -3px 0 13px #787378;
+    box-shadow: inset -3px 0 13px #787378;
+}
+
+.recommend .list .block,
+.share .list .block {
+    border-top: 1px solid #e6e6e6;
+    padding-bottom: 5px;
+}
+
+.recommend .list .block:FIRST-CHILD,
+.share .list .block:FIRST-CHILD {
+    border-top: none;
+}
+
+.recommend .list .block H1,
+.share .list .block H1 {
+    color: #4c4c4c;
+    margin: 5px 0;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    padding: 2px 0;
+}
+
+.recommend .list .thumbnail,
+.share .list .thumbnail {
+    padding: 8px 8px 0 8px;
+    margin-bottom: 0;
+}
+
+.recommend .list .content,
+.share .list .content {
+    float: left;
+    width: 175px;
+    text-align: left;
+    padding: 8px 8px 8px 0;
+}
+
+.recommend .list .infoText,
+.share .list .infoText {
+    color: #cfcfcf;
+}
+
+.recommend .list .done,
+.share .list .done {
+    color: #adacac;
+    font-weight: bold;
+    font-size: 13px;
+} 
 
 /*
 LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
@@ -400,13 +476,13 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 #liveTracking #mapWrapper .fade01,#liveTracking #mapWrapper .fade02 {
 	position: relative;
 	height: 42px;
-	background: url(fade_01.png) repeat-x;
+	background: url(/gfx/fade_01.png) repeat-x;
 	z-index: 1;
 }
 
 #liveTracking #mapWrapper .fade02 {
 	margin-top: -42px;
-	background: url(fade_02.png) repeat-x;
+	background: url(/gfx/fade_02.png) repeat-x;
 }
 
 .speed {
@@ -422,7 +498,7 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 	text-indent: 0;
 	z-index: 1;
 	display: inline-block;
@@ -439,12 +515,12 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	left: 42%;
 	height: 9px;
 	width: 17px;
-	background: url(button_arrow_down.png) no-repeat;
+	background: url(/gfx/button_arrow_down.png) no-repeat;
 }
 
 #workoutPanel {
 	position: absolute;
-	top: 110px;
+	top: 40px;
 	right: 100px;
 	color: #fff;
 	z-index: 2;
@@ -456,7 +532,7 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 10px 10px 0 0;
 	-moz-border-radius: 10px 10px 0 0;
 	border-radius: 10px 10px 0 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #workoutPanel .block {
@@ -511,7 +587,7 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	float: right;
 	padding-right: 10px;
 	color: #1bd7f2;
-	background: url(arrow_02.png) no-repeat right 4px;
+	background: url(/gfx/arrow_02.png) no-repeat right 4px;
 }
 
 #workoutPanel .block SPAN.running {
@@ -520,16 +596,17 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 18px;
 	height: 25px;
 	margin-right: 5px;
-	background: url(running_icon.png) no-repeat;
+	background: url(/gfx/running_icon.png) no-repeat;
 }
 
 .workoutBar {
+	position: relative;
 	width: 100%;
 	height: 26px;
-	background: url(workout_bg.png) repeat-x; -webkit-border-radius : 10px;
+	background: url(/gfx/workout_01_bg.png) repeat-x; -webkit-border-radius : 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 	-webkit-border-radius: 10px;
 }
 
@@ -537,14 +614,14 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 10px 0 0 10px;
 	-moz-border-radius: 10px 0 0 10px;
 	border-radius: 10px 0 0 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .workoutBar .last {
 	-webkit-border-radius: 0 10px 10px 0;
 	-moz-border-radius: 0 10px 10px 0;
 	border-radius: 0 10px 10px 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .workoutBar .workout01,
@@ -552,22 +629,23 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 .workoutBar .workout03,
 .workoutBar .workout04
 	{
+	position: relative;
 	float: left;
 	width: 100%;
 	height: 26px;
-	background: url(workout_01_bg.png) repeat-x;
+	background: url(/gfx/workout_01_bg.png) repeat-x;
 }
 
 .workoutBar .workout02 {
-	background: url(workout_02_bg.png) repeat-x;
+	background: url(/gfx/workout_02_bg.png) repeat-x;
 }
 
 .workoutBar .workout03 {
-	background: url(workout_03_bg.png) repeat-x;
+	background: url(/gfx/workout_03_bg.png) repeat-x;
 }
 
 .workoutBar .workout04 {
-	background: url(workout_04_bg.png) repeat-x;
+	background: url(/gfx/workout_04_bg.png) repeat-x;
 }
 
 .workoutBar .workout01 SPAN,
@@ -580,20 +658,20 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 13px;
 	height: 26px;
 	margin-right: -13px;
-	background: url(workout_01_right.png) repeat-x;
+	background: url(/gfx/workout_01_right.png) repeat-x;
 	z-index: 1
 }
 
 .workoutBar .workout02 SPAN {
-	background: url(workout_02_right.png) repeat-x;
+	background: url(/gfx/workout_02_right.png) repeat-x;
 }
 
 .workoutBar .workout03 SPAN {
-	background: url(workout_03_right.png) repeat-x;
+	background: url(/gfx/workout_03_right.png) repeat-x;
 }
 
 .workoutBar .workout04 SPAN {
-	background: url(workout_04_right.png) repeat-x;
+	background: url(/gfx/workout_04_right.png) repeat-x;
 }
 
 #workoutPanel .block .left {
@@ -620,7 +698,7 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 0 0 10px 10px;
 	-moz-border-radius: 0 0 10px 10px;
 	border-radius: 0 0 10px 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #workoutPanel .talk INPUT.text,#workoutPanel .talk textarea {
@@ -635,7 +713,7 @@ LIVE TRACK_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	font-size: 20px;
 	color: #fff;
 	font-style: italic;
-	background: url(send.png) no-repeat;
+	background: url(/gfx/send.png) no-repeat;
 	border: none;
 }
 
@@ -654,7 +732,7 @@ HEADER_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 304px;
 	height: 55px;
 	margin-top: 25px;
-	background: url(logo.png) no-repeat;
+	background: url(/gfx/logo.png) no-repeat;
 }
 
 #logo A {
@@ -674,13 +752,13 @@ DIV#userActionWrapper > DIV {
 	min-width: 80px;
 	padding: 7px 26px 7px 10px;
 	margin-left: 10px;
-	background: #4c4c4c url(arrow_02_down.png) no-repeat 95% 11px;
+	background: #4c4c4c url(/gfx/arrow_02_down.png) no-repeat 95% 11px;
 	color: #1bd7f2;
 	font-weight: bold;
 	-webkit-border-radius: 7px;
 	-moz-border-radius: 7px;
 	border-radius: 7px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 	z-index: 5;
 	text-align: right;
 }
@@ -715,7 +793,7 @@ DIV#userActionWrapper > DIV {
 	margin-bottom: 25px;
 	font-size: 16px;
 	font-weight: bold;
-	background: url(menu_bg.png) no-repeat;
+	background: url(/gfx/menu_bg.png) no-repeat;
 }
 
 #menu UL LI {
@@ -740,13 +818,13 @@ DIV#userActionWrapper > DIV {
 
 #menu UL LI A:HOVER {
 	text-decoration: none;
-	background: url(menu_bg_hover.png) no-repeat;
+	background: url(/gfx/menu_bg_hover.png) no-repeat;
 }
 
 #menu UL LI.active A {
 	position: relative;
 	height: 73px;
-	background: url(menu_bg_active.png) no-repeat;
+	background: url(/gfx/menu_bg_active.png) no-repeat;
 }
 
 #menu UL LI:FIRST-CHILD :HOVER,
@@ -755,7 +833,7 @@ DIV#userActionWrapper > DIV {
 	-webkit-border-radius: 10px 0 0 10px;
 	-moz-border-radius: 10px 0 0 10px;
 	border-radius: 10px 0 0 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #last A, 
@@ -764,7 +842,7 @@ DIV#userActionWrapper > DIV {
 	-webkit-border-radius: 0 10px 10px 0;
 	-moz-border-radius: 0 10px 10px 0;
 	border-radius: 0 10px 10px 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #menu UL LI:FIRST-CHILD A {
@@ -772,7 +850,7 @@ DIV#userActionWrapper > DIV {
 	-webkit-border-radius: 10px 0 0 10px;
 	-moz-border-radius: 10px 0 0 10px;
 	border-radius: 10px 0 0 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #menu UL LI.active SPAN {
@@ -781,7 +859,7 @@ DIV#userActionWrapper > DIV {
 	height: 9px;
 	bottom: -9px;
 	left: 60px;
-	background: url(menu_arrow.png) no-repeat;
+	background: url(/gfx/menu_arrow.png) no-repeat;
 }
 
 #menu UL LI.active A:HOVER {
@@ -801,7 +879,7 @@ LEFT WRAPPER_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 10px 0 0 10px;
 	-moz-border-radius: 10px 0 0 10px;
 	border-radius: 10px 0 0 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #leftWrapper A {
@@ -866,7 +944,7 @@ LEFT WRAPPER_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 7px 7px 0 0;
 	-moz-border-radius: 7px 7px 0 0;
 	border-radius: 7px 7px 0 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #leftWrapper TABLE {
@@ -920,7 +998,8 @@ A.cancel {
 	width: 100px;
 }
 
-.bar,.bar .progress {
+.bar {
+	position: relative;
 	width: 100%;
 	height: 38px;
 	margin-top: 15px;
@@ -929,22 +1008,34 @@ A.cancel {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
-.bar .progress,
-.bar .noProgress {
+.bar .progress {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 38px;
 	display: block;
 	line-height: 38px;
 	text-align: center;
 	background: url(bar_bg_active.png) repeat-x;
 	color: #fff;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	behavior: url(/gfx/PIE.htc);
 }
 
-.bar .noProgress {
-	text-align: center;
-	background: none;
+.bar .value {
+	position: absolute;
+	top: 0;
+	left: 0;
 	color: #fff;
+	font-weight: bold;
+	line-height: 38px;
+	width: 100%;
+	text-align: center;
 }
 
 /*
@@ -959,7 +1050,7 @@ CONTENT WRAPPER_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 0 10px 10px 10px;
 	-moz-border-radius: 0 10px 10px 10px;
 	border-radius: 0 10px 10px 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 /*
@@ -972,7 +1063,7 @@ CONTENT WRAPPER TOP_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 0 10px 0 0;
 	-moz-border-radius: 0 10px 0 0;
 	border-radius: 0 10px 0 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #topPhoto {
@@ -982,7 +1073,7 @@ CONTENT WRAPPER TOP_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 0 0 10px 10px;
 	-moz-border-radius: 0 0 10px 10px;
 	border-radius: 0 0 10px 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 #top H1 SPAN,#topPhoto H1 SPAN {
@@ -1021,20 +1112,20 @@ CONTENT WRAPPER TOP_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 24px;
 	height: 24px;
 	margin: 0 2px -8px 2px;
-	background: url(facebook_a.png) no-repeat;
+	background: url(/gfx/facebook_a.png) no-repeat;
 	text-indent: -5000px;
 }
 
 .shareAction SPAN A.twitter {
-	background: url(twitter_a.png) no-repeat;
+	background: url(/gfx/twitter_a.png) no-repeat;
 }
 
 .shareAction SPAN A.facebookActive {
-	background: url(facebook.png) no-repeat;
+	background: url(/gfx/facebook.png) no-repeat;
 }
 
 .shareAction SPAN A.twitterActive {
-	background: url(twitter.png) no-repeat;
+	background: url(/gfx/twitter.png) no-repeat;
 }
 
 .shareAction LABEL.active {
@@ -1094,13 +1185,13 @@ SPAN.track,SPAN.mapIt {
 	display: inline-block;
 	height: 36px;
 	margin: 0 15px 0 15px;
-	background: url(track_icon.png) no-repeat;
+	background: url(/gfx/track_icon.png) no-repeat;
 	text-indent: -5000px;
 }
 
 SPAN.mapIt {
 	margin: 0;
-	background: url(map_icon.png) no-repeat;
+	background: url(/gfx/map_icon.png) no-repeat;
 }
 
 SPAN.track A,SPAN.mapIt A {
@@ -1110,27 +1201,30 @@ SPAN.track A,SPAN.mapIt A {
 }
 
 SPAN.track A.active,SPAN.track A:HOVER {
-	background: url(track_icon_active.png) no-repeat;
+	background: url(/gfx/track_icon_active.png) no-repeat;
 }
 
 SPAN.mapIt A.active,SPAN.mapIt A:HOVER {
-	background: url(map_icon_active.png) no-repeat;
+	background: url(/gfx/map_icon_active.png) no-repeat;
 }
 
 #track .tooltipBox {
 	bottom: -55px;
-	left: 313px;
+	left: -30px;
+	width: 80px;
 }
 
 #mapIt .tooltipBox {
 	bottom: -55px;
-	left: 370px;
+	left: -28px;
+	width: 40px;
 }
 
 .tooltipBox {
 	position: absolute;
 	display: inline-block;
 	height: 36px;
+	line-height: 36px;
 	padding: 0 28px;
 	background: #252525;
 	border: none;
@@ -1141,7 +1235,7 @@ SPAN.mapIt A.active,SPAN.mapIt A:HOVER {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 	text-indent: 0;
 	z-index: 3;
 }
@@ -1153,7 +1247,7 @@ SPAN.mapIt A.active,SPAN.mapIt A:HOVER {
 	left: 42%;
 	width: 17px;
 	height: 9px;
-	background: url(button_arrow.png) no-repeat;
+	background: url(/gfx/button_arrow.png) no-repeat;
 }
 
 .set {
@@ -1185,7 +1279,7 @@ SPAN.mapIt A.active,SPAN.mapIt A:HOVER {
 }
 
 .remove A  {
-	background: url(remove.png) no-repeat right;
+	background: url(/gfx/remove.png) no-repeat right;
 	padding-right: 15px;
 	line-height: 12px;
 }
@@ -1228,26 +1322,26 @@ SPAN.mapIt A.active,SPAN.mapIt A:HOVER {
 	display: inline-block;
 	width: 22px;
 	height: 21px;
-	background: url(icon_02.png) no-repeat;
+	background: url(/gfx/icon_02.png) no-repeat;
 }
 
 .display A.itemView {
 	margin-left: 10px;
-	background: url(icon_01.png) no-repeat;
+	background: url(/gfx/icon_01.png) no-repeat;
 }
 
 .display A.itemView.active,.display A.itemView:HOVER {
-	background: url(icon_01_a.png) no-repeat;
+	background: url(/gfx/icon_01_a.png) no-repeat;
 }
 
 .display A.calView.active,.display A.calView:HOVER {
-	background: url(icon_02_a.png) no-repeat;
+	background: url(/gfx/icon_02_a.png) no-repeat;
 }
 
 #graphBg {
 	padding-top: 15px;
 	height: 226px;
-	background: url(graph_bg.png) repeat-x;
+	background: url(/gfx/graph_bg.png) repeat-x;
 }
 
 #graphBg .parameters {
@@ -1318,21 +1412,21 @@ TABLE.statistic TR TD A.arrowRight {
 	width: 20px;
 	height: 18px;
 	margin-left: 8px;
-	background: url(arrow_left.png) no-repeat;
+	background: url(/gfx/arrow_left.png) no-repeat;
 	text-indent: -5000px;
 }
 
 TABLE.statistic TR TD A.arrowRight {
 	margin-left: 12px;
-	background: url(arrow_right.png) no-repeat;
+	background: url(/gfx/arrow_right.png) no-repeat;
 }
 
 TABLE.statistic TR TD A.arrowLeft.active {
-	background: url(arrow_left_active.png) no-repeat;
+	background: url(/gfx/arrow_left_active.png) no-repeat;
 }
 
 TABLE.statistic TR TD A.arrowRight.active {
-	background: url(arrow_right_active.png) no-repeat;
+	background: url(/gfx/arrow_right_active.png) no-repeat;
 }
 
 #contentWrapper #top .map {
@@ -1343,7 +1437,7 @@ TABLE.statistic TR TD A.arrowRight.active {
 	-webkit-border-radius: 10px 10px 0 0;
 	-moz-border-radius: 10px 10px 0 0;
 	border-radius: 10px 10px 0 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .speed P {
@@ -1541,27 +1635,27 @@ CONTENT_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	width: 140px;
 	height: 24px;
 	margin-top: -40px;
-	background: url(rate_00.png) no-repeat;
+	background: url(/gfx/rate_00.png) no-repeat;
 }
 
 #contentWrapper .rate01 {
-	background: url(rate_01.png) no-repeat;
+	background: url(/gfx/rate_01.png) no-repeat;
 }
 
 #contentWrapper .rate02 {
-	background: url(rate_02.png) no-repeat;
+	background: url(/gfx/rate_02.png) no-repeat;
 }
 
 #contentWrapper .rate03 {
-	background: url(rate_03.png) no-repeat;
+	background: url(/gfx/rate_03.png) no-repeat;
 }
 
 #contentWrapper .rate04 {
-	background: url(rate_04.png) no-repeat;
+	background: url(/gfx/rate_04.png) no-repeat;
 }
 
 #contentWrapper .rate05 {
-	background: url(rate_05.png) no-repeat;
+	background: url(/gfx/rate_05.png) no-repeat;
 }
 
 .rate00 A,
@@ -1587,7 +1681,7 @@ CONTENT_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	line-height: 36px;
 	color: #fff;
 	text-decoration: none;
-	background: url(button_bg02.png) no-repeat;
+	background: url(/gfx/button_bg02.png) no-repeat;
 }
 
 #contentWrapper .more A {
@@ -1604,7 +1698,7 @@ CONTENT_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .friendsList H1 {
@@ -1646,21 +1740,21 @@ P.notification {
 	width: 12px;
 	height: 18px;
 	margin: 6px 10px 0 0;
-	background: url(previous.png) no-repeat;
+	background: url(/gfx/previous.png) no-repeat;
 	text-indent: -5000px;
 }
 
 .month .next A {
-	background: url(next.png) no-repeat;
+	background: url(/gfx/next.png) no-repeat;
 	margin-left: 10px;
 }
 
 .month .previous A.active {
-	background: url(previous_active.png) no-repeat;
+	background: url(/gfx/previous_active.png) no-repeat;
 }
 
 .month .next A.active {
-	background: url(next_active.png) no-repeat;
+	background: url(/gfx/next_active.png) no-repeat;
 }
 
 UL.trainingTasks {
@@ -1746,7 +1840,7 @@ A.addToPlans {
 	height: 28px;
 	margin: 15px 0 10px 0;
 	text-align:center;
-	background: url(showmore_bg.png) no-repeat;
+	background: url(/gfx/showmore_bg.png) no-repeat;
 }
 
 .showMore A,
@@ -1764,7 +1858,7 @@ A.addToPlans {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .open P {
@@ -1862,7 +1956,7 @@ textarea,input.text {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 	font-family: Helvetica, Arial, sans-serif, Verdana, "Trebuchet MS",
 		Tahoma;
 }
@@ -1927,10 +2021,6 @@ span.select {
 	cursor: default;
 	z-index: 1;
 	overflow: hidden;
-	-webkit-border-radius: 10px 0 0 10px;
-	-moz-border-radius: 10px 10px 0 10px;
-	border-radius: 10px 10px 0 10px;
-	behavior: url(PIE.htc);
 }
 
 select.small,
@@ -1940,17 +2030,20 @@ span.small {
 
 select.smaller,
 span.smaller {
-	width: 210px !important;
+	width: 208px !important;
+	background: url(select_medium.png) no-repeat;
 }
 
 select.smaller02,
 span.smaller02 {
 	width: 151px !important;
+	background: url(select_small.png) no-repeat;
 }
 
 select.min,
 span.min {
 	width: 85px !important;
+	background: url(select_min.png) no-repeat;
 }
 
 
@@ -1961,7 +2054,7 @@ input.blue,
 	height: 36px;
 	padding: 0 28px;
 	margin-left: 20px;
-	background: url(button_bg.png) repeat-x;
+	background: url(/gfx/button_bg.png) repeat-x;
 	border: none;
 	font-size: 14px;
 	font-weight: bold;
@@ -1971,7 +2064,7 @@ input.blue,
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .buttonNoActive {
@@ -1985,7 +2078,7 @@ input.blue,
 
 INPUT.blue {
 	margin-top: 5px;
-	background: url(bar_bg_active.png) repeat-x;
+	background: url(/gfx/bar_bg_active.png) repeat-x;
 }
 
 .tooltip {
@@ -2009,7 +2102,7 @@ A.addPhoto,A.search {
 	width: 23px;
 	height: 18px;
 	margin: -33px 8px 0 0;
-	background: url(photo_icon.png) no-repeat;
+	background: url(/gfx/photo_icon.png) no-repeat;
 	z-index: 1;
 }
 
@@ -2017,7 +2110,7 @@ A.search {
 	width: 25px;
 	height: 24px;
 	margin: -36px 8px 0 0;
-	background: url(search_icon.png) no-repeat;
+	background: url(/gfx/search_icon.png) no-repeat;
 	text-indent: -5000px;
 }
 
@@ -2045,11 +2138,11 @@ A.search {
 	height: 32px;
 	line-height: 32px;
 	text-align: center;
-	background: url(tab_bg.png) repeat-x;
+	background: url(/gfx/tab_bg.png) repeat-x;
 	-webkit-border-radius: 10px 10px 0 0;
 	-moz-border-radius: 10px 10px 0 0;
 	border-radius: 10px 10px 0 0;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 .tabs UL LI.active A {
@@ -2080,7 +2173,7 @@ A.search {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	behavior: url(PIE.htc);
+	behavior: url(/gfx/PIE.htc);
 }
 
 div.fileinputs {

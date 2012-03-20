@@ -45,7 +45,6 @@ class NewsFeed extends AbstractService {
 	
 	public function postFacebook(\Entity\Feed\Post $post = null, $description, $link = null, $linkName = null, $picture = null, \Entity\User $user = null) {
 		$facebook = new \Facebook_Graph($this->config->facebook->toArray());
-		
 		$params = array (
 			'message' => stripslashes(htmlspecialchars($description)),
 		);
@@ -68,6 +67,7 @@ class NewsFeed extends AbstractService {
 			$result = $facebook->api('me/feed', 'POST', $params);
 		} catch (\Facebook_GraphApiException $e) {
 			// just ignore
+// 			print_r($e->getMessage());
 			return null;
 		}
 		
@@ -91,13 +91,23 @@ class NewsFeed extends AbstractService {
 	    }
 	}
 	
-	public function postTwitter($description) {
+	public function postTwitter($description, \Entity\User $user = null) {
 		require_once 'Twitter/twitteroauth.php';
 		
 		$config = $this->config->twitter;
-		$twitterSession = new \Zend_session_Namespace('twitter');
 		
-		$twitteroauth = new \TwitterOAuth($config->consumerKey, $config->consumerSecret, $twitterSession->oauthToken, $twitterSession->oauthSecret);
+		if ($user == null) {
+			$user = $this->userService->getCurrentUser();
+		}	
+		if ($user == null) {
+			return;
+		}
+		
+		
+		$oAuthToken = $user->getTwitterOAuthToken();
+		$oAuthSecret = $user->getTwitterOAuthTokenSecret();
+		
+		$twitteroauth = new \TwitterOAuth($config->consumerKey, $config->consumerSecret, $oAuthToken, $oAuthSecret);
 		$userInfo = $twitteroauth->post('statuses/update', array (
 			'status' => substr($description, 0, 140),
 		));
@@ -285,9 +295,20 @@ class NewsFeed extends AbstractService {
 		return $messages[mt_rand(0, count($messages) - 1)];
 	}
 
-	public function postWorkoutToFacebook(\Entity\Workout $workout, \Entity\User $user = null) {
+	public function postWorkoutToFacebook(\Entity\Workout $workout, \Entity\User $user = null, $multisport = false) {
+		$distance = round($workout->getDistance() / 1000, 2);
+		if ($distance > 1000) {
+			$distance = 1000;
+		}
+		
+		if ($multisport) {
+			$sportName = 'Multisport';
+		} else {
+			$sportName = $workout->getTrainingPlanReport(0)->getSport()->getName();
+		}
+		
 		$this->postFacebook($workout->getFeedPost(),
-			'New entry on my #Trainingbook. ' . $workout->getTrainingPlanReport(0)->getSport()->getName() . ' - ' . round($workout->getDistance() / 1000, 2) .' km. ' . $this->getRandomSocialMessage(),
+			'New entry on my #Trainingbook. ' . $sportName . ' - ' . $distance .' km. ' . $this->getRandomSocialMessage(),
 			$this->config->meta->domainName . 'workout/training/id/' . $workout->getId(),
 			'Check it out',
 			null,
@@ -295,8 +316,19 @@ class NewsFeed extends AbstractService {
 		);
 	}
 	
-	public function postWorkoutToTwitter(\Entity\Workout $workout) {
-		$this->postTwitter('New entry on my #Trainingbook. ' . $workout->getTrainingPlanReport(0)->getSport()->getName() . ' - ' . round($workout->getDistance() / 1000, 2) .' km.');
+	public function postWorkoutToTwitter(\Entity\Workout $workout, $multisport = false, \Entity\User $user = null) {
+		$distance = round($workout->getDistance() / 1000, 2);
+		if ($distance > 1000) {
+			$distance = 1000;
+		}
+		
+		if ($multisport) {
+			$sportName = 'Multisport';
+		} else {
+			$sportName = $workout->getTrainingPlanReport(0)->getSport()->getName();
+		}
+		
+		$this->postTwitter('New entry on my #Trainingbook. ' . $sportName . ' - ' . $distance .' km.', $user);
 	}
 	
 	public function postLiveTrackingToFacebook(\Entity\Workout $workout, \Entity\User $user = null) {
@@ -311,5 +343,9 @@ class NewsFeed extends AbstractService {
 	
 	public function postLiveTrackingToTwitter(\Entity\Workout $workout) {
 		$this->postTwitter('I\'m out ' . $workout->getTrainingPlanReport(0)->getSport()->getName() . '! Join me! ' . $this->config->meta->domainName . 'workout/track/id/' . $workout->getId());
+	}
+	
+	public function removePost($post) {
+		$this->em->remove($post);
 	}
 }

@@ -9,78 +9,79 @@ $challenge = $report->getTrainingPlanReport()->getTrainingPlan();
 	<div class="map" id="map-canvas">
 	</div>
 	<div class="fade02"></div>
-</div>
+
 
 <!-- div class="speed">
 	<p>1.45 km/h</p>
 	<p class="sp">Lowest speed</p>
 	<span></span>
 </div -->
-<div id="workoutPanel">
-	<div class="info clear">
-		<div class="block clear">
-			<div class="thumbnail">
-				<?php if ($challenge->getUser()->getProfileImageUrl() != null):?>
-					<img src="<?php echo $challenge->getUser()->getProfileImageUrl()?>" alt="" />
-				<?php endif;?>
-			</div>
-			<div class="name">
-				<p class="clear">
-					<a href="/user/profile/id/<?php echo $challenge->getUser()->getId()?>" class="link">Profile</a>
-				</p>
-				<h1><?php echo $challenge->getUser()->getName()?></h1>
-				<p class="workouts"><?php echo $report->getTrainingPlanReport()->getWorkout()->getName()?></p>
-			</div>
-		</div>
-		<div class="line"></div>
-		<div class="block clear">
-			<div class="clear">
-				<h3 class="left"><?php echo $challenge->getName()?></h3>
-				<a href="/workout/training/id/<?php echo $report->getTrainingPlanReport()->getWorkout()->getId()?>" class="link right">Workout</a>
-			</div>
-			<div class="clear">
-				<span class="running"></span>
-				<h2 class="left"><?php echo $challenge->getSport()->getName()?></h2>
-			</div>
-			<div class="workoutBar clear">
-				<?php $graphData = $this->workoutService->getIntensityGraph($challenge);?>
-				<?php foreach ($challenge->getExercises() as $i => $exercise):?>
-					<?php if (isset($graphData[$i])):?>
-						<div style="width: <?php echo $graphData[$i]?>%;" class="workout0<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_WC):?>1<?php else:?><?php echo $exercise->getIntensity() + 1?><?php endif;?><?php if ($i == 0):?> first<?php endif;?><?php if ($i == count($challenge->getExercises()) - 1):?> last<?php endif;?>">
-							<?php if ($i != count($challenge->getExercises()) - 1):?>
-								<span></span>
-							<?php endif;?>
-						</div>
+	<div id="workoutPanel">
+		<div class="info clear">
+			<div class="block clear">
+				<div class="thumbnail">
+					<?php if ($challenge->getUser()->getProfileImageUrl() != null):?>
+						<img src="<?php echo $challenge->getUser()->getProfileImageUrl()?>" alt="" />
 					<?php endif;?>
-				<?php endforeach;?>
+				</div>
+				<div class="name">
+					<p class="clear">
+						<a href="/user/profile/id/<?php echo $challenge->getUser()->getId()?>" class="link">Profile</a>
+					</p>
+					<h1><?php echo $challenge->getUser()->getName()?></h1>
+					<p class="workouts"><?php echo $report->getTrainingPlanReport()->getWorkout()->getName()?></p>
+				</div>
+			</div>
+			<div class="line"></div>
+			<div class="block clear">
+				<div class="clear">
+					<h3 class="left"><?php echo $challenge->getName()?></h3>
+					<a href="/workout/training/id/<?php echo $report->getTrainingPlanReport()->getWorkout()->getId()?>" class="link right">Workout</a>
+				</div>
+				<div class="clear">
+					<span class="running"></span>
+					<h2 class="left"><?php echo $challenge->getSport()->getName()?></h2>
+				</div>
+				<div class="workoutBar clear">
+					<?php $graphData = $this->workoutService->getIntensityGraph($challenge);?>
+					<?php foreach ($challenge->getExercises() as $i => $exercise):?>
+						<?php if (isset($graphData[$i])):?>
+							<div style="width: <?php echo $graphData[$i]?>%;" class="workout0<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_WC):?>1<?php else:?><?php echo $exercise->getIntensity() + 1?><?php endif;?><?php if ($i == 0):?> first<?php endif;?><?php if ($i == count($challenge->getExercises()) - 1):?> last<?php endif;?>">
+								<?php if ($i != count($challenge->getExercises()) - 1):?>
+									<span></span>
+								<?php endif;?>
+							</div>
+						<?php endif;?>
+					<?php endforeach;?>
+				</div>
+			</div>
+			<div class="line"></div>
+			<div class="block clear">
+				<div class="left">
+					<h3>Duration</h3>
+					<p class="time" id="duration">-</p>
+					<h3>DISTANCE (KM)</h3>
+					<p class="distance" id="distance">-</p>
+				</div>
+				<div class="right">
+					<h3>SPEED (KM/H)</h3>
+					<p id="speed">-</p>
+					<h3>HEART (BPM)</h3>
+					<p id="heart">-</p>
+					<h3>ENERGY (KCAL)</h3>
+					<p id="energy">-</p>
+				</div>
+			</div>
+			<div class="line"></div>
+			<div class="block clear">
+				<iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $report->getTrainingPlanReport()->getWorkout()->getFeedPost()->getId()?>&amp;send=false&amp;layout=button_count&amp&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px;" allowTransparency="true"></iframe>
 			</div>
 		</div>
-		<div class="line"></div>
-		<div class="block clear">
-			<div class="left">
-				<h3>Duration</h3>
-				<p class="time" id="duration">-</p>
-				<h3>DISTANCE (KM)</h3>
-				<p class="distance" id="distance">-</p>
+		<div class="talk">
+			<div class="block clear">
+				<textarea class="tooltip" cols="" rows="" id="message" onfocus="Click.clear(this);">Your cheer up message</textarea>
+				<input type="button" class="send" value="Send pep talk" onclick="Message.send(<?php echo $report->getTrainingPlanReport()->getWorkout()->getId()?>)"/>
 			</div>
-			<div class="right">
-				<h3>SPEED (KM/H)</h3>
-				<p id="speed">-</p>
-				<h3>HEART (BPM)</h3>
-				<p id="heart">-</p>
-				<h3>ENERGY (KCAL)</h3>
-				<p id="energy">-</p>
-			</div>
-		</div>
-		<div class="line"></div>
-		<div class="block clear">
-			<iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $report->getTrainingPlanReport()->getWorkout()->getFeedPost()->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe>
-		</div>
-	</div>
-	<div class="talk">
-		<div class="block clear">
-			<textarea class="tooltip" cols="" rows="" id="message" onclick="Click.clear(this);">Your cheer up message</textarea>
-			<input type="button" class="send" value="Send pep talk" onclick="Message.send(<?php echo $report->getTrainingPlanReport()->getWorkout()->getId()?>)"/>
 		</div>
 	</div>
 </div>

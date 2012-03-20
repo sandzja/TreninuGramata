@@ -44,7 +44,16 @@
 				<span class="name"><a href="/friend/profile/id/<?php echo $post->getAuthor()->getId()?>"><?php echo $post->getAuthor()->getName()?></a></span>
 				<span class="infoText"><?php echo Helper_Date::format($post->getDateAdded())?> - Web</span>
 				<div class="goal">
-					<h1><a href="/workout/training/id/<?php echo $post->getWorkout()->getId()?>"><?php echo $post->getWorkout()->getTrainingPlan(0)->getSport()->getName()?> <?php echo round($post->getWorkout()->getDistance() / 1000, 2)?> km in <?php echo $this->secondsToHours($post->getWorkout()->getDuration())?></a></h1>
+					<h1>
+						<a href="/workout/training/id/<?php echo $post->getWorkout()->getId()?>">
+							<?php if (count($post->getWorkout()->getTrainingPlans()) > 1):?>
+								Multisport
+							<?php else:?>
+								<?php echo $post->getWorkout()->getTrainingPlan(0)->getSport()->getName()?> <?php if ($post->getWorkout()->getDistance() != 0):?><?php echo round($post->getWorkout()->getDistance() / 1000, 2)?> km<?php endif;?>
+								<?php if ($post->getWorkout()->getDuration() != 0):?> <?php if ($post->getWorkout()->getDistance() != 0):?>in<?php else:?>for<?php endif;?> <?php echo $this->secondsToHours($post->getWorkout()->getDuration())?><?php endif;?>
+							<?php endif;?>
+						</a>
+					</h1>
 					<?php if ($post->getWorkout()->isShared() && $post->getWorkout()->getStartTime() != null && $post->getWorkout()->getEndTime() == null):?>
 						<div class="trackLive">
 							<a href="/workout/track/id/<?php echo $post->getWorkout()->getId()?>">Track live!</a>
@@ -55,7 +64,7 @@
 				</div>
 				<p><?php echo $post->getComment()?></p>
 				<div class="social">
-					<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo Zend_Registry::getInstance()->config->meta->domainName?>news-feed/post/id/<?php echo $post->getId()?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
+					<span class="plugin"><iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo urlencode(Zend_Registry::getInstance()->config->meta->domainName . 'workout/training/id/' . $post->getWorkout()->getId())?>&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=249761815088830" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe></span>
 					<span></span>
 					<span class="highlight"><a href="javascript:;" onclick="NewsFeed.showComments(<?php echo $post->getId()?>);"><?php if ($post->getComments()->count() > 0):?><?php echo $post->getComments()->count()?> Comments<?php else:?>Comment<?php endif;?></a></span>
 				</div>

@@ -100,8 +100,11 @@ class Sync {
 		    $trainingPlanDTO->hasWorkoutGoal = (boolean) $this->getParam($trainingPlan, 'HasWorkoutGoal');
 		    $trainingPlanDTO->note = $this->getParam($trainingPlan, 'Note');
 		    $trainingPlanDTO->userId = $userId;
-		    $trainingPlanDTO->isPrivate = true;
+		    $trainingPlanDTO->isPrivate = false;
 		    $trainingPlanDTO->synced = true;
+		    if (isset($trainingPlan[TrainingPlanDeleted])) {
+		    	$trainingPlanDTO->deletedTime = new \DateTime('@' . (int) $this->getParam($trainingPlan, 'TrainingPlanDeleted'));
+		    }
 		    
 		    $trainingPlanFeed = $this->newsFeedService->saveTrainingPlan($trainingPlanDTO);
 		    $trainingPlanEntity = $trainingPlanFeed->getTrainingPlan();
@@ -111,6 +114,7 @@ class Sync {
 		    	$exerciseEntity = new \Entity\Exercise();
 		    	$exerciseEntity->setName($this->getParam($exercise, 'ExerciseName'));
 		    	$exerciseEntity->setIntensity($this->getParam($exercise, 'ExerciseIntensity'));
+		    	$exerciseEntity->setNote($this->getParam($exercise, 'ExerciseNote'));
 		    	$exerciseEntity->setSynced(true);
 		    	$goal = new \Entity\Goal();
 		    	$goal->setDistance($this->getParam($exercise, 'GoalDistance'));
@@ -244,14 +248,17 @@ class Sync {
 			    $workoutEntity = $this->workoutService->getWorkout($this->getParam($record, 'WorkoutID'));
 			}
 			
-			$recordEntity = new \Entity\Record();
-			$recordEntity->setDuration($this->getParam($record, 'Duration'));
-			$recordEntity->setDistance($this->getParam($record, 'Distance'));
-			$recordEntity->setIsTimeRecord((boolean) $this->getParam($record, 'IsTimeRecord'));
-			$recordEntity->setIsMiles((boolean) $this->getParam($record, 'IsMiles'));
-			$recordEntity->setWorkout($workoutEntity);
-			$recordEntity->setUser($user);
-			$recordEntity->setSynced(true);
+			if ($this->workoutService->getSport($this->getParam($record, 'SportID')) != null) {
+				$recordEntity = new \Entity\Record();
+				$recordEntity->setDuration($this->getParam($record, 'Duration'));
+				$recordEntity->setDistance($this->getParam($record, 'Distance'));
+				$recordEntity->setIsTimeRecord((boolean) $this->getParam($record, 'IsTimeRecord'));
+				$recordEntity->setIsMiles((boolean) $this->getParam($record, 'IsMiles'));
+				$recordEntity->setWorkout($workoutEntity);
+				$recordEntity->setUser($user);
+				$recordEntity->setSport($this->workoutService->getSport($this->getParam($record, 'SportID')));
+				$recordEntity->setSynced(true);
+			}
 			
 			$this->workoutService->persistRecord($recordEntity);
 			
@@ -292,6 +299,7 @@ class Sync {
 		        	'ExerciseID' => $exercise->getId(),
 		        	'ExerciseName' => $exercise->getName(),
 		        	'ExerciseIntensity' => $exercise->getIntensity(),
+		        	'ExerciseNote' => $exercise->getNote(),
 		        	'GoalDistance' => (double) $exercise->getGoal()->getDistance(),
 		        	'GoalDuration' => (double) $exercise->getGoal()->getDuration(),
 		        	'GoalIsChallenge' => $exercise->getGoal()->isChallenge(),
@@ -305,6 +313,7 @@ class Sync {
 		    	'IsChallenge' => (boolean) $trainingPlan->isChallenge(),
 		    	'HasWorkoutGoal' => (boolean) $trainingPlan->hasWorkoutGoal(),
 		    	'Note' => (boolean) $trainingPlan->getFeedPost()->getComment(),
+		    	'TrainingPlanDeleted' => $trainingPlan->getDeletedTime() != null ? $trainingPlan->getDeletedTime()->getTimestamp() : null,
 		    	'SportID' => $trainingPlan->getSport()->getId(),
 		    	'Exercises' => $exercisesData,
 		    );

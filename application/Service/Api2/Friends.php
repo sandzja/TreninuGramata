@@ -317,4 +317,66 @@ class Friends {
 	    
 	    return $response;
 	}
+	
+	public function unsignedFriendsListFB($userId, $sessionId) {
+		$userService = new User();
+		$user = $userService->checkAndUpdateSession($userId, $sessionId);
+		
+		$friends = array ();
+		foreach ($this->userService->getUnsignedFacebookFriends($user) as $facebookFriend) {
+			$friends[] = array (
+					'FriendUserId' => $facebookFriend['id'],
+					'FriendName' => $facebookFriend['name'],
+					'FriendImage' => $facebookFriend['profileImage'],
+			);
+		}
+		
+		$response = \Zend_Json::encode(array (
+				'Response' => 'OK',
+				'Friends' => $friends,
+		));
+		 
+		return $response;
+	}
+	
+	public function unsignedFriendsListTwitter($userId, $sessionId) {
+		$userService = new User();
+		$user = $userService->checkAndUpdateSession($userId, $sessionId);
+	
+		$friends = array ();
+		foreach ($this->userService->getUnsignedTwitterFriends($user) as $twitterFriend) {
+			$friends[] = array (
+					'FriendUserId' => $twitterFriend['id'],
+					'FriendName' => $twitterFriend['name'],
+					'FriendImage' => $twitterFriend['profileImage'],
+			);
+		}
+	
+		$response = \Zend_Json::encode(array (
+				'Response' => 'OK',
+				'Friends' => $friends,
+		));
+			
+		return $response;
+	}
+	
+	public function inviteFriends($userId, $sessionId, $friendsToInviteFBIDs, $friendsToInviteTwitterIDs, $friendsToInviteEMails) {
+		$userService = new User();
+		$user = $userService->checkAndUpdateSession($userId, $sessionId);
+		
+		foreach (explode(',', $friendsToInviteFBIDs) as $friendId) {
+			$this->userService->inviteFacebook($user, trim($friendId), 'I\'m using Trainingbook.com application on my phone. Please check it out at http://trainingbook.com.');
+		}
+		
+		foreach (explode(',', $friendsToInviteTwitterIDs) as $friend) {
+			$this->userService->inviteTwitter($user, trim($friendId), 'I\'m using Trainingbook.com application on my phone. Please check it out at http://trainingbook.com.');
+		}
+		
+		foreach (explode(',', $friendsToInviteEMails) as $friend) {
+		}
+		
+		$response = \Zend_Json::encode(array (
+				'Response' => 'OK',
+		));
+	}
 }

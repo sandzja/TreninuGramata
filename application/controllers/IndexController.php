@@ -23,7 +23,6 @@ class IndexController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
-
         if (Zend_Auth::getInstance()->hasIdentity()) {
     		$this->_forward('index', 'news-feed');
     	} else {
@@ -37,6 +36,6 @@ class IndexController extends Zend_Controller_Action {
     public function startAction() {
     	$this->_helper->setLayout('front_page');
     }
-
+ 
 }
 	

@@ -105,7 +105,21 @@ class UserController extends Zend_Controller_Action {
 		
 		if ($this->_request->isPost()) {
 			$user = $this->userService->getCurrentUser();
-			$this->userService->setGoal($user, $this->_getParam('goal'), $this->_getParam('value'), $this->_getParam('unit'));
+			switch ($this->_getParam('type')) {
+				case 'distance':
+					$this->userService->setDistanceGoal($user, $this->_getParam('goal'), $this->_getParam('distance'), $this->_getParam('unit'));
+					break;
+				case 'time':
+					$this->userService->setTimeGoal($user, $this->_getParam('goal'), $this->_getParam('hours'), $this->_getParam('minutes'), $this->_getParam('seconds'));
+					break;
+				case 'calories':
+					$this->userService->setCaloriesGoal($user, $this->_getParam('goal'), $this->_getParam('calories'));
+					break;
+				case 'workout':
+				default:
+					$this->userService->setWorkoutGoal($user, $this->_getParam('goal'), $this->_getParam('workout'));
+			} 
+			
 		}
 	}
     

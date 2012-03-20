@@ -40,7 +40,7 @@
 								<?php if ($exercise->getGoal()->getDuration() != 0):?>
 									<?php echo $this->secondsToHours($exercise->getGoal()->getDuration())?> <?php echo $exercise->getName()?>
 								<?php elseif ($exercise->getGoal()->getDistance() != 0):?>
-									<?php echo $this->secondsToHours($exercise->getGoal()->getDistance() / $trainingPlan->getSport()->getIntensitySpeed())?> <?php echo $exercise->getName()?>
+									<?php echo round($exercise->getGoal()->getDistance() / 1000, 2)?> km <?php echo $exercise->getName()?>
 								<?php endif;?>
 							</p>
 						<?php else:?>
@@ -48,7 +48,7 @@
 								<?php if ($exercise->getGoal()->getDuration() != 0):?>
 									<?php echo $this->secondsToHours($exercise->getGoal()->getDuration())?> <?php echo $exercise->getName()?>
 								<?php elseif ($exercise->getGoal()->getDistance() != 0):?>
-									<?php echo $this->secondsToHours($exercise->getGoal()->getDistance() / $trainingPlan->getSport()->getIntensitySpeed())?> <?php echo $exercise->getName()?>
+									<?php echo round($exercise->getGoal()->getDistance() / 1000, 2)?> km <?php echo $exercise->getName()?>
 								<?php endif;?>
 							 <b>
 							<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_LOW):?>
@@ -60,14 +60,17 @@
 							<?php if ($exercise->getIntensity() == \Entity\Exercise::INTENSITY_HIGH):?>
 								High intensity
 							<?php endif;?>
-							</b> <span class="infoText"> “<?php echo $exercise->getNote()?>”</span></p>
+							</b> <?php if ($exercise->getNote() != ''):?><span class="infoText"> “<?php echo $exercise->getNote()?>”</span><?php endif;?></p>
 						<?php endif;?>
 					<?php endforeach;?>
+					<?php if ($trainingPlan->getUser() == $this->currentUser && $trainingPlan->getName() != 'Basic tracking'):?>
+						<a href="javascript:;" class="right" style="color: #d63f22;" onclick="WorkoutPlan.deletePlan(<?php echo $trainingPlan->getId()?>, this);">Delete</a>
+					<?php endif;?>
 					<?php if ($trainingPlan->getUser()->getId() != $this->currentUser->getId()):?>
 						<a href="javascript:;" onclick="WorkoutPlan.addToMyPlans(<?php echo $trainingPlan->getId()?>, this)" class="right">+ Add to My plans</a>
 					<?php endif;?>
-					<a href="#" class="right">Recommend</a>
-					<a href="#" class="right">Share</a>
+					<a href="javascript:;" onclick="Modal.ajax('/workout/recommend', '.recommend');" class="right">Recommend</a>
+					<a href="javascript:;" onclick="Modal.ajax('/workout/share', '.share');" class="right">Share</a>
 				</div>
 				<a href="javascript:;" id="show-more-link-<?php echo $trainingPlan->getFeedPost()->getId()?>" onclick="NewsFeed.showTrainingPlanContent(<?php echo $trainingPlan->getFeedPost()->getId()?>)">+ show more</a>
 			</div>
