@@ -30,8 +30,11 @@ class WorkoutController extends Zend_Controller_Action {
         /* SV: Top WorkoutSets addon */
         $db = Zend_Db_Table::getDefaultAdapter();
         /* SV: Gets top workouts */
-        $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 order by likes desc limit 5");
-        $this->view->top_running_workout = $data;
+        $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 and distance='10km' order by likes desc limit 3");
+        $this->view->top_running_workout_10 = $data;
+
+        $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 and distance='Half-marathon' order by likes desc limit 3");
+        $this->view->top_running_workout_21 = $data;
 
         $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by likes desc limit 5");
         

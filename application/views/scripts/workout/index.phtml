@@ -37,8 +37,9 @@
 	<h1>Top <span style="color: #1BD7F2;">Workout</span> Plans</h1>
 	<div class="span-tr">
 		<div class="span-trrow tr-sameheight" style="margin-right: 5px;">
-			<div class="span-trrow"><h1>Top running workouts</h1></div>
-			<?php foreach ($this->top_running_workout as $workout) { ?>
+
+			<div class="span-trrow"><h1>Top half-marathon workouts</h1></div>
+			<?php foreach ($this->top_running_workout_21 as $workout) { ?>
 			<div class="span-trrow tr-relatvie">
 					<div class="span-trimage"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><img width=60px src="<?=$workout['image'];?>" title="<?=$workout['name'];?>"></a></div>
 					<div class="span-trname last">
@@ -51,6 +52,22 @@
 					</div>
 			</div>
 			<?php } ?>
+
+			<div class="span-trrow"><h1>Top 10km workouts</h1></div>
+			<?php foreach ($this->top_running_workout_10 as $workout) { ?>
+			<div class="span-trrow tr-relatvie">
+					<div class="span-trimage"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><img width=60px src="<?=$workout['image'];?>" title="<?=$workout['name'];?>"></a></div>
+					<div class="span-trname last">
+						<div class="span-trname">
+							<a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><?=$workout['name'];?></a>
+						</div>
+						<div class="span-trname tr-preview last">
+							<span style="color: #1BD7F2;"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout">Preview Workout</a></span>
+						</div>
+					</div>
+			</div>
+			<?php } ?>
+
 		</div>
 		<div class="span-trrow last tr-sameheight" style="margin-left: 5px;">
 			<div class="span-trrow"><h1>Top coaches</h1></div>
