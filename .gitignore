@@ -1,0 +1,4 @@
+# proxy files
+application/proxies/*
+application/data/feedPost/*
+application/data/logs/*
