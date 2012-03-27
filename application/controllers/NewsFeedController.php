@@ -345,18 +345,18 @@ function sec2hms ($sec)
           if (isset($data[0])) {
             $old_set_id=$data[0];
             
-            $delete_data = $db->fetchAll("select * from FeedTrainingPlan where training_plan_id in (SELECT id FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id)");
-            foreach ($delete_data as $del) {
-                $db->query("delete from FeedTrainingPlan where id=".$del['id']);
-                $db->query("delete from FeedPost where id=".$del['id']);
-            }
+            //$delete_data = $db->fetchAll("select * from FeedTrainingPlan where training_plan_id in (SELECT id FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id)");
+            //foreach ($delete_data as $del) {
+            //    $db->query("delete from FeedTrainingPlan where id=".$del['id']);
+            //    $db->query("delete from FeedPost where id=".$del['id']);
+            //}
 
-            $delete_data = $db->fetchAll("SELECT * FROM Exercise WHERE trainingPlanId in (SELECT id FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id)");
-            foreach ($delete_data as $del) {
-                $db->query("delete from Exercise where id=".$del['id']);
-                $db->query("delete from Goal where id=".$del['goal_id']);
-            }
-            $db->query("delete FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id");
+            //$delete_data = $db->fetchAll("SELECT * FROM Exercise WHERE trainingPlanId in (SELECT id FROM `TrainingPlan` WHERE user_id=$user_id and set_id=$old_set_id)");
+            //foreach ($delete_data as $del) {
+            //    $db->query("delete from Exercise where id=".$del['id']);
+            //    $db->query("delete from Goal where id=".$del['goal_id']);
+            //}
+            $db->query("update TrainingPlan set deleted_time=now(), is_synced=0 WHERE user_id=$user_id and set_id=$old_set_id");
         }
 
                 // nodzesam patreizejo, ja ir
