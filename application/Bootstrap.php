@@ -80,7 +80,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		$view->headMeta()->appendName('Keywords', $config->defaultKeywords);
 		$view->headMeta()->appendName('Description', $config->defaultDescription);
 		$view->headMeta()->appendName('Author', 'BitWeb OÜ');
-		//$view->headMeta($config->defaultDescription, 'og:description', 'property');
+		$view->headMeta($config->defaultDescription, 'og:description', 'property');
 		$view->headLink(array('rel' => 'icon', 'href' => '/favicon.ico', 'type' => 'image/x-icon'));
 
 		$this->view->headLink()->appendStylesheet('/gfx/_styles_screen.css');
