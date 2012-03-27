@@ -53,4 +53,5 @@ return array (
 		'Get moving! Log out, go run! ',
 		'I\'m training more effective! I\'m having a lot of fun! Trainingbook is so social!',
 	),
+	'defaultFriends' => array (29, 30),
 );

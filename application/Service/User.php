@@ -170,7 +170,7 @@ class User extends AbstractService {
 			$workoutService = new \Service\Workout();
 			$workoutService->createDefaultTrainingData($user);
 			$this->refreshTransaction();
-			
+
 			$newsFeedService = new \Service\NewsFeed();
 			$newsFeedService->postFacebook(null, 'I just created my personal workout\'s Trainingbook. Now I have a training assistant who will add fun and effectiveness to my workouts and let me track and share my progress.', $this->config->meta->domainName, 'TrainingBook', null, $user);
 		}
@@ -211,6 +211,12 @@ class User extends AbstractService {
 		}
 
 		return $user;
+	}
+
+	public function addDefaultFriends() {
+		foreach ($this->config->defaultFriends->toArray() as $user) {
+			$this->addFollowing($user);
+		}
 	}
 	
 	public function updateFacebookData($userId = null) {
@@ -261,6 +267,9 @@ class User extends AbstractService {
 				$this->em->persist($friend);
 			}
 		}
+
+		// SV: add default fiends
+		$this->addDefaultFriends();
 	}
 	
 	public function syncTwitterFriends() {
@@ -294,6 +303,10 @@ class User extends AbstractService {
 				$this->addFollowing($friend->getId());
 			}
 		}
+
+		// SV: add default fiends
+		$this->addDefaultFriends();
+
 	}
 	
 	public function addFollowing($friendId, \Entity\User $user = null) {
