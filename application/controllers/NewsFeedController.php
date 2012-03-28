@@ -164,7 +164,8 @@ function sec2hms ($sec)
                     and TrainingPlan.user_id=$user_id 
                     and TrainingPlan.set_id=".$treninu_plans['param_key']." 
                     and (date(TrainingPlan.date)=curdate() 
-                        or TrainingPlan.date>now()) 
+                        or TrainingPlan.date>now())
+                    and TrainingPlan.deleted_time is NULL
                     order by TrainingPlan.date asc 
                     limit 1");
             } else {
@@ -180,13 +181,14 @@ function sec2hms ($sec)
                     where TrainingPlan.sport_id=Sport.id 
                     and TrainingPlan.user_id=$user_id 
                     and TrainingPlan.set_id=".$treninu_plans['param_key']." 
-                    and TrainingPlan.execution_order=$nr 
+                    and TrainingPlan.execution_order=$nr
+                    and TrainingPlan.deleted_time is NULL 
                     ");
             }       
             
             $treninu_workout = $data[0];
 
-            $data = $db->fetchCol("SELECT max(execution_order) FROM TrainingPlan where TrainingPlan.user_id=$user_id and TrainingPlan.set_id=".$treninu_plans['param_key']);
+            $data = $db->fetchCol("SELECT max(execution_order) FROM TrainingPlan where TrainingPlan.deleted_time is NULL and TrainingPlan.user_id=$user_id and TrainingPlan.set_id=".$treninu_plans['param_key']);
             $treninu_workout['execution_order_max'] = $data[0];            
 
             $data = $db->fetchCol("SELECT image FROM SetSets where id=".$treninu_plans['param_key']);
