@@ -45,6 +45,12 @@ class SetSets extends AbstractEntity {
 	protected $event;
 	
 	/**
+	 * @Column(type="string")
+	 * @var string
+	 */
+	protected $distance;
+
+	/**
 	 * @Column(type="date")
 	 * @var \Date
 	*/
@@ -158,10 +164,24 @@ class SetSets extends AbstractEntity {
 	/**
 	 * @param string $event
 	 */
-	public function setEvente($event) {
+	public function setEvent($event) {
 		$this->event = $event;
 	}
 
+
+	/**
+	 * @return string the $distance
+	 */
+	public function getDistance() {
+		return $this->distance;
+	}
+
+	/**
+	 * @param string $distance
+	 */
+	public function setDistance($distance) {
+		$this->distance = $distance;
+	}
 
 	/**
 	 * @return string the $image

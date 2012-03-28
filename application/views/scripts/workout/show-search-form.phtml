@@ -2,13 +2,13 @@
 	<div class="block noBord clear">
 		<div class="element">
 			<div class="left clear">
-				<select class="select smaller" title="Select one" name="sportId">
-					<option value="">Sport type</option>
-					<?php foreach ($this->sports as $sport):?>
-						<option value="<?php echo $sport->getId()?>" <?php if ($this->sport == $sport):?>selected="selected"<?php endif;?>><?php echo $sport->getName()?></option>
+				<select class="select smaller" title="Select one" name="distance">
+					<option value="">Distance</option>
+					<?php foreach ($this->distances as $distance):?>
+						<option value="<?php echo $distance['distance']?>" <?php if ($this->distance == $distance['distance']):?>selected="selected"<?php endif;?>><?php echo $distance['distance']?></option>
 					<?php endforeach;?>
 				  </select>
-			  <span class="select smaller"><?php if ($this->sport != null):?><?php echo $this->sport->getName()?><?php else:?>Sport type<?php endif;?></span>
+			  <span class="select smaller"><?php if ($this->distance != null):?><?php echo $this->distance?><?php else:?>Distance<?php endif;?></span>
 		  </div>
 		</div>
 		<div class="element">

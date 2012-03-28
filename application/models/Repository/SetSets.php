@@ -20,7 +20,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 class SetSets extends AbstractRepository {
 
 	// 	$this->em->getRepository('\Entity\SetSets')->searchTrainingPlans($sets, $coach, $sportId, $intensity, $event, $name, $limit, $offset);
-	public function searchTrainingPlans($nr, $sets, $coach, $sportId , $intensity, $event, $name, $limit = null, $offset = null) {
+	public function searchTrainingPlans($nr, $sets, $coach, $sportId, $intensity, $event, $name, $distance, $limit = null, $offset = null) {
 		
 		$where_set = 0;
 
@@ -53,7 +53,12 @@ class SetSets extends AbstractRepository {
 			$query->andWhere('SetSets.event = :event')->setParameter('event', $event);
 			$where_set = 1;
 		}
-	
+		
+		if ($distance != null) {
+			$query->andWhere('SetSets.distance = :distance')->setParameter('distance', $distance);
+			$where_set = 1;
+		}	
+		
 		if ($coach != null) {
 			$query->andWhere('User.name = :coach')->setParameter('coach', $coach);
 			$where_set = 1;

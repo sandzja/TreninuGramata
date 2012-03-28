@@ -71,7 +71,7 @@ class WorkoutController extends Zend_Controller_Action {
         
         $this->view->no_output = false;
         if ($this->_getParam('search') != null or $this->_getParam('sets') != null or $this->_getParam('coach') != null) {
-            $this->view->trainingPlans = $this->workoutService->searchTrainingPlansSets($this->_getParam('nr',1), $this->_getParam('sets'), $this->_getParam('coach'), $this->_getParam('sportId'), $this->_getParam('intensity'), $this->_getParam('event'), $this->_getParam('name'), 10, $this->_getParam('page', 0) * 10);
+            $this->view->trainingPlans = $this->workoutService->searchTrainingPlansSets($this->_getParam('nr',1), $this->_getParam('sets'), $this->_getParam('coach'), $this->_getParam('sportId'), $this->_getParam('intensity'), $this->_getParam('event'), $this->_getParam('name'), $this->_getParam('distance'), 10, $this->_getParam('page', 0) * 10);
         } else {
             $this->view->no_output = true;
         }
@@ -212,6 +212,12 @@ class WorkoutController extends Zend_Controller_Action {
         $data = $db->fetchAll("SELECT DISTINCT event FROM  SetSets");
         $this->view->events = $data;
         $this->view->event = $this->_getParam('event');
+
+        /* SV: Gets all posible distance */
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $data = $db->fetchAll("SELECT DISTINCT distance FROM  SetSets");
+        $this->view->distances = $data;
+        $this->view->distance = $this->_getParam('distance');
     }
     
     public function showAddWorkoutPlanFormAction() {
