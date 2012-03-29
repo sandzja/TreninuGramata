@@ -366,6 +366,10 @@ function sec2hms ($sec)
                 // uztaisam jaunu
         $db->query("insert into UserConfig (user_id, param_name, param_value, param_key) values ($user_id,'TrainingPlan','$event_name','$event_id')");
 
+        // SV add used by func
+        $db->query("update SetSets set `usage`=`usage`+1 where id=".$event_id);
+        if (isset($old_set_id)) $db->query("update SetSets set `usage`=`usage`-1 where id=".$old_set_id);
+
         // liekam ieksaa jaunos
         $data = $db->fetchAll("SELECT * FROM SetTrainingPlan where set_id=?",$event_id);
           foreach ($data as $tp) {

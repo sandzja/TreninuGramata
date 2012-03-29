@@ -31,13 +31,22 @@ class WorkoutController extends Zend_Controller_Action {
         $db = Zend_Db_Table::getDefaultAdapter();
         /* SV: Gets top workouts */
         $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 and distance='10km' order by likes desc limit 3");
-        $this->view->top_running_workout_10 = $data;
+        $data_work = array();
+        foreach ($data as $row) {
+            $row['user']=$this->userService->getUser($row['coach_id']);
+            $data_work[]=$row;
+        }
+        $this->view->top_running_workout_10 = $data_work;
 
         $data = $db->fetchAll("SELECT * from SetSets where sport_id=1 and distance='Half-marathon' order by likes desc limit 3");
-        $this->view->top_running_workout_21 = $data;
+        $data_work = array();
+        foreach ($data as $row) {
+            $row['user']=$this->userService->getUser($row['coach_id']);
+            $data_work[]=$row;
+        }
+        $this->view->top_running_workout_21 = $data_work;
 
         $data = $db->fetchAll("SELECT coach_id, count(1) plans, sum(likes) likes from SetSets group by coach_id order by likes desc limit 5");
-        
         $coach = array();
         foreach ($data as $row) {
             $row['user']=$this->userService->getUser($row['coach_id']);

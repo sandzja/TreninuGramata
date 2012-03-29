@@ -29,9 +29,10 @@
 .span-trrow h1 {margin:5px 0 10px 5px; font-size:16px;}
 .span-trimage {margin:0 10px 10px 5px; width:60px;}
 .span-trname {width:245px;}
-.tr-preview {position:absolute; bottom:15px; left:75px;}
+.tr-preview {position:absolute; bottom:0px; left:75px;}
 .tr-sameheight {padding-bottom: 1000px; margin-bottom:-1000px;}
 .tr-relatvie {margin-bottom:5px; position:relative;}
+.paddingadd {padding-top:5px;}
 </style>
 
 <div class="block clear" style="background-color: white; padding-left:18px;padding-top:15px;border-top:0;">
@@ -45,9 +46,12 @@
 					<div class="span-trimage"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><img width=60px src="<?=$workout['image'];?>" title="<?=$workout['name'];?>"></a></div>
 					<div class="span-trname last">
 						<div class="span-trname">
-							<a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><?=$workout['name'];?></a>
+							<a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><?=$workout['name'];?></a> <span style="color: #1BD7F2;">used by <?php echo $workout['usage'];?> athlete<?php if ($workout['usage']>1) { ?>s<?php } ?></span>
 						</div>
-						<div class="span-trname tr-preview last">
+						<div class="span-trname paddingadd">
+							Coach: <a href="workout?coach=<?php echo $workout['user']->getName()?>" title="Show Workouts"><?php echo $workout['user']->getName()?></a>
+						</div>
+						<div class="span-trname paddingadd">
 							<span style="color: #1BD7F2;"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout">Preview Workout</a></span>
 						</div>
 					</div>
@@ -60,9 +64,12 @@
 					<div class="span-trimage"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><img width=60px src="<?=$workout['image'];?>" title="<?=$workout['name'];?>"></a></div>
 					<div class="span-trname last">
 						<div class="span-trname">
-							<a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><?=$workout['name'];?></a>
+							<a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout"><?=$workout['name'];?></a> <span style="color: #1BD7F2;">used by <?php echo $workout['usage'];?> athlete<?php if ($workout['usage']>1) { ?>s<?php } ?></span>
 						</div>
-						<div class="span-trname tr-preview last">
+						<div class="span-trname paddingadd">
+							Coach: <a href="workout?coach=<?php echo $workout['user']->getName()?>" title="Show Workouts"><?php echo $workout['user']->getName()?></a>
+						</div>
+						<div class="span-trname paddingadd">
 							<span style="color: #1BD7F2;"><a href="workout?sets=<?php echo $workout['id'];?>" title="Preview Workout">Preview Workout</a></span>
 						</div>
 					</div>
