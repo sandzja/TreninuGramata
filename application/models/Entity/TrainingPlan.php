@@ -116,6 +116,12 @@ class TrainingPlan extends AbstractEntity {
 	 * @OneToOne(targetEntity="Entity\Feed\Post\TrainingPlan", mappedBy="trainingPlan")
 	 */
 	protected $feedPost;
+
+	/**
+	 * @Column(name="set_id", type="integer")
+	 * @var integer
+	 */
+	protected $setIds;
 	
 	public function __construct() {
 		$this->date = new \DateTime();
@@ -179,6 +185,20 @@ class TrainingPlan extends AbstractEntity {
 	public function setExecutionOrder($executionOrder) {
 		$this->executionOrder = $executionOrder;
 	}
+
+	/**
+	 * @return int the $set_id
+	 */
+	public function getsetIds() {
+		return $this->setIds;
+	}
+
+	/**
+	 * @param int $set_id
+	 */
+	public function setsetIds($set_id) {
+		$this->setIds = $set_id;
+	}	
 
 	/**
 	 * @return DateTime the $deletedTime

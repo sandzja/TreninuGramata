@@ -1,6 +1,10 @@
 <?php
 namespace Repository;
 
+use Doctrine\ORM\Query\Expr\GroupBy;
+
+use Doctrine\ORM\Query\ResultSetMapping;
+
 use Repository\AbstractRepository;
 
 class TrainingPlan extends AbstractRepository {
@@ -214,4 +218,30 @@ class TrainingPlan extends AbstractRepository {
 		
 		return $query->getQuery()->getResult();
 	}
+
+	public function getMaxExecutionOrder(\Entity\User $user, \Entity\TrainingPlan $trainingPlan) {
+		$rsm = new ResultSetMapping();
+		$rsm->addScalarResult('maxexecutionorder', 'maxexecutionorder');
+
+		$query = $this->_em->createNativeQuery('
+			SELECT
+				max(execution_order) as maxexecutionorder
+			FROM
+				TrainingPlan
+			WHERE
+				user_id = ?
+				and TrainingPlan.set_id = ?
+				and TrainingPlan.deleted_time is NULL
+			'
+				, $rsm);
+
+		$query->setParameter(1, $user->getId());
+		$query->setParameter(2, $trainingPlan->getsetIds());
+
+		$data = $query->getResult();
+
+error_log(print_r($data,true));
+
+		return $data[0]['maxexecutionorder'];
+	}	
 }

@@ -305,11 +305,19 @@ class Sync {
 		        	'GoalIsChallenge' => $exercise->getGoal()->isChallenge(),
 		        );
 		    }
+
+			// SV training plan set name update like 2/32 or something
+			$name_add_string="";
+			if ($trainingPlan->getsetIds() != null) {
+				$maxorder = $entityManager->getRepository('\Entity\TrainingPlan')->getMaxExecutionOrder($user,$trainingPlan);
+	            $name_add_string=(int) $trainingPlan->getExecutionOrder()."/".$maxorder." ";
+	            error_log($name_add_string);
+			}
 		    
 		    $trainingPlansData[] = array (
 		    	'TrainingPlanID' => $trainingPlan->getId(),
 		    	'TrainingPlanDateCreated' => $trainingPlan->getDate() != null ? $trainingPlan->getDate()->getTimestamp() : null,
-		    	'TrainingPlanName' => $trainingPlan->getName(),
+		    	'TrainingPlanName' => $name_add_string.$trainingPlan->getName(),
 		    	'IsChallenge' => (boolean) $trainingPlan->isChallenge(),
 		    	'HasWorkoutGoal' => (boolean) $trainingPlan->hasWorkoutGoal(),
 		    	'Note' => (boolean) $trainingPlan->getFeedPost()->getComment(),

@@ -454,11 +454,18 @@ class Workout {
 		foreach ($trainingPlan->getExercises() as $exercise) {
 			$exerciseIds[] = $exercise->getId();
 		}
-		
+
+		// SV training plan set name update like 2/32 or something
+		$name_add_string="";
+		if ($trainingPlan->getsetIds() != null) {
+			$maxorder = $entityManager->getRepository('\Entity\TrainingPlan')->getMaxExecutionOrder($user,$trainingPlan);
+            $name_add_string=(int) $trainingPlan->getExecutionOrder()."/".$maxorder." ";
+		}
+
 		$response = \Zend_Json::encode(array (
 			'Response' => 'OK',
 			'TrainingPlanDateCreated' => $trainingPlan->getDate()->getTimestamp(),
-			'TrainingPlanName' => $trainingPlan->getName(),
+			'TrainingPlanName' => $name_add_string.$trainingPlan->getName(),
 			'SportID' => $trainingPlan->getSport()->getId(),
 			'IsChallenge' => $trainingPlan->isChallenge(),
 			'HasWorkoutGoal' => (boolean) $trainingPlan->hasWorkoutGoal(),
@@ -509,9 +516,17 @@ class Workout {
 				$exerciseIds[] = $exercise->getId();
 			}
 			
+			// SV training plan set name update like 2/32 or something
+			$name_add_string="";
+			if ($trainingPlan->getsetIds() != null) {
+				$maxorder = $entityManager->getRepository('\Entity\TrainingPlan')->getMaxExecutionOrder($user,$trainingPlan);
+    	        $name_add_string=(int) $trainingPlan->getExecutionOrder()."/".$maxorder." ";
+			}
+
+
 			$trainingPlanResponse[] = array (
 				'TrainingPlanDateCreated' => $trainingPlan->getDate()->getTimestamp(),
-				'TrainingPlanName' => $trainingPlan->getName(),
+				'TrainingPlanName' => $name_add_string.$trainingPlan->getName(),
 				'SportID' => $trainingPlan->getSport()->getId(),
 				'IsChallenge' => (boolean) $trainingPlan->isChallenge(),
 				'HasWorkoutGoal' => (boolean) $trainingPlan->hasWorkoutGoal(),
