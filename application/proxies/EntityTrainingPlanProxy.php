@@ -84,6 +84,18 @@ class EntityTrainingPlanProxy extends \Entity\TrainingPlan implements \Doctrine\
         return parent::setExecutionOrder($executionOrder);
     }
 
+    public function getsetIds()
+    {
+        $this->__load();
+        return parent::getsetIds();
+    }
+
+    public function setsetIds($set_id)
+    {
+        $this->__load();
+        return parent::setsetIds($set_id);
+    }
+
     public function getDeletedTime()
     {
         $this->__load();
@@ -279,7 +291,7 @@ class EntityTrainingPlanProxy extends \Entity\TrainingPlan implements \Doctrine\
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'date', 'executionOrder', 'deletedTime', 'isDefault', 'hasWorkoutGoal', 'isChallenge', 'isSynced', 'isFeatured', 'user', 'trainingPlanReports', 'exercises', 'sport', 'originalTrainingPlan', 'trainingPlanCopies', 'feedPost');
+        return array('__isInitialized__', 'id', 'name', 'date', 'executionOrder', 'deletedTime', 'isDefault', 'hasWorkoutGoal', 'isChallenge', 'isSynced', 'isFeatured', 'user', 'trainingPlanReports', 'exercises', 'sport', 'originalTrainingPlan', 'trainingPlanCopies', 'feedPost', 'setIds');
     }
 
     public function __clone()
