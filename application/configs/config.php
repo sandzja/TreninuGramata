@@ -9,14 +9,14 @@
 
 // SV: application keys and secrets
 $twitter = array (
-		'consumerKey' => 'XCKtWHPKeoIbUhqqIanOWA',
-		'consumerSecret' => '9W9xTQutJ5EqKwQJUTaEnZZ1ASZ4VPjgU0sPGMeoiWo',
+        'consumerKey' => 'wW1IKMoG6YuI8QJAaKg0yg',
+        'consumerSecret' => '1MWa8iTCohgpXNqGr4Xaxn0HlKZQDUnpWrUomvT3I',
 	);
 $facebook = array (
-		'appId' => '206959362723186',
-		'secret' => 'f79f18a5170038eb3aaf0a66d54d6d32',
+		'appId' => '247901511953732',
+		'secret' => '8395d40c2a3b40831e4146e4424dcac5',
 		'loginParams' => array (
-			'display' => 'popup',
+        	'display' => 'popup',
 			'req_perms' => 'email,read_stream,publish_stream,user_about_me,user_birthday,friends_about_me',
 		),
 		'cookie' => true,
@@ -53,5 +53,5 @@ return array (
 		'Get moving! Log out, go run! ',
 		'I\'m training more effective! I\'m having a lot of fun! Trainingbook is so social!',
 	),
-	'defaultFriends' => array (29, 30),
+	'defaultFriends' => array (170),
 );
