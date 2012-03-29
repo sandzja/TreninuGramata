@@ -16,7 +16,9 @@
 				<select class="select smaller" title="Select one" name="intensity">
 					<option value="">Intensity</option>
 					<?php foreach (\Entity\Exercise::$intensities as $intensity => $intensityName):?>
-						<option value="<?php echo $intensity?>" <?php if ($this->intensity === (string) $intensity):?>selected="selected"<?php endif;?>><?php echo $intensityName?></option>
+						<?php if ($intensity>0 and $intensity<4) { ?>
+							<option value="<?php echo $intensity?>" <?php if ($this->intensity === (string) $intensity):?>selected="selected"<?php endif;?>><?php echo $intensityName?></option>
+						<?php } ?>	
 					<?php endforeach;?>
 				  </select>
 			  <span class="select smaller"><?php if ($this->intensity != null):?><?php echo \Entity\Exercise::$intensities[$this->intensity]?><?php else:?>Intensity<?php endif;?></span>
