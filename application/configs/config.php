@@ -40,7 +40,7 @@ return array (
 		'titleSeparator' => ' | ',
 		'defaultKeywords' => 'training book, motivator, trainingbook, trainingbook.com, tracker, sport tracker, sports tracker, GPS tracking, effective training, fun training, social training, challenge friends, share music playlists, result oriented, faster speed, voice assistant, weight control',
 		'defaultDescription' => 'TRAININGBOOK is your virtual motivator in living active and healthy life',
-		'domainName' => 'http://trainingbook.local/',
+		'domainName' => 'http://www.trainingbook.com/',
 	),
 	'twitter' => $twitter,
 	'facebook' => $facebook,
