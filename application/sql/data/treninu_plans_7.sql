@@ -125,7 +125,7 @@ insert into SetExercise (trainingPlanId, name, intensity, note, duration) values
 insert into SetExercise (trainingPlanId, name, intensity, note, duration) values (161,'Run and Walk',1,'4 sets of 2 minutes slow running and 1 minute fast walking',720);
 insert into SetExercise (trainingPlanId, name, intensity, note, duration) values (161,'Cooldown',4,NULL,180);
 
-
+insert into SetExercise (trainingPlanId, name, intensity, note, duration) values (160,'Warmup',4,NULL,180);
 insert into SetExercise (trainingPlanId, name, intensity, note, duration) values (160,'Run and Walk',1,'2 sets of 6 minutes slow running and 4 minutes fast walking',1200);
 insert into SetExercise (trainingPlanId, name, intensity, note, duration) values (160,'Speed interval',2,NULL,360);
 insert into SetExercise (trainingPlanId, name, intensity, note, duration) values (160,'Rest and Recovery',1,NULL,120);
