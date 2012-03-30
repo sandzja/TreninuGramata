@@ -3,12 +3,12 @@
 		<div class="element">
 			<div class="left clear">
 				<select class="select smaller" title="Select one" name="distance">
-					<option value="">Distance</option>
+					<option value="">Category</option>
 					<?php foreach ($this->distances as $distance):?>
 						<option value="<?php echo $distance['distance']?>" <?php if ($this->distance == $distance['distance']):?>selected="selected"<?php endif;?>><?php echo $distance['distance']?></option>
 					<?php endforeach;?>
 				  </select>
-			  <span class="select smaller"><?php if ($this->distance != null):?><?php echo $this->distance?><?php else:?>Distance<?php endif;?></span>
+			  <span class="select smaller"><?php if ($this->distance != null):?><?php echo $this->distance?><?php else:?>Category<?php endif;?></span>
 		  </div>
 		</div>
 		<div class="element">
