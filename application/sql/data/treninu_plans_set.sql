@@ -5,7 +5,6 @@ INSERT INTO `User` (`id`, `name`, `email`, `goal`, `height`, `weight`, `birthDat
 
 
 INSERT INTO `SetSets` (`id`, `sport_id`, `coach_id`, `name`, `event`, `event_date`, `intensity`, `usage`, `likes`, `image`) VALUES
-(1, 1, 1002, 'Nordea Riga marathon 10 weeks plan', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg'),
 (3, 1, 1001, '10km low intensity workout plan (3 workout per week)', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg '),
 (4, 1, 1001, 'Half-marathon low intensity workout plan (3 workout per week)', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg '),
 (5, 1, 1003, '10km | Low intensity | 3 workouts per week', 'Nordea Riga marathon', '2012-05-20', 1, 0, 0, '/partner/nordea_riga_marathon.jpg '),
