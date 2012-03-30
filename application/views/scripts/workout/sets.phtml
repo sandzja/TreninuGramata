@@ -43,7 +43,7 @@ No workouts plan found.
 			<div class="goal">
 		    	<h1 style="margin: 0 0 2px 0;font-size: 16px;margin-bottom:3px;"><?php echo $trainingPlan->getName();?></h1>
 		    	<h2 style="margin: 0 0 2px 0;margin-bottom:3px;text-transform: none;">Event: <span style="color: #1BD7F2;"><?php echo $trainingPlan->getEvent();?></span> (<?php echo $trainingPlan->getEventDate()->format('d M Y')?>)</h2>
-		    	<h2 style="margin: 0 0 2px 0;margin-bottom:3px;text-transform: none;">Sport: <span style="color: #1BD7F2;"><?php echo $trainingPlan->getSport()->getName();?></span></h2>
+		    	<h2 style="margin: 0 0 2px 0;margin-bottom:3px;text-transform: none;">Sport: <span style="color: #1BD7F2;"><?php echo $trainingPlan->getSport()->getName();?> <?php echo $trainingPlan->getDistance();?></span></h2>
 		    	<h2 style="margin: 0 0 2px 0;margin-bottom:3px;text-transform: none;">Intensity: <span style="color: #1BD7F2;"><?php echo $details['intensity'];?></span></h2>
 		    	<h2 style="margin: 0 0 2px 0;margin-bottom:3px;text-transform: none;">Coach: <span style="color: #1BD7F2;"><?php echo $trainingPlan->getUser()->getName();?></span></h2>
 		    	<h2 style="color: #CCC;margin: 0 0 2px 0;margin-bottom:10px;text-transform: none;">Currently use: <span style="color: #F2491B;"><?php echo $trainingPlan->getUsage();?></span> Likes: <span style="color: #F2491B;"><?php echo $trainingPlan->getLikes();?></span></h2>
