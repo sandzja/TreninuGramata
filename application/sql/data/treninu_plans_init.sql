@@ -52,8 +52,9 @@ CREATE TABLE IF NOT EXISTS `SetSets` (
   `usage` int(11) NOT NULL DEFAULT '0',
   `likes` int(11) NOT NULL DEFAULT '0',
   `image` varchar(100) NOT NULL,
+  `distance` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 --
