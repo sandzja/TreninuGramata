@@ -3,7 +3,7 @@ INSERT INTO `User` (`id`, `name`, `email`, `goal`, `height`, `weight`, `birthDat
 (1102, 'VSK Noskrien', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'https://graph.facebook.com/noskrien/picture?type=large', NULL),
 (1103, 'Trainingbook.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/373487_190495544370465_1322598424_n.jpg', NULL),
 (1104, 'Romāns Melderis', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'http://a0.twimg.com/profile_images/1930869312/image.jpg', NULL),
-(1105, 'Māris Ābele', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'http://a0.twimg.com/profile_images/1930869312/image.jpg', NULL);
+(1105, 'Māris Ābele', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'http://www.noskrien.lv/wp-content/uploads/2011/05/abele.jpg', NULL);
 
 
 INSERT INTO `SetSets` (`id`, `sport_id`, `coach_id`, `distance`, `name`, `event`, `event_date`, `intensity`, `usage`, `likes`, `image`) VALUES
