@@ -1,0 +1,1 @@
+UPDATE  `trainingbook`.`User` SET  `profileImageUrl` =  '/partner/2011-03-12_romans_melderis.jpg' WHERE  `User`.`id` =1104;
